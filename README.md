@@ -1,7 +1,16 @@
 # Hex Map Project
 
-This project contains the final Hex Map 27 unitypackage imported in a Unity 2021 project. It is identical to the [Hex Map tutorial series](https://catlikecoding.com/unity/tutorials/hex-map/) except for the upgrade to Unity 2021. This is the starting point for the modernization of Hex Map in project form.
+![Hex Map screenshot](Documentation/images/hex-map-banner.jpg)
+
+This is the Hex Map project, a continuation and modernization of the [Hex Map tutorial series](https://catlikecoding.com/unity/tutorials/hex-map/).
+
+- [Documentation](Documentation/index.md)
+- [Changelog](CHANGELOG.md)
+
+## Become My Patron
+
+Your support makes these projects and tutorials possible! If you like them and want to see more, please become my patron, via [Patreon](https://www.patreon.com/catlikecoding). You can also make a one-time [donation](https://catlikecoding.com/unity/tutorials/donating.html).
 
 ## Giving Credit
 
-This project has a MIT-0 license, but if you want to credit me in your work you can do so by mentioning [Jasper Flick](https://catlikecoding.com/jasper-flick/) and/or [Catlike Coding](https://catlikecoding.com).
+This project has a [MIT-0 license](LICENSE.md), but if you want to credit me in your work you can do so by mentioning [Jasper Flick](https://catlikecoding.com/jasper-flick/) and/or [Catlike Coding](https://catlikecoding.com).

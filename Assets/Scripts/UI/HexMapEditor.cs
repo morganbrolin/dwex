@@ -106,16 +106,16 @@ public class HexMapEditor : MonoBehaviour {
 
 	public void ShowGrid (bool visible) {
 		if (visible) {
-			terrainMaterial.EnableKeyword("GRID_ON");
+			terrainMaterial.EnableKeyword("_SHOW_GRID");
 		}
 		else {
-			terrainMaterial.DisableKeyword("GRID_ON");
+			terrainMaterial.DisableKeyword("_SHOW_GRID");
 		}
 	}
 
 	void Awake () {
-		terrainMaterial.DisableKeyword("GRID_ON");
-		Shader.EnableKeyword("HEX_MAP_EDIT_MODE");
+		terrainMaterial.DisableKeyword("_SHOW_GRID");
+		Shader.EnableKeyword("_HEX_MAP_EDIT_MODE");
 		SetEditMode(true);
 	}
 
