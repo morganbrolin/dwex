@@ -13,9 +13,7 @@ public class HexUnit : MonoBehaviour {
 	public HexGrid Grid { get; set; }
 
 	public HexCell Location {
-		get {
-			return location;
-		}
+		get => location;
 		set {
 			if (location) {
 				Grid.DecreaseVisibility(location, VisionRange);
@@ -32,38 +30,25 @@ public class HexUnit : MonoBehaviour {
 	HexCell location, currentTravelLocation;
 
 	public float Orientation {
-		get {
-			return orientation;
-		}
+		get => orientation;
 		set {
 			orientation = value;
 			transform.localRotation = Quaternion.Euler(0f, value, 0f);
 		}
 	}
 
-	public int Speed {
-		get {
-			return 24;
-		}
-	}
+	public int Speed => 24;
 
-	public int VisionRange {
-		get {
-			return 3;
-		}
-	}
+	public int VisionRange => 3;
 
 	float orientation;
 
 	List<HexCell> pathToTravel;
 
-	public void ValidateLocation () {
-		transform.localPosition = location.Position;
-	}
+	public void ValidateLocation () => transform.localPosition = location.Position;
 
-	public bool IsValidDestination (HexCell cell) {
-		return cell.IsExplored && !cell.IsUnderwater && !cell.Unit;
-	}
+	public bool IsValidDestination (HexCell cell) =>
+		cell.IsExplored && !cell.IsUnderwater && !cell.Unit;
 
 	public void Travel (List<HexCell> path) {
 		location.Unit = null;

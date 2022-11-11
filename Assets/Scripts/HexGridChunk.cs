@@ -28,13 +28,9 @@ public class HexGridChunk : MonoBehaviour {
 		cell.uiRect.SetParent(gridCanvas.transform, false);
 	}
 
-	public void Refresh () {
-		enabled = true;
-	}
+	public void Refresh () => enabled = true;
 
-	public void ShowUI (bool visible) {
-		gridCanvas.gameObject.SetActive(visible);
-	}
+	public void ShowUI (bool visible) => gridCanvas.gameObject.SetActive(visible);
 
 	void LateUpdate () {
 		Triangulate();
@@ -963,9 +959,8 @@ public class HexGridChunk : MonoBehaviour {
 	void TriangulateRiverQuad (
 		Vector3 v1, Vector3 v2, Vector3 v3, Vector3 v4,
 		float y, float v, bool reversed, Vector3 indices
-	) {
+	) =>
 		TriangulateRiverQuad(v1, v2, v3, v4, y, y, v, reversed, indices);
-	}
 
 	void TriangulateRiverQuad (
 		Vector3 v1, Vector3 v2, Vector3 v3, Vector3 v4,

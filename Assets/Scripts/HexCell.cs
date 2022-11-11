@@ -15,9 +15,7 @@ public class HexCell : MonoBehaviour {
 	public int ColumnIndex { get; set; }
 
 	public int Elevation {
-		get {
-			return elevation;
-		}
+		get => elevation;
 		set {
 			if (elevation == value) {
 				return;
@@ -41,9 +39,7 @@ public class HexCell : MonoBehaviour {
 	}
 
 	public int WaterLevel {
-		get {
-			return waterLevel;
-		}
+		get => waterLevel;
 		set {
 			if (waterLevel == value) {
 				return;
@@ -58,47 +54,20 @@ public class HexCell : MonoBehaviour {
 		}
 	}
 
-	public int ViewElevation {
-		get {
-			return elevation >= waterLevel ? elevation : waterLevel;
-		}
-	}
+	public int ViewElevation => elevation >= waterLevel ? elevation : waterLevel;
 
-	public bool IsUnderwater {
-		get {
-			return waterLevel > elevation;
-		}
-	}
+	public bool IsUnderwater => waterLevel > elevation;
 
-	public bool HasIncomingRiver {
-		get {
-			return hasIncomingRiver;
-		}
-	}
+	public bool HasIncomingRiver => hasIncomingRiver;
 
-	public bool HasOutgoingRiver {
-		get {
-			return hasOutgoingRiver;
-		}
-	}
+	public bool HasOutgoingRiver => hasOutgoingRiver;
 
-	public bool HasRiver {
-		get {
-			return hasIncomingRiver || hasOutgoingRiver;
-		}
-	}
+	public bool HasRiver => hasIncomingRiver || hasOutgoingRiver;
 
-	public bool HasRiverBeginOrEnd {
-		get {
-			return hasIncomingRiver != hasOutgoingRiver;
-		}
-	}
+	public bool HasRiverBeginOrEnd => hasIncomingRiver != hasOutgoingRiver;
 
-	public HexDirection RiverBeginOrEndDirection {
-		get {
-			return hasIncomingRiver ? incomingRiver : outgoingRiver;
-		}
-	}
+	public HexDirection RiverBeginOrEndDirection =>
+		hasIncomingRiver ? incomingRiver : outgoingRiver;
 
 	public bool HasRoads {
 		get {
@@ -111,53 +80,23 @@ public class HexCell : MonoBehaviour {
 		}
 	}
 
-	public HexDirection IncomingRiver {
-		get {
-			return incomingRiver;
-		}
-	}
+	public HexDirection IncomingRiver => incomingRiver;
 
-	public HexDirection OutgoingRiver {
-		get {
-			return outgoingRiver;
-		}
-	}
+	public HexDirection OutgoingRiver => outgoingRiver;
 
-	public Vector3 Position {
-		get {
-			return transform.localPosition;
-		}
-	}
+	public Vector3 Position => transform.localPosition;
 
+	public float StreamBedY =>
+		(elevation + HexMetrics.streamBedElevationOffset) * HexMetrics.elevationStep;
 
-	public float StreamBedY {
-		get {
-			return
-				(elevation + HexMetrics.streamBedElevationOffset) *
-				HexMetrics.elevationStep;
-		}
-	}
+	public float RiverSurfaceY =>
+		(elevation + HexMetrics.waterElevationOffset) * HexMetrics.elevationStep;
 
-	public float RiverSurfaceY {
-		get {
-			return
-				(elevation + HexMetrics.waterElevationOffset) *
-				HexMetrics.elevationStep;
-		}
-	}
-
-	public float WaterSurfaceY {
-		get {
-			return
-				(waterLevel + HexMetrics.waterElevationOffset) *
-				HexMetrics.elevationStep;
-		}
-	}
+	public float WaterSurfaceY =>
+		(waterLevel + HexMetrics.waterElevationOffset) * HexMetrics.elevationStep;
 
 	public int UrbanLevel {
-		get {
-			return urbanLevel;
-		}
+		get => urbanLevel;
 		set {
 			if (urbanLevel != value) {
 				urbanLevel = value;
@@ -167,9 +106,7 @@ public class HexCell : MonoBehaviour {
 	}
 
 	public int FarmLevel {
-		get {
-			return farmLevel;
-		}
+		get => farmLevel;
 		set {
 			if (farmLevel != value) {
 				farmLevel = value;
@@ -179,9 +116,7 @@ public class HexCell : MonoBehaviour {
 	}
 
 	public int PlantLevel {
-		get {
-			return plantLevel;
-		}
+		get => plantLevel;
 		set {
 			if (plantLevel != value) {
 				plantLevel = value;
@@ -191,9 +126,7 @@ public class HexCell : MonoBehaviour {
 	}
 
 	public int SpecialIndex {
-		get {
-			return specialIndex;
-		}
+		get => specialIndex;
 		set {
 			if (specialIndex != value && !HasRiver) {
 				specialIndex = value;
@@ -203,16 +136,10 @@ public class HexCell : MonoBehaviour {
 		}
 	}
 
-	public bool IsSpecial {
-		get {
-			return specialIndex > 0;
-		}
-	}
+	public bool IsSpecial => specialIndex > 0;
 
 	public bool Walled {
-		get {
-			return walled;
-		}
+		get => walled;
 		set {
 			if (walled != value) {
 				walled = value;
@@ -222,9 +149,7 @@ public class HexCell : MonoBehaviour {
 	}
 
 	public int TerrainTypeIndex {
-		get {
-			return terrainTypeIndex;
-		}
+		get => terrainTypeIndex;
 		set {
 			if (terrainTypeIndex != value) {
 				terrainTypeIndex = value;
@@ -233,30 +158,18 @@ public class HexCell : MonoBehaviour {
 		}
 	}
 
-	public bool IsVisible {
-		get {
-			return visibility > 0 && Explorable;
-		}
-	}
+	public bool IsVisible => visibility > 0 && Explorable;
 
 	public bool IsExplored {
-		get {
-			return explored && Explorable;
-		}
-		private set {
-			explored = value;
-		}
+		get => explored && Explorable;
+		private set => explored = value;
 	}
 
 	public bool Explorable { get; set; }
 
 	public int Distance {
-		get {
-			return distance;
-		}
-		set {
-			distance = value;
-		}
+		get => distance;
+		set => distance = value;
 	}
 
 	public HexUnit Unit { get; set; }
@@ -265,11 +178,7 @@ public class HexCell : MonoBehaviour {
 
 	public int SearchHeuristic { get; set; }
 
-	public int SearchPriority {
-		get {
-			return distance + SearchHeuristic;
-		}
-	}
+	public int SearchPriority => distance + SearchHeuristic;
 
 	public int SearchPhase { get; set; }
 
@@ -325,32 +234,24 @@ public class HexCell : MonoBehaviour {
 		}
 	}
 
-	public HexCell GetNeighbor (HexDirection direction) {
-		return neighbors[(int)direction];
-	}
+	public HexCell GetNeighbor (HexDirection direction) => neighbors[(int)direction];
 
 	public void SetNeighbor (HexDirection direction, HexCell cell) {
 		neighbors[(int)direction] = cell;
 		cell.neighbors[(int)direction.Opposite()] = this;
 	}
 
-	public HexEdgeType GetEdgeType (HexDirection direction) {
-		return HexMetrics.GetEdgeType(
-			elevation, neighbors[(int)direction].elevation
-		);
-	}
+	public HexEdgeType GetEdgeType (HexDirection direction) => HexMetrics.GetEdgeType(
+		elevation, neighbors[(int)direction].elevation
+	);
 
-	public HexEdgeType GetEdgeType (HexCell otherCell) {
-		return HexMetrics.GetEdgeType(
-			elevation, otherCell.elevation
-		);
-	}
+	public HexEdgeType GetEdgeType (HexCell otherCell) => HexMetrics.GetEdgeType(
+		elevation, otherCell.elevation
+	);
 
-	public bool HasRiverThroughEdge (HexDirection direction) {
-		return
-			hasIncomingRiver && incomingRiver == direction ||
-			hasOutgoingRiver && outgoingRiver == direction;
-	}
+	public bool HasRiverThroughEdge (HexDirection direction) =>
+		hasIncomingRiver && incomingRiver == direction ||
+		hasOutgoingRiver && outgoingRiver == direction;
 
 	public void RemoveIncomingRiver () {
 		if (!hasIncomingRiver) {
@@ -407,9 +308,7 @@ public class HexCell : MonoBehaviour {
 		SetRoad((int)direction, false);
 	}
 
-	public bool HasRoadThroughEdge (HexDirection direction) {
-		return roads[(int)direction];
-	}
+	public bool HasRoadThroughEdge (HexDirection direction) => roads[(int)direction];
 
 	public void AddRoad (HexDirection direction) {
 		if (
@@ -434,11 +333,8 @@ public class HexCell : MonoBehaviour {
 		return difference >= 0 ? difference : -difference;
 	}
 
-	bool IsValidRiverDestination (HexCell neighbor) {
-		return neighbor && (
-			elevation >= neighbor.elevation || waterLevel == neighbor.elevation
-		);
-	}
+	bool IsValidRiverDestination (HexCell neighbor) =>
+		neighbor && (elevation >= neighbor.elevation || waterLevel == neighbor.elevation);
 
 	void ValidateRivers () {
 		if (
@@ -589,7 +485,5 @@ public class HexCell : MonoBehaviour {
 		highlight.enabled = true;
 	}
 
-	public void SetMapData (float data) {
-		ShaderData.SetMapData(this, data);
-	}
+	public void SetMapData (float data) => ShaderData.SetMapData(this, data);
 }

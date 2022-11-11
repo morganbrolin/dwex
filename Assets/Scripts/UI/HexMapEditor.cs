@@ -32,77 +32,41 @@ public class HexMapEditor : MonoBehaviour {
 	HexDirection dragDirection;
 	HexCell previousCell;
 
-	public void SetTerrainTypeIndex (int index) {
-		activeTerrainTypeIndex = index;
-	}
+	public void SetTerrainTypeIndex (int index) => activeTerrainTypeIndex = index;
 
-	public void SetApplyElevation (bool toggle) {
-		applyElevation = toggle;
-	}
+	public void SetApplyElevation (bool toggle) => applyElevation = toggle;
 
-	public void SetElevation (float elevation) {
-		activeElevation = (int)elevation;
-	}
+	public void SetElevation (float elevation) => activeElevation = (int)elevation;
 
-	public void SetApplyWaterLevel (bool toggle) {
-		applyWaterLevel = toggle;
-	}
+	public void SetApplyWaterLevel (bool toggle) => applyWaterLevel = toggle;
 
-	public void SetWaterLevel (float level) {
-		activeWaterLevel = (int)level;
-	}
+	public void SetWaterLevel (float level) => activeWaterLevel = (int)level;
 
-	public void SetApplyUrbanLevel (bool toggle) {
-		applyUrbanLevel = toggle;
-	}
+	public void SetApplyUrbanLevel (bool toggle) => applyUrbanLevel = toggle;
 
-	public void SetUrbanLevel (float level) {
-		activeUrbanLevel = (int)level;
-	}
+	public void SetUrbanLevel (float level) => activeUrbanLevel = (int)level;
 
-	public void SetApplyFarmLevel (bool toggle) {
-		applyFarmLevel = toggle;
-	}
+	public void SetApplyFarmLevel (bool toggle) => applyFarmLevel = toggle;
 
-	public void SetFarmLevel (float level) {
-		activeFarmLevel = (int)level;
-	}
+	public void SetFarmLevel (float level) => activeFarmLevel = (int)level;
 
-	public void SetApplyPlantLevel (bool toggle) {
-		applyPlantLevel = toggle;
-	}
+	public void SetApplyPlantLevel (bool toggle) => applyPlantLevel = toggle;
 
-	public void SetPlantLevel (float level) {
-		activePlantLevel = (int)level;
-	}
+	public void SetPlantLevel (float level) => activePlantLevel = (int)level;
 
-	public void SetApplySpecialIndex (bool toggle) {
-		applySpecialIndex = toggle;
-	}
+	public void SetApplySpecialIndex (bool toggle) => applySpecialIndex = toggle;
 
-	public void SetSpecialIndex (float index) {
-		activeSpecialIndex = (int)index;
-	}
+	public void SetSpecialIndex (float index) => activeSpecialIndex = (int)index;
 
-	public void SetBrushSize (float size) {
-		brushSize = (int)size;
-	}
+	public void SetBrushSize (float size) => brushSize = (int)size;
 
-	public void SetRiverMode (int mode) {
-		riverMode = (OptionalToggle)mode;
-	}
+	public void SetRiverMode (int mode) => riverMode = (OptionalToggle)mode;
 
-	public void SetRoadMode (int mode) {
-		roadMode = (OptionalToggle)mode;
-	}
+	public void SetRoadMode (int mode) => roadMode = (OptionalToggle)mode;
 
-	public void SetWalledMode (int mode) {
-		walledMode = (OptionalToggle)mode;
-	}
+	public void SetWalledMode (int mode) => walledMode = (OptionalToggle)mode;
 
-	public void SetEditMode (bool toggle) {
-		enabled = toggle;
-	}
+	public void SetEditMode (bool toggle) => enabled = toggle;
 
 	public void ShowGrid (bool visible) {
 		if (visible) {
@@ -138,10 +102,8 @@ public class HexMapEditor : MonoBehaviour {
 		previousCell = null;
 	}
 
-	HexCell GetCellUnderCursor () {
-		return
-			hexGrid.GetCell(Camera.main.ScreenPointToRay(Input.mousePosition));
-	}
+	HexCell GetCellUnderCursor () =>
+		hexGrid.GetCell(Camera.main.ScreenPointToRay(Input.mousePosition));
 
 	void CreateUnit () {
 		HexCell cell = GetCellUnderCursor();

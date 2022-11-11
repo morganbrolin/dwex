@@ -53,9 +53,7 @@ public class SaveLoadMenu : MonoBehaviour {
 		Close();
 	}
 
-	public void SelectItem (string name) {
-		nameInput.text = name;
-	}
+	public void SelectItem (string name) => nameInput.text = name;
 
 	public void Delete () {
 		string path = GetSelectedPath();

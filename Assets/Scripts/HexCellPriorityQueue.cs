@@ -7,11 +7,7 @@ public class HexCellPriorityQueue {
 	int count = 0;
 	int minimum = int.MaxValue;
 
-	public int Count {
-		get {
-			return count;
-		}
-	}
+	public int Count => count;
 
 	public void Enqueue (HexCell cell) {
 		count += 1;

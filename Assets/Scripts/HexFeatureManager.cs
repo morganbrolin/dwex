@@ -22,9 +22,7 @@ public class HexFeatureManager : MonoBehaviour {
 		walls.Clear();
 	}
 
-	public void Apply () {
-		walls.Apply();
-	}
+	public void Apply () => walls.Apply();
 
 	Transform PickPrefab (
 		HexFeatureCollection[] collection,

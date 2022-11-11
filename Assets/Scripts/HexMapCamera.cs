@@ -21,14 +21,10 @@ public class HexMapCamera : MonoBehaviour {
 	static HexMapCamera instance;
 
 	public static bool Locked {
-		set {
-			instance.enabled = !value;
-		}
+		set => instance.enabled = !value;
 	}
 
-	public static void ValidatePosition () {
-		instance.AdjustPosition(0f, 0f);
-	}
+	public static void ValidatePosition () => instance.AdjustPosition(0f, 0f);
 
 	void Awake () {
 		swivel = transform.GetChild(0);

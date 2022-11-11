@@ -98,11 +98,7 @@ public static class HexMetrics {
 
 	public static int wrapSize;
 
-	public static bool Wrapping {
-		get {
-			return wrapSize > 0;
-		}
-	}
+	public static bool Wrapping => wrapSize > 0;
 
 	public static void InitializeHashGrid (int seed) {
 		hashGrid = new HexHash[hashGridSize * hashGridSize];
@@ -126,49 +122,35 @@ public static class HexMetrics {
 		return hashGrid[x + z * hashGridSize];
 	}
 
-	public static float[] GetFeatureThresholds (int level) {
-		return featureThresholds[level];
-	}
+	public static float[] GetFeatureThresholds (int level) => featureThresholds[level];
 
-	public static Vector3 GetFirstCorner (HexDirection direction) {
-		return corners[(int)direction];
-	}
+	public static Vector3 GetFirstCorner (HexDirection direction) =>
+		corners[(int)direction];
 
-	public static Vector3 GetSecondCorner (HexDirection direction) {
-		return corners[(int)direction + 1];
-	}
+	public static Vector3 GetSecondCorner (HexDirection direction) =>
+		corners[(int)direction + 1];
 
-	public static Vector3 GetFirstSolidCorner (HexDirection direction) {
-		return corners[(int)direction] * solidFactor;
-	}
+	public static Vector3 GetFirstSolidCorner (HexDirection direction) =>
+		corners[(int)direction] * solidFactor;
 
-	public static Vector3 GetSecondSolidCorner (HexDirection direction) {
-		return corners[(int)direction + 1] * solidFactor;
-	}
+	public static Vector3 GetSecondSolidCorner (HexDirection direction) =>
+		corners[(int)direction + 1] * solidFactor;
 
-	public static Vector3 GetSolidEdgeMiddle (HexDirection direction) {
-		return
-			(corners[(int)direction] + corners[(int)direction + 1]) *
-			(0.5f * solidFactor);
-	}
+	public static Vector3 GetSolidEdgeMiddle (HexDirection direction) =>
+		(corners[(int)direction] + corners[(int)direction + 1]) *
+		(0.5f * solidFactor);
 
-	public static Vector3 GetFirstWaterCorner (HexDirection direction) {
-		return corners[(int)direction] * waterFactor;
-	}
+	public static Vector3 GetFirstWaterCorner (HexDirection direction) =>
+		corners[(int)direction] * waterFactor;
 
-	public static Vector3 GetSecondWaterCorner (HexDirection direction) {
-		return corners[(int)direction + 1] * waterFactor;
-	}
+	public static Vector3 GetSecondWaterCorner (HexDirection direction) =>
+		corners[(int)direction + 1] * waterFactor;
 
-	public static Vector3 GetBridge (HexDirection direction) {
-		return (corners[(int)direction] + corners[(int)direction + 1]) *
-			blendFactor;
-	}
+	public static Vector3 GetBridge (HexDirection direction) =>
+		(corners[(int)direction] + corners[(int)direction + 1]) * blendFactor;
 
-	public static Vector3 GetWaterBridge (HexDirection direction) {
-		return (corners[(int)direction] + corners[(int)direction + 1]) *
-			waterBlendFactor;
-	}
+	public static Vector3 GetWaterBridge (HexDirection direction) =>
+		(corners[(int)direction] + corners[(int)direction + 1]) * waterBlendFactor;
 
 	public static Vector3 TerraceLerp (Vector3 a, Vector3 b, int step) {
 		float h = step * HexMetrics.horizontalTerraceStepSize;

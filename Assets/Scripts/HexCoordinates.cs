@@ -7,23 +7,11 @@ public struct HexCoordinates {
 	[SerializeField]
 	private int x, z;
 
-	public int X {
-		get {
-			return x;
-		}
-	}
+	public int X => x;
 
-	public int Z {
-		get {
-			return z;
-		}
-	}
+	public int Z => z;
 
-	public int Y {
-		get {
-			return -X - Z;
-		}
-	}
+	public int Y => -X - Z;
 
 	public HexCoordinates (int x, int z) {
 		if (HexMetrics.Wrapping) {
@@ -66,9 +54,8 @@ public struct HexCoordinates {
 		return (xy + (z < other.z ? other.z - z : z - other.z)) / 2;
 	}
 
-	public static HexCoordinates FromOffsetCoordinates (int x, int z) {
-		return new HexCoordinates(x - z / 2, z);
-	}
+	public static HexCoordinates FromOffsetCoordinates (int x, int z) =>
+		new HexCoordinates(x - z / 2, z);
 
 	public static HexCoordinates FromPosition (Vector3 position) {
 		float x = position.x / HexMetrics.innerDiameter;
@@ -98,14 +85,11 @@ public struct HexCoordinates {
 		return new HexCoordinates(iX, iZ);
 	}
 
-	public override string ToString () {
-		return "(" +
-			X.ToString() + ", " + Y.ToString() + ", " + Z.ToString() + ")";
-	}
+	public override string ToString () =>
+		"(" + X.ToString() + ", " + Y.ToString() + ", " + Z.ToString() + ")";
 
-	public string ToStringOnSeparateLines () {
-		return X.ToString() + "\n" + Y.ToString() + "\n" + Z.ToString();
-	}
+	public string ToStringOnSeparateLines () =>
+		X.ToString() + "\n" + Y.ToString() + "\n" + Z.ToString();
 
 	public void Save (BinaryWriter writer) {
 		writer.Write(x);

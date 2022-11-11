@@ -107,9 +107,8 @@ public class HexMesh : MonoBehaviour {
 		cellWeights.Add(weights3);
 	}
 
-	public void AddTriangleCellData (Vector3 indices, Color weights) {
+	public void AddTriangleCellData (Vector3 indices, Color weights) =>
 		AddTriangleCellData(indices, weights, weights, weights);
-	}
 
 	public void AddQuad (Vector3 v1, Vector3 v2, Vector3 v3, Vector3 v4) {
 		int vertexIndex = vertices.Count;
@@ -125,9 +124,7 @@ public class HexMesh : MonoBehaviour {
 		triangles.Add(vertexIndex + 3);
 	}
 
-	public void AddQuadUnperturbed (
-		Vector3 v1, Vector3 v2, Vector3 v3, Vector3 v4
-	) {
+	public void AddQuadUnperturbed (Vector3 v1, Vector3 v2, Vector3 v3, Vector3 v4) {
 		int vertexIndex = vertices.Count;
 		vertices.Add(v1);
 		vertices.Add(v2);
@@ -183,13 +180,9 @@ public class HexMesh : MonoBehaviour {
 		cellWeights.Add(weights4);
 	}
 
-	public void AddQuadCellData (
-		Vector3 indices, Color weights1, Color weights2
-	) {
+	public void AddQuadCellData (Vector3 indices, Color weights1, Color weights2) =>
 		AddQuadCellData(indices, weights1, weights1, weights2, weights2);
-	}
 
-	public void AddQuadCellData (Vector3 indices, Color weights) {
+	public void AddQuadCellData (Vector3 indices, Color weights) =>
 		AddQuadCellData(indices, weights, weights, weights, weights);
-	}
 }
