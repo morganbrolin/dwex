@@ -2,14 +2,25 @@
 
 public class HexFeatureManager : MonoBehaviour {
 
-	public HexFeatureCollection[]
-		urbanCollections, farmCollections, plantCollections;
+	[System.Serializable]
+	public struct HexFeatureCollection {
 
-	public HexMesh walls;
+		public Transform[] prefabs;
 
-	public Transform wallTower, bridge;
+		public Transform Pick (float choice) => prefabs[(int)(choice * prefabs.Length)];
+	}
 
-	public Transform[] special;
+	[SerializeField]
+	HexFeatureCollection[] urbanCollections, farmCollections, plantCollections;
+
+	[SerializeField]
+	HexMesh walls;
+
+	[SerializeField]
+	Transform wallTower, bridge;
+
+	[SerializeField]
+	Transform[] special;
 
 	Transform container;
 
