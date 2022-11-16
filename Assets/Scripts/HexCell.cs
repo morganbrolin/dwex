@@ -4,11 +4,11 @@ using System.IO;
 
 public class HexCell : MonoBehaviour {
 
-	public HexCoordinates coordinates;
+	public HexCoordinates Coordinates { get; set; }
 
-	public RectTransform uiRect;
+	public RectTransform UIRect { get; set; }
 
-	public HexGridChunk chunk;
+	public HexGridChunk Chunk { get; set; }
 
 	public int Index { get; set; }
 
@@ -366,18 +366,18 @@ public class HexCell : MonoBehaviour {
 			HexMetrics.elevationPerturbStrength;
 		transform.localPosition = position;
 
-		Vector3 uiPosition = uiRect.localPosition;
+		Vector3 uiPosition = UIRect.localPosition;
 		uiPosition.z = -position.y;
-		uiRect.localPosition = uiPosition;
+		UIRect.localPosition = uiPosition;
 	}
 
 	void Refresh () {
-		if (chunk) {
-			chunk.Refresh();
+		if (Chunk) {
+			Chunk.Refresh();
 			for (int i = 0; i < neighbors.Length; i++) {
 				HexCell neighbor = neighbors[i];
-				if (neighbor != null && neighbor.chunk != chunk) {
-					neighbor.chunk.Refresh();
+				if (neighbor != null && neighbor.Chunk != Chunk) {
+					neighbor.Chunk.Refresh();
 				}
 			}
 			if (Unit) {
@@ -387,7 +387,7 @@ public class HexCell : MonoBehaviour {
 	}
 
 	void RefreshSelfOnly () {
-		chunk.Refresh();
+		Chunk.Refresh();
 		if (Unit) {
 			Unit.ValidateLocation();
 		}
@@ -470,17 +470,17 @@ public class HexCell : MonoBehaviour {
 	}
 
 	public void SetLabel (string text) {
-		UnityEngine.UI.Text label = uiRect.GetComponent<Text>();
+		UnityEngine.UI.Text label = UIRect.GetComponent<Text>();
 		label.text = text;
 	}
 
 	public void DisableHighlight () {
-		Image highlight = uiRect.GetChild(0).GetComponent<Image>();
+		Image highlight = UIRect.GetChild(0).GetComponent<Image>();
 		highlight.enabled = false;
 	}
 
 	public void EnableHighlight (Color color) {
-		Image highlight = uiRect.GetChild(0).GetComponent<Image>();
+		Image highlight = UIRect.GetChild(0).GetComponent<Image>();
 		highlight.color = color;
 		highlight.enabled = true;
 	}

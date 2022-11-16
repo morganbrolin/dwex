@@ -5,7 +5,8 @@ using System;
 [RequireComponent(typeof(MeshFilter), typeof(MeshRenderer))]
 public class HexMesh : MonoBehaviour {
 
-	public bool useCollider, useCellData, useUVCoordinates, useUV2Coordinates;
+	[SerializeField]
+	bool useCollider, useCellData, useUVCoordinates, useUV2Coordinates;
 
 	[NonSerialized] List<Vector3> vertices, cellIndices;
 	[NonSerialized] List<Color> cellWeights;

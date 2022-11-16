@@ -3,7 +3,7 @@ using UnityEngine.UI;
 
 public class SaveLoadItem : MonoBehaviour {
 
-	public SaveLoadMenu menu;
+	public SaveLoadMenu Menu { get; set; }
 
 	public string MapName {
 		get => mapName;
@@ -15,5 +15,5 @@ public class SaveLoadItem : MonoBehaviour {
 
 	string mapName;
 
-	public void Select () => menu.SelectItem(mapName);
+	public void Select () => Menu.SelectItem(mapName);
 }

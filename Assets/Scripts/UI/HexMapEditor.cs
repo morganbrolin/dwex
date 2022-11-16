@@ -4,9 +4,11 @@ using System.IO;
 
 public class HexMapEditor : MonoBehaviour {
 
-	public HexGrid hexGrid;
+	[SerializeField]
+	HexGrid hexGrid;
 
-	public Material terrainMaterial;
+	[SerializeField]
+	Material terrainMaterial;
 
 	int activeElevation;
 	int activeWaterLevel;
@@ -153,8 +155,8 @@ public class HexMapEditor : MonoBehaviour {
 	}
 
 	void EditCells (HexCell center) {
-		int centerX = center.coordinates.X;
-		int centerZ = center.coordinates.Z;
+		int centerX = center.Coordinates.X;
+		int centerZ = center.Coordinates.Z;
 
 		for (int r = 0, z = centerZ - brushSize; z <= centerZ; z++, r++) {
 			for (int x = centerX - r; x <= centerX + brushSize; x++) {

@@ -7,15 +7,20 @@ public class SaveLoadMenu : MonoBehaviour {
 
 	const int mapFileVersion = 5;
 
-	public Text menuLabel, actionButtonLabel;
+	[SerializeField]
+	Text menuLabel, actionButtonLabel;
 
-	public InputField nameInput;
+	[SerializeField]
+	InputField nameInput;
 
-	public RectTransform listContent;
+	[SerializeField]
+	RectTransform listContent;
 
-	public SaveLoadItem itemPrefab;
+	[SerializeField]
+	SaveLoadItem itemPrefab;
 
-	public HexGrid hexGrid;
+	[SerializeField]
+	HexGrid hexGrid;
 
 	bool saveMode;
 
@@ -76,7 +81,7 @@ public class SaveLoadMenu : MonoBehaviour {
 		Array.Sort(paths);
 		for (int i = 0; i < paths.Length; i++) {
 			SaveLoadItem item = Instantiate(itemPrefab);
-			item.menu = this;
+			item.Menu = this;
 			item.MapName = Path.GetFileNameWithoutExtension(paths[i]);
 			item.transform.SetParent(listContent, false);
 		}

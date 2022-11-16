@@ -190,7 +190,7 @@ public class HexUnit : MonoBehaviour {
 	}
 
 	public void Save (BinaryWriter writer) {
-		location.coordinates.Save(writer);
+		location.Coordinates.Save(writer);
 		writer.Write(orientation);
 	}
 

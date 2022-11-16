@@ -3,7 +3,8 @@ using UnityEngine.EventSystems;
 
 public class HexGameUI : MonoBehaviour {
 
-	public HexGrid grid;
+	[SerializeField]
+	HexGrid grid;
 
 	HexCell currentCell;
 

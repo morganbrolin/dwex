@@ -3,94 +3,99 @@ using UnityEngine;
 
 public class HexMapGenerator : MonoBehaviour {
 
-	public HexGrid grid;
+	[SerializeField]
+	HexGrid grid;
 
-	public bool useFixedSeed;
+	[SerializeField]
+	bool useFixedSeed;
 
-	public int seed;
+	[SerializeField]
+	int seed;
 
-	[Range(0f, 0.5f)]
-	public float jitterProbability = 0.25f;
+	[SerializeField, Range(0f, 0.5f)]
+	float jitterProbability = 0.25f;
 
-	[Range(20, 200)]
-	public int chunkSizeMin = 30;
+	[SerializeField, Range(20, 200)]
+	int chunkSizeMin = 30;
 
-	[Range(20, 200)]
-	public int chunkSizeMax = 100;
+	[SerializeField, Range(20, 200)]
+	int chunkSizeMax = 100;
 
-	[Range(0f, 1f)]
-	public float highRiseProbability = 0.25f;
+	[SerializeField, Range(0f, 1f)]
+	float highRiseProbability = 0.25f;
 
-	[Range(0f, 0.4f)]
-	public float sinkProbability = 0.2f;
+	[SerializeField, Range(0f, 0.4f)]
+	float sinkProbability = 0.2f;
 
-	[Range(5, 95)]
-	public int landPercentage = 50;
+	[SerializeField, Range(5, 95)]
+	int landPercentage = 50;
 
-	[Range(1, 5)]
-	public int waterLevel = 3;
+	[SerializeField, Range(1, 5)]
+	int waterLevel = 3;
 
-	[Range(-4, 0)]
-	public int elevationMinimum = -2;
+	[SerializeField, Range(-4, 0)]
+	int elevationMinimum = -2;
 
-	[Range(6, 10)]
-	public int elevationMaximum = 8;
+	[SerializeField, Range(6, 10)]
+	int elevationMaximum = 8;
 
-	[Range(0, 10)]
-	public int mapBorderX = 5;
+	[SerializeField, Range(0, 10)]
+	int mapBorderX = 5;
 
-	[Range(0, 10)]
-	public int mapBorderZ = 5;
+	[SerializeField, Range(0, 10)]
+	int mapBorderZ = 5;
 
-	[Range(0, 10)]
-	public int regionBorder = 5;
+	[SerializeField, Range(0, 10)]
+	int regionBorder = 5;
 
-	[Range(1, 4)]
-	public int regionCount = 1;
+	[SerializeField, Range(1, 4)]
+	int regionCount = 1;
 
-	[Range(0, 100)]
-	public int erosionPercentage = 50;
+	[SerializeField, Range(0, 100)]
+	int erosionPercentage = 50;
 
-	[Range(0f, 1f)]
-	public float startingMoisture = 0.1f;
+	[SerializeField, Range(0f, 1f)]
+	float startingMoisture = 0.1f;
 
-	[Range(0f, 1f)]
-	public float evaporationFactor = 0.5f;
+	[SerializeField, Range(0f, 1f)]
+	float evaporationFactor = 0.5f;
 
-	[Range(0f, 1f)]
-	public float precipitationFactor = 0.25f;
+	[SerializeField, Range(0f, 1f)]
+	float precipitationFactor = 0.25f;
 
-	[Range(0f, 1f)]
-	public float runoffFactor = 0.25f;
+	[SerializeField, Range(0f, 1f)]
+	float runoffFactor = 0.25f;
 
-	[Range(0f, 1f)]
-	public float seepageFactor = 0.125f;
+	[SerializeField, Range(0f, 1f)]
+	float seepageFactor = 0.125f;
 
-	public HexDirection windDirection = HexDirection.NW;
+	[SerializeField]
+	HexDirection windDirection = HexDirection.NW;
 
-	[Range(1f, 10f)]
-	public float windStrength = 4f;
+	[SerializeField, Range(1f, 10f)]
+	float windStrength = 4f;
 
-	[Range(0, 20)]
-	public int riverPercentage = 10;
+	[SerializeField, Range(0, 20)]
+	int riverPercentage = 10;
 
-	[Range(0f, 1f)]
-	public float extraLakeProbability = 0.25f;
+	[SerializeField, Range(0f, 1f)]
+	float extraLakeProbability = 0.25f;
 
-	[Range(0f, 1f)]
-	public float lowTemperature = 0f;
+	[SerializeField, Range(0f, 1f)]
+	float lowTemperature = 0f;
 
-	[Range(0f, 1f)]
-	public float highTemperature = 1f;
+	[SerializeField, Range(0f, 1f)]
+	float highTemperature = 1f;
 
 	public enum HemisphereMode {
 		Both, North, South
 	}
 
-	public HemisphereMode hemisphere;
+	[SerializeField]
+	HemisphereMode hemisphere;
 
-	[Range(0f, 1f)]
-	public float temperatureJitter = 0.1f;
+	[SerializeField, Range(0f, 1f)]
+	float temperatureJitter = 0.1f;
 
 	HexCellPriorityQueue searchFrontier;
 
@@ -174,71 +179,71 @@ public class HexMapGenerator : MonoBehaviour {
 			regions.Clear();
 		}
 
-		int borderX = grid.wrapping ? regionBorder : mapBorderX;
+		int borderX = grid.Wrapping ? regionBorder : mapBorderX;
 		MapRegion region;
 		switch (regionCount) {
 		default:
-			if (grid.wrapping) {
+			if (grid.Wrapping) {
 				borderX = 0;
 			}
 			region.xMin = borderX;
-			region.xMax = grid.cellCountX - borderX;
+			region.xMax = grid.CellCountX - borderX;
 			region.zMin = mapBorderZ;
-			region.zMax = grid.cellCountZ - mapBorderZ;
+			region.zMax = grid.CellCountZ - mapBorderZ;
 			regions.Add(region);
 			break;
 		case 2:
 			if (Random.value < 0.5f) {
 				region.xMin = borderX;
-				region.xMax = grid.cellCountX / 2 - regionBorder;
+				region.xMax = grid.CellCountX / 2 - regionBorder;
 				region.zMin = mapBorderZ;
-				region.zMax = grid.cellCountZ - mapBorderZ;
+				region.zMax = grid.CellCountZ - mapBorderZ;
 				regions.Add(region);
-				region.xMin = grid.cellCountX / 2 + regionBorder;
-				region.xMax = grid.cellCountX - borderX;
+				region.xMin = grid.CellCountX / 2 + regionBorder;
+				region.xMax = grid.CellCountX - borderX;
 				regions.Add(region);
 			}
 			else {
-				if (grid.wrapping) {
+				if (grid.Wrapping) {
 					borderX = 0;
 				}
 				region.xMin = borderX;
-				region.xMax = grid.cellCountX - borderX;
+				region.xMax = grid.CellCountX - borderX;
 				region.zMin = mapBorderZ;
-				region.zMax = grid.cellCountZ / 2 - regionBorder;
+				region.zMax = grid.CellCountZ / 2 - regionBorder;
 				regions.Add(region);
-				region.zMin = grid.cellCountZ / 2 + regionBorder;
-				region.zMax = grid.cellCountZ - mapBorderZ;
+				region.zMin = grid.CellCountZ / 2 + regionBorder;
+				region.zMax = grid.CellCountZ - mapBorderZ;
 				regions.Add(region);
 			}
 			break;
 		case 3:
 			region.xMin = borderX;
-			region.xMax = grid.cellCountX / 3 - regionBorder;
+			region.xMax = grid.CellCountX / 3 - regionBorder;
 			region.zMin = mapBorderZ;
-			region.zMax = grid.cellCountZ - mapBorderZ;
+			region.zMax = grid.CellCountZ - mapBorderZ;
 			regions.Add(region);
-			region.xMin = grid.cellCountX / 3 + regionBorder;
-			region.xMax = grid.cellCountX * 2 / 3 - regionBorder;
+			region.xMin = grid.CellCountX / 3 + regionBorder;
+			region.xMax = grid.CellCountX * 2 / 3 - regionBorder;
 			regions.Add(region);
-			region.xMin = grid.cellCountX * 2 / 3 + regionBorder;
-			region.xMax = grid.cellCountX - borderX;
+			region.xMin = grid.CellCountX * 2 / 3 + regionBorder;
+			region.xMax = grid.CellCountX - borderX;
 			regions.Add(region);
 			break;
 		case 4:
 			region.xMin = borderX;
-			region.xMax = grid.cellCountX / 2 - regionBorder;
+			region.xMax = grid.CellCountX / 2 - regionBorder;
 			region.zMin = mapBorderZ;
-			region.zMax = grid.cellCountZ / 2 - regionBorder;
+			region.zMax = grid.CellCountZ / 2 - regionBorder;
 			regions.Add(region);
-			region.xMin = grid.cellCountX / 2 + regionBorder;
-			region.xMax = grid.cellCountX - borderX;
+			region.xMin = grid.CellCountX / 2 + regionBorder;
+			region.xMax = grid.CellCountX - borderX;
 			regions.Add(region);
-			region.zMin = grid.cellCountZ / 2 + regionBorder;
-			region.zMax = grid.cellCountZ - mapBorderZ;
+			region.zMin = grid.CellCountZ / 2 + regionBorder;
+			region.zMax = grid.CellCountZ - mapBorderZ;
 			regions.Add(region);
 			region.xMin = borderX;
-			region.xMax = grid.cellCountX / 2 - regionBorder;
+			region.xMax = grid.CellCountX / 2 - regionBorder;
 			regions.Add(region);
 			break;
 		}
@@ -276,7 +281,7 @@ public class HexMapGenerator : MonoBehaviour {
 		firstCell.Distance = 0;
 		firstCell.SearchHeuristic = 0;
 		searchFrontier.Enqueue(firstCell);
-		HexCoordinates center = firstCell.coordinates;
+		HexCoordinates center = firstCell.Coordinates;
 
 		int rise = Random.value < highRiseProbability ? 2 : 1;
 		int size = 0;
@@ -300,7 +305,7 @@ public class HexMapGenerator : MonoBehaviour {
 				HexCell neighbor = current.GetNeighbor(d);
 				if (neighbor && neighbor.SearchPhase < searchFrontierPhase) {
 					neighbor.SearchPhase = searchFrontierPhase;
-					neighbor.Distance = neighbor.coordinates.DistanceTo(center);
+					neighbor.Distance = neighbor.Coordinates.DistanceTo(center);
 					neighbor.SearchHeuristic =
 						Random.value < jitterProbability ? 1: 0;
 					searchFrontier.Enqueue(neighbor);
@@ -318,7 +323,7 @@ public class HexMapGenerator : MonoBehaviour {
 		firstCell.Distance = 0;
 		firstCell.SearchHeuristic = 0;
 		searchFrontier.Enqueue(firstCell);
-		HexCoordinates center = firstCell.coordinates;
+		HexCoordinates center = firstCell.Coordinates;
 
 		int sink = Random.value < highRiseProbability ? 2 : 1;
 		int size = 0;
@@ -342,7 +347,7 @@ public class HexMapGenerator : MonoBehaviour {
 				HexCell neighbor = current.GetNeighbor(d);
 				if (neighbor && neighbor.SearchPhase < searchFrontierPhase) {
 					neighbor.SearchPhase = searchFrontierPhase;
-					neighbor.Distance = neighbor.coordinates.DistanceTo(center);
+					neighbor.Distance = neighbor.Coordinates.DistanceTo(center);
 					neighbor.SearchHeuristic =
 						Random.value < jitterProbability ? 1: 0;
 					searchFrontier.Enqueue(neighbor);
@@ -740,7 +745,7 @@ public class HexMapGenerator : MonoBehaviour {
 	}
 
 	float DetermineTemperature (HexCell cell) {
-		float latitude = (float)cell.coordinates.Z / grid.cellCountZ;
+		float latitude = (float)cell.Coordinates.Z / grid.CellCountZ;
 		if (hemisphere == HemisphereMode.Both) {
 			latitude *= 2f;
 			if (latitude > 1f) {

@@ -2,9 +2,11 @@
 
 public class NewMapMenu : MonoBehaviour {
 
-	public HexGrid hexGrid;
+	[SerializeField]
+	HexGrid hexGrid;
 
-	public HexMapGenerator mapGenerator;
+	[SerializeField]
+	HexMapGenerator mapGenerator;
 
 	bool generateMaps = true;
 

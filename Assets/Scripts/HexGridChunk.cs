@@ -3,9 +3,11 @@ using UnityEngine.UI;
 
 public class HexGridChunk : MonoBehaviour {
 
-	public HexMesh terrain, rivers, roads, water, waterShore, estuaries;
+	[SerializeField]
+	HexMesh terrain, rivers, roads, water, waterShore, estuaries;
 
-	public HexFeatureManager features;
+	[SerializeField]
+	HexFeatureManager features;
 
 	HexCell[] cells;
 
@@ -23,9 +25,9 @@ public class HexGridChunk : MonoBehaviour {
 
 	public void AddCell (int index, HexCell cell) {
 		cells[index] = cell;
-		cell.chunk = this;
+		cell.Chunk = this;
 		cell.transform.SetParent(transform, false);
-		cell.uiRect.SetParent(gridCanvas.transform, false);
+		cell.UIRect.SetParent(gridCanvas.transform, false);
 	}
 
 	public void Refresh () => enabled = true;
