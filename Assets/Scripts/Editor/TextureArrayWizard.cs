@@ -1,6 +1,10 @@
 ﻿using UnityEditor;
 using UnityEngine;
 
+/// <summary>
+/// Wizard to create a texture array from separate textures.
+/// Was needed before the Unity editor natively supported the creation of texture arrays.
+/// </summary>
 public class TextureArrayWizard : ScriptableWizard {
 
 	public Texture2D[] textures;

@@ -1,6 +1,9 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// Component that manages cell data used by shaders.
+/// </summary>
 public class HexCellShaderData : MonoBehaviour {
 
 	const float transitionSpeed = 255f;
@@ -16,6 +19,11 @@ public class HexCellShaderData : MonoBehaviour {
 
 	public bool ImmediateMode { get; set; }
 
+	/// <summary>
+	/// Initialze the map data.
+	/// </summary>
+	/// <param name="x">Map X size.</param>
+	/// <param name="z">Map Z size.</param>
 	public void Initialize (int x, int z) {
 		if (cellTexture) {
 			cellTexture.Reinitialize(x, z);
@@ -47,11 +55,19 @@ public class HexCellShaderData : MonoBehaviour {
 		enabled = true;
 	}
 
+	/// <summary>
+	/// Refresh the terrain data of a cell.
+	/// </summary>
+	/// <param name="cell">Cell with changed terrain type.</param>
 	public void RefreshTerrain (HexCell cell) {
 		cellTextureData[cell.Index].a = (byte)cell.TerrainTypeIndex;
 		enabled = true;
 	}
 
+	/// <summary>
+	/// Refresh visibility of a cell.
+	/// </summary>
+	/// <param name="cell">Cell with changed visibility.</param>
 	public void RefreshVisibility (HexCell cell) {
 		int index = cell.Index;
 		if (ImmediateMode) {
@@ -65,12 +81,20 @@ public class HexCellShaderData : MonoBehaviour {
 		enabled = true;
 	}
 
+	/// <summary>
+	/// Set the map data of a cell.
+	/// </summary>
+	/// <param name="cell">Cell to apply data for.</param>
+	/// <param name="data">Cell data value.</param>
 	public void SetMapData (HexCell cell, float data) {
 		cellTextureData[cell.Index].b =
 			data < 0f ? (byte)0 : (data < 1f ? (byte)(data * 254f) : (byte)254);
 		enabled = true;
 	}
 
+	/// <summary>
+	/// Indicate that view elevation data has changed, requiring a visibility reset.
+	/// </summary>
 	public void ViewElevationChanged () {
 		needsVisibilityReset = true;
 		enabled = true;

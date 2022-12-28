@@ -1,5 +1,8 @@
 ﻿using UnityEngine;
 
+/// <summary>
+/// Component that controls the singleton camera that navigates the hex map.
+/// </summary>
 public class HexMapCamera : MonoBehaviour {
 
 	[SerializeField]
@@ -25,10 +28,16 @@ public class HexMapCamera : MonoBehaviour {
 
 	static HexMapCamera instance;
 
+	/// <summary>
+	/// Whether the singleton camera controls are locked.
+	/// </summary>
 	public static bool Locked {
 		set => instance.enabled = !value;
 	}
 
+	/// <summary>
+	/// Validate the position of the singleton camera.
+	/// </summary>
 	public static void ValidatePosition () => instance.AdjustPosition(0f, 0f);
 
 	void Awake () {

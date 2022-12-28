@@ -3,6 +3,9 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 
+/// <summary>
+/// Component representing a unit that occupies a cell of the hex map.
+/// </summary>
 public class HexUnit : MonoBehaviour {
 
 	const float rotationSpeed = 180f;
@@ -12,6 +15,9 @@ public class HexUnit : MonoBehaviour {
 
 	public HexGrid Grid { get; set; }
 
+	/// <summary>
+	/// Cell that the unit occupies.
+	/// </summary>
 	public HexCell Location {
 		get => location;
 		set {
@@ -29,6 +35,9 @@ public class HexUnit : MonoBehaviour {
 
 	HexCell location, currentTravelLocation;
 
+	/// <summary>
+	/// Orientation that the unit is facing.
+	/// </summary>
 	public float Orientation {
 		get => orientation;
 		set {
@@ -37,19 +46,37 @@ public class HexUnit : MonoBehaviour {
 		}
 	}
 
+	/// <summary>
+	/// Speed of the unit, in cells per turn.
+	/// </summary>
 	public int Speed => 24;
 
+	/// <summary>
+	/// Vision range of the unit, in cells.
+	/// </summary>
 	public int VisionRange => 3;
 
 	float orientation;
 
 	List<HexCell> pathToTravel;
 
+	/// <summary>
+	/// Validate the position of the unit.
+	/// </summary>
 	public void ValidateLocation () => transform.localPosition = location.Position;
 
+	/// <summary>
+	/// Checl whether a cell is a valid destination for the unit.
+	/// </summary>
+	/// <param name="cell">Cell to check.</param>
+	/// <returns>Whether the unit could occupy the cell.</returns>
 	public bool IsValidDestination (HexCell cell) =>
 		cell.IsExplored && !cell.IsUnderwater && !cell.Unit;
 
+	/// <summary>
+	/// Travel along a path.
+	/// </summary>
+	/// <param name="path">List of cells that describe a valid path.</param>
 	public void Travel (List<HexCell> path) {
 		location.Unit = null;
 		location = path[path.Count - 1];
@@ -156,6 +183,13 @@ public class HexUnit : MonoBehaviour {
 		orientation = transform.localRotation.eulerAngles.y;
 	}
 
+	/// <summary>
+	/// Get the movement cost of moving from one cell to another.
+	/// </summary>
+	/// <param name="fromCell">Cell to move from.</param>
+	/// <param name="toCell">Cell to move to.</param>
+	/// <param name="direction">Movement direction.</param>
+	/// <returns></returns>
 	public int GetMoveCost (
 		HexCell fromCell, HexCell toCell, HexDirection direction)
 	{
@@ -181,6 +215,9 @@ public class HexUnit : MonoBehaviour {
 		return moveCost;
 	}
 
+	/// <summary>
+	/// Terminate the unit.
+	/// </summary>
 	public void Die () {
 		if (location) {
 			Grid.DecreaseVisibility(location, VisionRange);
@@ -189,11 +226,20 @@ public class HexUnit : MonoBehaviour {
 		Destroy(gameObject);
 	}
 
+	/// <summary>
+	/// Save the unit data.
+	/// </summary>
+	/// <param name="writer"><see cref="BinaryWriter"/> to use.</param>
 	public void Save (BinaryWriter writer) {
 		location.Coordinates.Save(writer);
 		writer.Write(orientation);
 	}
 
+	/// <summary>
+	/// Load the unit data.
+	/// </summary>
+	/// <param name="reader"><see cref="BinaryReader"/> to use.</param>
+	/// <param name="grid"><see cref="HexGrid"/> to add the unit to.</param>
 	public static void Load (BinaryReader reader, HexGrid grid) {
 		HexCoordinates coordinates = HexCoordinates.Load(reader);
 		float orientation = reader.ReadSingle();

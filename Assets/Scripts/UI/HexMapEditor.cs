@@ -1,7 +1,10 @@
 ﻿using UnityEngine;
 using UnityEngine.EventSystems;
-using System.IO;
 
+/// <summary>
+/// Component that applies UI commands to the hex map.
+/// Public methods are hooked up to the in-game UI.
+/// </summary>
 public class HexMapEditor : MonoBehaviour {
 
 	[SerializeField]

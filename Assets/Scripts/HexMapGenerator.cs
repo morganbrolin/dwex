@@ -1,6 +1,9 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// Component that generates hex maps.
+/// </summary>
 public class HexMapGenerator : MonoBehaviour {
 
 	[SerializeField]
@@ -140,6 +143,12 @@ public class HexMapGenerator : MonoBehaviour {
 		new Biome(0, 0), new Biome(1, 1), new Biome(1, 2), new Biome(1, 3)
 	};
 
+	/// <summary>
+	/// Generate a random hex map.
+	/// </summary>
+	/// <param name="x">X size of the map.</param>
+	/// <param name="z">Z size of the map.</param>
+	/// <param name="wrapping">Whether east-west wrapping is enabled.</param>
 	public void GenerateMap (int x, int z, bool wrapping) {
 		Random.State originalRandomState = Random.state;
 		if (!useFixedSeed) {

@@ -1,6 +1,9 @@
 ﻿using UnityEngine;
 using UnityEngine.EventSystems;
 
+/// <summary>
+/// Component that manages the game UI.
+/// </summary>
 public class HexGameUI : MonoBehaviour {
 
 	[SerializeField]
@@ -10,6 +13,10 @@ public class HexGameUI : MonoBehaviour {
 
 	HexUnit selectedUnit;
 
+	/// <summary>
+	/// Set whether map edit mode is active.
+	/// </summary>
+	/// <param name="toggle">Whether edit mode is enabled.</param>
 	public void SetEditMode (bool toggle) {
 		enabled = !toggle;
 		grid.ShowUI(!toggle);

@@ -3,6 +3,10 @@ using UnityEngine.UI;
 using System;
 using System.IO;
 
+/// <summary>
+/// Component that applies actions from the save-load menu UI to the hex map.
+/// Public methods are hooked up to the in-game UI.
+/// </summary>
 public class SaveLoadMenu : MonoBehaviour {
 
 	const int mapFileVersion = 5;

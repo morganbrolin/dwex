@@ -1,6 +1,9 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 
+/// <summary>
+/// Component that manages a single chunk of <see cref="HexGrid"/>.
+/// </summary>
 public class HexGridChunk : MonoBehaviour {
 
 	[SerializeField]
@@ -23,6 +26,11 @@ public class HexGridChunk : MonoBehaviour {
 		cells = new HexCell[HexMetrics.chunkSizeX * HexMetrics.chunkSizeZ];
 	}
 
+	/// <summary>
+	/// Add a cell to the chunk.
+	/// </summary>
+	/// <param name="index">Index of the cell for the chunk.</param>
+	/// <param name="cell">Cell to add.</param>
 	public void AddCell (int index, HexCell cell) {
 		cells[index] = cell;
 		cell.Chunk = this;
@@ -30,8 +38,15 @@ public class HexGridChunk : MonoBehaviour {
 		cell.UIRect.SetParent(gridCanvas.transform, false);
 	}
 
+	/// <summary>
+	/// Refresh the chunk.
+	/// </summary>
 	public void Refresh () => enabled = true;
 
+	/// <summary>
+	/// Control whether the map UI is visibile or hidden for the chunk.
+	/// </summary>
+	/// <param name="visible">Whether the UI should be visible.</param>
 	public void ShowUI (bool visible) => gridCanvas.gameObject.SetActive(visible);
 
 	void LateUpdate () {
@@ -39,6 +54,9 @@ public class HexGridChunk : MonoBehaviour {
 		enabled = false;
 	}
 
+	/// <summary>
+	/// Triangulate everything in the chunk.
+	/// </summary>
 	public void Triangulate () {
 		terrain.Clear();
 		rivers.Clear();
