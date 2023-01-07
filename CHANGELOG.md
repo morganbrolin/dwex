@@ -5,6 +5,28 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+
+- Store world-space water level in B channel of shader data.
+- Colorize underwater terrain based on submergence.
+- Highlight affected cells while in edit mode, based on cursor position and brush size.
+- The concept of hex space, where the distance between cell centers of east-west neighbors is one unit.
+
+### Changed
+
+- *HexCellData.hlsl* relies upon and includes *HexMetrics.hlsl*.
+- *HexCellShaderData* uses a separate array to track visibility transitions.
+- Shaders use world position XZ to calculate hex grid position data analytically.
+- Grid visualization is analytical instead of texture-based.
+
+### Removed
+
+- Hex grid texture.
+- Hex grid offsets texture.
+- Unused *Feature* material.
+
 ## [2.1.0] - 2022-12-28
 
 ### Added

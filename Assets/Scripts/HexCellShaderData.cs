@@ -9,7 +9,10 @@ public class HexCellShaderData : MonoBehaviour {
 	const float transitionSpeed = 255f;
 
 	Texture2D cellTexture;
+
 	Color32[] cellTextureData;
+
+	bool[] visibilityTransitions;
 
 	List<HexCell> transitioningCells = new List<HexCell>();
 
@@ -44,10 +47,12 @@ public class HexCellShaderData : MonoBehaviour {
 
 		if (cellTextureData == null || cellTextureData.Length != x * z) {
 			cellTextureData = new Color32[x * z];
+			visibilityTransitions = new bool[x * z];
 		}
 		else {
 			for (int i = 0; i < cellTextureData.Length; i++) {
 				cellTextureData[i] = new Color32(0, 0, 0, 0);
+				visibilityTransitions[i] = false;
 			}
 		}
 
@@ -56,11 +61,14 @@ public class HexCellShaderData : MonoBehaviour {
 	}
 
 	/// <summary>
-	/// Refresh the terrain data of a cell.
+	/// Refresh the terrain data of a cell. Supports water surfaces up to 30 units high.
 	/// </summary>
 	/// <param name="cell">Cell with changed terrain type.</param>
 	public void RefreshTerrain (HexCell cell) {
-		cellTextureData[cell.Index].a = (byte)cell.TerrainTypeIndex;
+		Color32 data = cellTextureData[cell.Index];
+		data.b = cell.IsUnderwater ? (byte)(cell.WaterSurfaceY * (255f / 30f)) : (byte)0;
+		data.a = (byte)cell.TerrainTypeIndex;
+		cellTextureData[cell.Index] = data;
 		enabled = true;
 	}
 
@@ -74,28 +82,32 @@ public class HexCellShaderData : MonoBehaviour {
 			cellTextureData[index].r = cell.IsVisible ? (byte)255 : (byte)0;
 			cellTextureData[index].g = cell.IsExplored ? (byte)255 : (byte)0;
 		}
-		else if (cellTextureData[index].b != 255) {
-			cellTextureData[index].b = 255;
+		else if (!visibilityTransitions[index]) {
+			visibilityTransitions[index] = true;
 			transitioningCells.Add(cell);
 		}
 		enabled = true;
 	}
 
 	/// <summary>
-	/// Set the map data of a cell.
+	/// Set arbitrary map data of a cell, overriding water data.
 	/// </summary>
 	/// <param name="cell">Cell to apply data for.</param>
-	/// <param name="data">Cell data value.</param>
+	/// <param name="data">Cell data value, 0-1 inclusive.</param>
 	public void SetMapData (HexCell cell, float data) {
 		cellTextureData[cell.Index].b =
-			data < 0f ? (byte)0 : (data < 1f ? (byte)(data * 254f) : (byte)254);
+			data < 0f ? (byte)0 : (data < 1f ? (byte)(data * 255f) : (byte)255);
 		enabled = true;
 	}
 
 	/// <summary>
 	/// Indicate that view elevation data has changed, requiring a visibility reset.
+	/// Supports water surfaces up to 30 units high.
 	/// </summary>
-	public void ViewElevationChanged () {
+	/// <param name="cell">Changed cell.</param>
+	public void ViewElevationChanged (HexCell cell) {
+		cellTextureData[cell.Index].b = cell.IsUnderwater ?
+			(byte)(cell.WaterSurfaceY * (255f / 30f)) : (byte)0;
 		needsVisibilityReset = true;
 		enabled = true;
 	}
@@ -148,7 +160,7 @@ public class HexCellShaderData : MonoBehaviour {
 		}
 
 		if (!stillUpdating) {
-			data.b = 0;
+			visibilityTransitions[index] = false;
 		}
 		cellTextureData[index] = data;
 		return stillUpdating;

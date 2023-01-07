@@ -26,6 +26,18 @@ public struct HexCoordinates {
 	public int Y => -X - Z;
 
 	/// <summary>
+	/// X position in hex space,
+	/// where the distance between cell centers of east-west neighbors is one unit.
+	/// </summary>
+	public float HexX => X + Z / 2 + ((Z & 1) == 0 ? 0f : 0.5f);
+
+	/// <summary>
+	/// Z position in hex space,
+	/// where the distance between cell centers of east-west neighbors is one unit.
+	/// </summary>
+	public float HexZ => Z * HexMetrics.outerToInner;
+
+	/// <summary>
 	/// Create hex coordinates.
 	/// </summary>
 	/// <param name="x">X coordinate.</param>

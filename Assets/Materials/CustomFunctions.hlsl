@@ -1,5 +1,5 @@
-﻿#include "Water.hlsl"
-#include "HexCellData.hlsl"
+﻿#include "HexCellData.hlsl"
+#include "Water.hlsl"
 
 // Used by Water and Water Shore shader graphs.
 void GetVertexCellData_float (

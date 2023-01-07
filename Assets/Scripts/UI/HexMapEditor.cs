@@ -7,6 +7,8 @@ using UnityEngine.EventSystems;
 /// </summary>
 public class HexMapEditor : MonoBehaviour {
 
+	static int cellHighlightingId = Shader.PropertyToID("_CellHighlighting");
+
 	[SerializeField]
 	HexGrid hexGrid;
 
@@ -94,6 +96,10 @@ public class HexMapEditor : MonoBehaviour {
 				HandleInput();
 				return;
 			}
+			else {
+				// Potential optimization: only do this if camera or cursor has changed.
+				UpdateCellHighlightData(GetCellUnderCursor());
+			}
 			if (Input.GetKeyDown(KeyCode.U)) {
 				if (Input.GetKey(KeyCode.LeftShift)) {
 					DestroyUnit();
@@ -103,6 +109,9 @@ public class HexMapEditor : MonoBehaviour {
 				}
 				return;
 			}
+		}
+		else {
+			ClearCellHighlightData();
 		}
 		previousCell = null;
 	}
@@ -141,7 +150,29 @@ public class HexMapEditor : MonoBehaviour {
 		else {
 			previousCell = null;
 		}
+		UpdateCellHighlightData(currentCell);
 	}
+
+	void UpdateCellHighlightData (HexCell cell) {
+		if (cell == null) {
+			ClearCellHighlightData();
+			return;
+		}
+
+		// Works up to brush size 6.
+		Shader.SetGlobalVector(
+			cellHighlightingId,
+			new Vector4(
+				cell.Coordinates.HexX,
+				cell.Coordinates.HexZ,
+				brushSize * brushSize + 0.5f,
+				HexMetrics.wrapSize
+			)
+		);
+	}
+
+	void ClearCellHighlightData () =>
+		Shader.SetGlobalVector(cellHighlightingId, new Vector4(0f, 0f, -1f, 0f));
 
 	void ValidateDrag (HexCell currentCell) {
 		for (

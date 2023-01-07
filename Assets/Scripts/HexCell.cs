@@ -43,9 +43,7 @@ public class HexCell : MonoBehaviour {
 			}
 			int originalViewElevation = ViewElevation;
 			elevation = value;
-			if (ViewElevation != originalViewElevation) {
-				ShaderData.ViewElevationChanged();
-			}
+			ShaderData.ViewElevationChanged(this);
 			RefreshPosition();
 			ValidateRivers();
 
@@ -70,9 +68,7 @@ public class HexCell : MonoBehaviour {
 			}
 			int originalViewElevation = ViewElevation;
 			waterLevel = value;
-			if (ViewElevation != originalViewElevation) {
-				ShaderData.ViewElevationChanged();
-			}
+			ShaderData.ViewElevationChanged(this);
 			ValidateRivers();
 			Refresh();
 		}
@@ -622,7 +618,6 @@ public class HexCell : MonoBehaviour {
 	/// <param name="header">Header version.</param>
 	public void Load (BinaryReader reader, int header) {
 		terrainTypeIndex = reader.ReadByte();
-		ShaderData.RefreshTerrain(this);
 		elevation = reader.ReadByte();
 		if (header >= 4) {
 			elevation -= 127;
@@ -659,6 +654,7 @@ public class HexCell : MonoBehaviour {
 		}
 
 		IsExplored = header >= 3 ? reader.ReadBoolean() : false;
+		ShaderData.RefreshTerrain(this);
 		ShaderData.RefreshVisibility(this);
 	}
 
@@ -690,8 +686,8 @@ public class HexCell : MonoBehaviour {
 	}
 
 	/// <summary>
-	/// Set the map data for this cell's <see cref="ShaderData"/>.
+	/// Set arbitrary map data for this cell's <see cref="ShaderData"/>.
 	/// </summary>
-	/// <param name="data">Data value.</param>
+	/// <param name="data">Data value, 0-1 inclusive.</param>
 	public void SetMapData (float data) => ShaderData.SetMapData(this, data);
 }
