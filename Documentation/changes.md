@@ -19,3 +19,9 @@ Hex grid lines are now always sharp. This is most obvious on cliffs, where the o
 While in edit mode, cells that will be affected by an edit action are now highlighted with white hexagons. It's draw the same a grid lines so is part of the terrain and thus hidden by everything drawn on top of it.
 
 ![Texture-based Grid](images/2_2_0/cell-highlighting.jpg)
+
+## [2.2.0] - Underwater Terrain Coloration
+
+Underwater terrain is now colorized based on its submergence, shifting the color to blue the deeper it goes. This is relative to the cell's water level.
+
+![Texture-based Grid](images/2_2_0/submergence-uncolorized.jpg) ![Analytical Grid](images/2_2_0/submergence-colorized.jpg)
