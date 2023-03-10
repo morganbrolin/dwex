@@ -13,13 +13,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Colorize underwater terrain based on submergence.
 - Highlight affected cells while in edit mode, based on cursor position and brush size.
 - The concept of hex space, where the distance between cell centers of east-west neighbors is one unit.
+- Documentation page to showcase feature-level changes visible to players.
 
 ### Changed
 
+- Upgraded to Unity 2021.3.20f1 and URP 12.1.10.
 - *HexCellData.hlsl* relies upon and includes *HexMetrics.hlsl*.
-- *HexCellShaderData* uses a separate array to track visibility transitions.
+- *HexCellShaderData* uses a separate boolean array to track visibility transitions.
 - Shaders use world position XZ to calculate hex grid position data analytically.
-- Grid visualization is analytical instead of texture-based.
+- Grid visualization no longer uses a texture.
+- Material documentation update.
 
 ### Removed
 

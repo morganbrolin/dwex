@@ -4,8 +4,9 @@
 
 This is the Hex Map project, a continuation and modernization of the [Hex Map tutorial series](https://catlikecoding.com/unity/tutorials/hex-map/).
 
-- [Documentation](Documentation/index.md)
-- [Changelog](CHANGELOG.md)
+- [Documentation](Documentation/index.md), for implementation details.
+- [CHANGELOG](CHANGELOG.md), for low-level changes to the project.
+- [Changes](Documentation/changes.md), for feature-level changes visible to players.
 
 ## Become My Patron
 

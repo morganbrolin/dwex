@@ -10,7 +10,11 @@ All shader graphs use two custom functions, one for the vertex stage and one for
 
 ### Hex Cell Data
 
-Per-cell visibility and exploration data is provided via a global texture.
+Per-cell visibility, exploration, encoded water level, and terrain type index are provided via the RGBA channels of a global texture.
+
+### Hex Grid Data
+
+The `HexGridData` struct provides information about a given cell in the hex grid for a world XZ position. It is used to draw grid lines and retrieve hex cell data.
 
 ### Vertex Data
 
