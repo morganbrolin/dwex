@@ -16,6 +16,6 @@ Hex grid lines are now always sharp. This is most obvious on cliffs, where the o
 
 ## [2.2.0] - Cell Highlighting
 
-While in edit mode, cells that will be affected by an edit actions are now highlighted with white hexagons. It's draw the same a grid lines so is part of the terrain and thus hidden by everything drawn on top of it.
+While in edit mode, cells that will be affected by an edit action are now highlighted with white hexagons. It's draw the same a grid lines so is part of the terrain and thus hidden by everything drawn on top of it.
 
 ![Texture-based Grid](images/2_2_0/cell-highlighting.jpg)
