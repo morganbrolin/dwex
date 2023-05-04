@@ -10,7 +10,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - *HexFlags* enumeration type to represent bit flags for cell data.
-- Store some *HexCell* data in a bit flag field.
+- Store road and river *HexCell* data in a bit flag field.
+- *HexCell.HasIncomingRiverThroughEdge* method.
 
 ### Changed
 
@@ -20,6 +21,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Removed
 
 - *HexCell* roads array.
+- *HexCell* incoming and outgoing river boolean and direction fields.
+- *HexCell.RiverBeginOrEndDirection* property.
 
 ## [2.2.0] - 2023-03-10
 

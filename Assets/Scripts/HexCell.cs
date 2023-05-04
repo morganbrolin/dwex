@@ -101,28 +101,22 @@ public class HexCell : MonoBehaviour
 	/// <summary>
 	/// Whether there is an incoming river.
 	/// </summary>
-	public bool HasIncomingRiver => hasIncomingRiver;
+	public bool HasIncomingRiver => flags.HasAny(HexFlags.RiverIn);
 
 	/// <summary>
 	/// Whether there is an outgoing river.
 	/// </summary>
-	public bool HasOutgoingRiver => hasOutgoingRiver;
+	public bool HasOutgoingRiver => flags.HasAny(HexFlags.RiverOut);
 
 	/// <summary>
 	/// Whether there is a river, either incoming, outgoing, or both.
 	/// </summary>
-	public bool HasRiver => hasIncomingRiver || hasOutgoingRiver;
+	public bool HasRiver => flags.HasAny(HexFlags.River);
 
 	/// <summary>
 	/// Whether a river begins or ends in the cell.
 	/// </summary>
-	public bool HasRiverBeginOrEnd => hasIncomingRiver != hasOutgoingRiver;
-
-	/// <summary>
-	/// The direction of the incoming or outgoing river, if applicable.
-	/// </summary>
-	public HexDirection RiverBeginOrEndDirection =>
-		hasIncomingRiver ? incomingRiver : outgoingRiver;
+	public bool HasRiverBeginOrEnd => HasIncomingRiver != HasOutgoingRiver;
 
 	/// <summary>
 	/// Whether the cell contains roads.
@@ -132,12 +126,12 @@ public class HexCell : MonoBehaviour
 	/// <summary>
 	/// Incoming river direction, if applicable.
 	/// </summary>
-	public HexDirection IncomingRiver => incomingRiver;
+	public HexDirection IncomingRiver => flags.RiverInDirection();
 
 	/// <summary>
 	/// Outgoing river direction, if applicable.
 	/// </summary>
-	public HexDirection OutgoingRiver => outgoingRiver;
+	public HexDirection OutgoingRiver => flags.RiverOutDirection();
 
 	/// <summary>
 	/// Local position of this cell's game object.
@@ -335,7 +329,7 @@ public class HexCell : MonoBehaviour
 	{ get; set; }
 
 	/// <summary>
-	/// Bit flags containing cell data, initially only roads.
+	/// Bit flags containing cell data, currently rivers and roads.
 	/// </summary>
 	HexFlags flags;
 
@@ -355,9 +349,6 @@ public class HexCell : MonoBehaviour
 	bool explored;
 
 	bool walled;
-
-	bool hasIncomingRiver, hasOutgoingRiver;
-	HexDirection incomingRiver, outgoingRiver;
 
 	[SerializeField]
 	HexCell[] neighbors;
@@ -441,24 +432,31 @@ public class HexCell : MonoBehaviour
 	/// <param name="direction">Edge direction relative to the cell.</param>
 	/// <returns>Whether a river goes through the edge.</returns>
 	public bool HasRiverThroughEdge (HexDirection direction) =>
-		hasIncomingRiver && incomingRiver == direction ||
-		hasOutgoingRiver && outgoingRiver == direction;
+		flags.HasRiverIn(direction) || flags.HasRiverOut(direction);
+
+	/// <summary>
+	/// Whether an incoming river goes through a specific cell edge.
+	/// </summary>
+	/// <param name="direction">Edge direction relative to the cell.</param>
+	/// <returns>Whether an incoming river goes through the edge.</returns>
+	public bool HasIncomingRiverThroughEdge (HexDirection direction) =>
+		flags.HasRiverIn(direction);
 
 	/// <summary>
 	/// Remove the incoming river, if it exists.
 	/// </summary>
 	public void RemoveIncomingRiver ()
 	{
-		if (!hasIncomingRiver)
+		if (!HasIncomingRiver)
 		{
 			return;
 		}
-		hasIncomingRiver = false;
-		RefreshSelfOnly();
-
-		HexCell neighbor = GetNeighbor(incomingRiver);
-		neighbor.hasOutgoingRiver = false;
+		
+		HexCell neighbor = GetNeighbor(IncomingRiver);
+		flags = flags.Without(HexFlags.RiverIn);
+		neighbor.flags = neighbor.flags.Without(HexFlags.RiverOut);
 		neighbor.RefreshSelfOnly();
+		RefreshSelfOnly();
 	}
 
 	/// <summary>
@@ -466,16 +464,16 @@ public class HexCell : MonoBehaviour
 	/// </summary>
 	public void RemoveOutgoingRiver ()
 	{
-		if (!hasOutgoingRiver)
+		if (!HasOutgoingRiver)
 		{
 			return;
 		}
-		hasOutgoingRiver = false;
-		RefreshSelfOnly();
-
-		HexCell neighbor = GetNeighbor(outgoingRiver);
-		neighbor.hasIncomingRiver = false;
+		
+		HexCell neighbor = GetNeighbor(OutgoingRiver);
+		flags = flags.Without(HexFlags.RiverOut);
+		neighbor.flags = neighbor.flags.Without(HexFlags.RiverIn);
 		neighbor.RefreshSelfOnly();
+		RefreshSelfOnly();
 	}
 
 	/// <summary>
@@ -493,7 +491,7 @@ public class HexCell : MonoBehaviour
 	/// <param name="direction">Direction of the river.</param>
 	public void SetOutgoingRiver (HexDirection direction)
 	{
-		if (hasOutgoingRiver && outgoingRiver == direction)
+		if (flags.HasRiverOut(direction))
 		{
 			return;
 		}
@@ -505,17 +503,15 @@ public class HexCell : MonoBehaviour
 		}
 
 		RemoveOutgoingRiver();
-		if (hasIncomingRiver && incomingRiver == direction)
+		if (flags.HasRiverIn(direction))
 		{
 			RemoveIncomingRiver();
 		}
-		hasOutgoingRiver = true;
-		outgoingRiver = direction;
-		specialIndex = 0;
 
+		flags = flags.WithRiverOut(direction);
+		specialIndex = 0;
 		neighbor.RemoveIncomingRiver();
-		neighbor.hasIncomingRiver = true;
-		neighbor.incomingRiver = direction.Opposite();
+		neighbor.flags = neighbor.flags.WithRiverIn(direction.Opposite());
 		neighbor.specialIndex = 0;
 
 		RemoveRoad(direction);
@@ -578,16 +574,12 @@ public class HexCell : MonoBehaviour
 
 	void ValidateRivers ()
 	{
-		if (
-			hasOutgoingRiver &&
-			!IsValidRiverDestination(GetNeighbor(outgoingRiver))
-		)
+		if (HasOutgoingRiver && !IsValidRiverDestination(GetNeighbor(OutgoingRiver)))
 		{
 			RemoveOutgoingRiver();
 		}
 		if (
-			hasIncomingRiver &&
-			!GetNeighbor(incomingRiver).IsValidRiverDestination(this)
+			HasIncomingRiver && !GetNeighbor(IncomingRiver).IsValidRiverDestination(this)
 		)
 		{
 			RemoveIncomingRiver();
@@ -661,18 +653,18 @@ public class HexCell : MonoBehaviour
 		writer.Write((byte)specialIndex);
 		writer.Write(walled);
 
-		if (hasIncomingRiver)
+		if (HasIncomingRiver)
 		{
-			writer.Write((byte)(incomingRiver + 128));
+			writer.Write((byte)(IncomingRiver + 128));
 		}
 		else
 		{
 			writer.Write((byte)0);
 		}
 
-		if (hasOutgoingRiver)
+		if (HasOutgoingRiver)
 		{
-			writer.Write((byte)(outgoingRiver + 128));
+			writer.Write((byte)(OutgoingRiver + 128));
 		}
 		else
 		{
@@ -707,23 +699,21 @@ public class HexCell : MonoBehaviour
 		byte riverData = reader.ReadByte();
 		if (riverData >= 128)
 		{
-			hasIncomingRiver = true;
-			incomingRiver = (HexDirection)(riverData - 128);
+			flags = flags.WithRiverIn((HexDirection)(riverData - 128));
 		}
 		else
 		{
-			hasIncomingRiver = false;
+			flags = flags.Without(HexFlags.RiverIn);
 		}
 
 		riverData = reader.ReadByte();
 		if (riverData >= 128)
 		{
-			hasOutgoingRiver = true;
-			outgoingRiver = (HexDirection)(riverData - 128);
+			flags = flags.WithRiverOut((HexDirection)(riverData - 128));
 		}
 		else
 		{
-			hasOutgoingRiver = false;
+			flags = flags.Without(HexFlags.RiverOut);
 		}
 
 		flags |= (HexFlags)reader.ReadByte();
