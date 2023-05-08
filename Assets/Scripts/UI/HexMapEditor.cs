@@ -5,8 +5,8 @@ using UnityEngine.EventSystems;
 /// Component that applies UI commands to the hex map.
 /// Public methods are hooked up to the in-game UI.
 /// </summary>
-public class HexMapEditor : MonoBehaviour {
-
+public class HexMapEditor : MonoBehaviour
+{
 	static int cellHighlightingId = Shader.PropertyToID("_CellHighlighting");
 
 	[SerializeField]
@@ -29,7 +29,8 @@ public class HexMapEditor : MonoBehaviour {
 
 	bool applyUrbanLevel, applyFarmLevel, applyPlantLevel, applySpecialIndex;
 
-	enum OptionalToggle {
+	enum OptionalToggle
+	{
 		Ignore, Yes, No
 	}
 
@@ -75,42 +76,54 @@ public class HexMapEditor : MonoBehaviour {
 
 	public void SetEditMode (bool toggle) => enabled = toggle;
 
-	public void ShowGrid (bool visible) {
-		if (visible) {
+	public void ShowGrid (bool visible)
+	{
+		if (visible)
+		{
 			terrainMaterial.EnableKeyword("_SHOW_GRID");
 		}
-		else {
+		else
+		{
 			terrainMaterial.DisableKeyword("_SHOW_GRID");
 		}
 	}
 
-	void Awake () {
+	void Awake ()
+	{
 		terrainMaterial.DisableKeyword("_SHOW_GRID");
 		Shader.EnableKeyword("_HEX_MAP_EDIT_MODE");
 		SetEditMode(true);
 	}
 
-	void Update () {
-		if (!EventSystem.current.IsPointerOverGameObject()) {
-			if (Input.GetMouseButton(0)) {
+	void Update ()
+	{
+		if (!EventSystem.current.IsPointerOverGameObject())
+		{
+			if (Input.GetMouseButton(0))
+			{
 				HandleInput();
 				return;
 			}
-			else {
+			else
+			{
 				// Potential optimization: only do this if camera or cursor has changed.
 				UpdateCellHighlightData(GetCellUnderCursor());
 			}
-			if (Input.GetKeyDown(KeyCode.U)) {
-				if (Input.GetKey(KeyCode.LeftShift)) {
+			if (Input.GetKeyDown(KeyCode.U))
+			{
+				if (Input.GetKey(KeyCode.LeftShift))
+				{
 					DestroyUnit();
 				}
-				else {
+				else
+				{
 					CreateUnit();
 				}
 				return;
 			}
 		}
-		else {
+		else
+		{
 			ClearCellHighlightData();
 		}
 		previousCell = null;
@@ -119,42 +132,53 @@ public class HexMapEditor : MonoBehaviour {
 	HexCell GetCellUnderCursor () =>
 		hexGrid.GetCell(Camera.main.ScreenPointToRay(Input.mousePosition));
 
-	void CreateUnit () {
+	void CreateUnit ()
+	{
 		HexCell cell = GetCellUnderCursor();
-		if (cell && !cell.Unit) {
+		if (cell && !cell.Unit)
+		{
 			hexGrid.AddUnit(
 				Instantiate(HexUnit.unitPrefab), cell, Random.Range(0f, 360f)
 			);
 		}
 	}
 
-	void DestroyUnit () {
+	void DestroyUnit ()
+	{
 		HexCell cell = GetCellUnderCursor();
-		if (cell && cell.Unit) {
+		if (cell && cell.Unit)
+		{
 			hexGrid.RemoveUnit(cell.Unit);
 		}
 	}
 
-	void HandleInput () {
+	void HandleInput ()
+	{
 		HexCell currentCell = GetCellUnderCursor();
-		if (currentCell) {
-			if (previousCell && previousCell != currentCell) {
+		if (currentCell)
+		{
+			if (previousCell && previousCell != currentCell)
+			{
 				ValidateDrag(currentCell);
 			}
-			else {
+			else
+			{
 				isDrag = false;
 			}
 			EditCells(currentCell);
 			previousCell = currentCell;
 		}
-		else {
+		else
+		{
 			previousCell = null;
 		}
 		UpdateCellHighlightData(currentCell);
 	}
 
-	void UpdateCellHighlightData (HexCell cell) {
-		if (cell == null) {
+	void UpdateCellHighlightData (HexCell cell)
+	{
+		if (cell == null)
+		{
 			ClearCellHighlightData();
 			return;
 		}
@@ -174,13 +198,16 @@ public class HexMapEditor : MonoBehaviour {
 	void ClearCellHighlightData () =>
 		Shader.SetGlobalVector(cellHighlightingId, new Vector4(0f, 0f, -1f, 0f));
 
-	void ValidateDrag (HexCell currentCell) {
+	void ValidateDrag (HexCell currentCell)
+	{
 		for (
 			dragDirection = HexDirection.NE;
 			dragDirection <= HexDirection.NW;
 			dragDirection++
-		) {
-			if (previousCell.GetNeighbor(dragDirection) == currentCell) {
+		)
+		{
+			if (previousCell.GetNeighbor(dragDirection) == currentCell)
+			{
 				isDrag = true;
 				return;
 			}
@@ -188,63 +215,83 @@ public class HexMapEditor : MonoBehaviour {
 		isDrag = false;
 	}
 
-	void EditCells (HexCell center) {
+	void EditCells (HexCell center)
+	{
 		int centerX = center.Coordinates.X;
 		int centerZ = center.Coordinates.Z;
 
-		for (int r = 0, z = centerZ - brushSize; z <= centerZ; z++, r++) {
-			for (int x = centerX - r; x <= centerX + brushSize; x++) {
+		for (int r = 0, z = centerZ - brushSize; z <= centerZ; z++, r++)
+		{
+			for (int x = centerX - r; x <= centerX + brushSize; x++)
+			{
 				EditCell(hexGrid.GetCell(new HexCoordinates(x, z)));
 			}
 		}
-		for (int r = 0, z = centerZ + brushSize; z > centerZ; z--, r++) {
-			for (int x = centerX - brushSize; x <= centerX + r; x++) {
+		for (int r = 0, z = centerZ + brushSize; z > centerZ; z--, r++)
+		{
+			for (int x = centerX - brushSize; x <= centerX + r; x++)
+			{
 				EditCell(hexGrid.GetCell(new HexCoordinates(x, z)));
 			}
 		}
 	}
 
-	void EditCell (HexCell cell) {
-		if (cell) {
-			if (activeTerrainTypeIndex >= 0) {
+	void EditCell (HexCell cell)
+	{
+		if (cell)
+		{
+			if (activeTerrainTypeIndex >= 0)
+			{
 				cell.TerrainTypeIndex = activeTerrainTypeIndex;
 			}
-			if (applyElevation) {
+			if (applyElevation)
+			{
 				cell.Elevation = activeElevation;
 			}
-			if (applyWaterLevel) {
+			if (applyWaterLevel)
+			{
 				cell.WaterLevel = activeWaterLevel;
 			}
-			if (applySpecialIndex) {
+			if (applySpecialIndex)
+			{
 				cell.SpecialIndex = activeSpecialIndex;
 			}
-			if (applyUrbanLevel) {
+			if (applyUrbanLevel)
+			{
 				cell.UrbanLevel = activeUrbanLevel;
 			}
-			if (applyFarmLevel) {
+			if (applyFarmLevel)
+			{
 				cell.FarmLevel = activeFarmLevel;
 			}
-			if (applyPlantLevel) {
+			if (applyPlantLevel)
+			{
 				cell.PlantLevel = activePlantLevel;
 			}
-			if (riverMode == OptionalToggle.No) {
+			if (riverMode == OptionalToggle.No)
+			{
 				cell.RemoveRiver();
 			}
-			if (roadMode == OptionalToggle.No) {
+			if (roadMode == OptionalToggle.No)
+			{
 				cell.RemoveRoads();
 			}
-			if (walledMode != OptionalToggle.Ignore) {
+			if (walledMode != OptionalToggle.Ignore)
+			{
 				cell.Walled = walledMode == OptionalToggle.Yes;
 			}
-			if (isDrag) {
-				HexCell otherCell = cell.GetNeighbor(dragDirection.Opposite());
-				if (otherCell) {
-					if (riverMode == OptionalToggle.Yes) {
-						otherCell.SetOutgoingRiver(dragDirection);
-					}
-					if (roadMode == OptionalToggle.Yes) {
-						otherCell.AddRoad(dragDirection);
-					}
+			if (
+				isDrag &&
+				cell.TryGetNeighbor(dragDirection.Opposite(), out HexCell otherCell)
+			)
+			{
+				if (riverMode == OptionalToggle.Yes)
+				{
+					otherCell.SetOutgoingRiver(dragDirection);
+				}
+				if (roadMode == OptionalToggle.Yes)
+				{
+					otherCell.AddRoad(dragDirection);
 				}
 			}
 		}

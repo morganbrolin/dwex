@@ -311,8 +311,10 @@ public class HexMapGenerator : MonoBehaviour {
 			size += 1;
 
 			for (HexDirection d = HexDirection.NE; d <= HexDirection.NW; d++) {
-				HexCell neighbor = current.GetNeighbor(d);
-				if (neighbor && neighbor.SearchPhase < searchFrontierPhase) {
+				if (
+					current.TryGetNeighbor(d, out HexCell neighbor) &&
+					neighbor.SearchPhase < searchFrontierPhase
+				) {
 					neighbor.SearchPhase = searchFrontierPhase;
 					neighbor.Distance = neighbor.Coordinates.DistanceTo(center);
 					neighbor.SearchHeuristic =
@@ -353,8 +355,10 @@ public class HexMapGenerator : MonoBehaviour {
 			size += 1;
 
 			for (HexDirection d = HexDirection.NE; d <= HexDirection.NW; d++) {
-				HexCell neighbor = current.GetNeighbor(d);
-				if (neighbor && neighbor.SearchPhase < searchFrontierPhase) {
+				if (
+					current.TryGetNeighbor(d, out HexCell neighbor) &&
+					neighbor.SearchPhase < searchFrontierPhase
+				) {
 					neighbor.SearchPhase = searchFrontierPhase;
 					neighbor.Distance = neighbor.Coordinates.DistanceTo(center);
 					neighbor.SearchHeuristic =
@@ -393,9 +397,9 @@ public class HexMapGenerator : MonoBehaviour {
 			}
 
 			for (HexDirection d = HexDirection.NE; d <= HexDirection.NW; d++) {
-				HexCell neighbor = cell.GetNeighbor(d);
 				if (
-					neighbor && neighbor.Elevation == cell.Elevation + 2 &&
+					cell.TryGetNeighbor(d, out HexCell neighbor) &&
+					neighbor.Elevation == cell.Elevation + 2 &&
 					!erodibleCells.Contains(neighbor)
 				) {
 					erodibleCells.Add(neighbor);
@@ -407,9 +411,9 @@ public class HexMapGenerator : MonoBehaviour {
 			}
 
 			for (HexDirection d = HexDirection.NE; d <= HexDirection.NW; d++) {
-				HexCell neighbor = targetCell.GetNeighbor(d);
 				if (
-					neighbor && neighbor != cell &&
+					targetCell.TryGetNeighbor(d, out HexCell neighbor) &&
+					neighbor != cell &&
 					neighbor.Elevation == targetCell.Elevation + 1 &&
 					!IsErodible(neighbor)
 				) {
@@ -424,8 +428,10 @@ public class HexMapGenerator : MonoBehaviour {
 	bool IsErodible (HexCell cell) {
 		int erodibleElevation = cell.Elevation - 2;
 		for (HexDirection d = HexDirection.NE; d <= HexDirection.NW; d++) {
-			HexCell neighbor = cell.GetNeighbor(d);
-			if (neighbor && neighbor.Elevation <= erodibleElevation) {
+			if (
+				cell.TryGetNeighbor(d, out HexCell neighbor) &&
+				neighbor.Elevation <= erodibleElevation
+			) {
 				return true;
 			}
 		}
@@ -436,8 +442,10 @@ public class HexMapGenerator : MonoBehaviour {
 		List<HexCell> candidates = ListPool<HexCell>.Get();
 		int erodibleElevation = cell.Elevation - 2;
 		for (HexDirection d = HexDirection.NE; d <= HexDirection.NW; d++) {
-			HexCell neighbor = cell.GetNeighbor(d);
-			if (neighbor && neighbor.Elevation <= erodibleElevation) {
+			if (
+				cell.TryGetNeighbor(d, out HexCell neighbor) &&
+				neighbor.Elevation <= erodibleElevation
+			) {
 				candidates.Add(neighbor);
 			}
 		}
@@ -496,8 +504,7 @@ public class HexMapGenerator : MonoBehaviour {
 		float runoff = cellClimate.moisture * runoffFactor * (1f / 6f);
 		float seepage = cellClimate.moisture * seepageFactor * (1f / 6f);
 		for (HexDirection d = HexDirection.NE; d <= HexDirection.NW; d++) {
-			HexCell neighbor = cell.GetNeighbor(d);
-			if (!neighbor) {
+			if (!cell.TryGetNeighbor(d, out HexCell neighbor)) {
 				continue;
 			}
 			ClimateData neighborClimate = nextClimate[neighbor.Index];
@@ -564,8 +571,10 @@ public class HexMapGenerator : MonoBehaviour {
 			if (!origin.HasRiver) {
 				bool isValidOrigin = true;
 				for (HexDirection d = HexDirection.NE; d <= HexDirection.NW; d++) {
-					HexCell neighbor = origin.GetNeighbor(d);
-					if (neighbor && (neighbor.HasRiver || neighbor.IsUnderwater)) {
+					if (
+						origin.TryGetNeighbor(d, out HexCell neighbor) &&
+						(neighbor.HasRiver || neighbor.IsUnderwater)
+					) {
 						isValidOrigin = false;
 						break;
 					}
@@ -591,8 +600,7 @@ public class HexMapGenerator : MonoBehaviour {
 			int minNeighborElevation = int.MaxValue;
 			flowDirections.Clear();
 			for (HexDirection d = HexDirection.NE; d <= HexDirection.NW; d++) {
-				HexCell neighbor = cell.GetNeighbor(d);
-				if (!neighbor) {
+				if (!cell.TryGetNeighbor(d, out HexCell neighbor)) {
 					continue;
 				}
 
@@ -709,8 +717,7 @@ public class HexMapGenerator : MonoBehaviour {
 					for (
 						HexDirection d = HexDirection.NE; d <= HexDirection.NW; d++
 					) {
-						HexCell neighbor = cell.GetNeighbor(d);
-						if (!neighbor) {
+						if (!cell.TryGetNeighbor(d, out HexCell neighbor)) {
 							continue;
 						}
 						int delta = neighbor.Elevation - cell.WaterLevel;

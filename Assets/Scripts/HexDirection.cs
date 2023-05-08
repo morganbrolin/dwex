@@ -1,7 +1,8 @@
 ﻿/// <summary>
 /// Hexagonal direction, pointy side up, which is north.
 /// </summary>
-public enum HexDirection {
+public enum HexDirection
+{
 	/// <summary>Northeast.</summary>
 	NE,
 	/// <summary>East.</summary>
@@ -19,8 +20,8 @@ public enum HexDirection {
 /// <summary>
 /// Extension methods for <see cref="HexDirection"/>.
 /// </summary>
-public static class HexDirectionExtensions {
-
+public static class HexDirectionExtensions
+{
 	/// <summary>
 	/// Get the opposite of a hex direction.
 	/// </summary>
@@ -50,7 +51,8 @@ public static class HexDirectionExtensions {
 	/// </summary>
 	/// <param name="direction">A given direction.</param>
 	/// <returns>A direction rotated two steps counter-clockwise.</returns>
-	public static HexDirection Previous2 (this HexDirection direction) {
+	public static HexDirection Previous2 (this HexDirection direction)
+	{
 		direction -= 2;
 		return direction >= HexDirection.NE ? direction : (direction + 6);
 	}
@@ -60,7 +62,8 @@ public static class HexDirectionExtensions {
 	/// </summary>
 	/// <param name="direction">A given direction.</param>
 	/// <returns>A direction rotated two steps clockwise.</returns>
-	public static HexDirection Next2 (this HexDirection direction) {
+	public static HexDirection Next2 (this HexDirection direction)
+	{
 		direction += 2;
 		return direction <= HexDirection.NW ? direction : (direction - 6);
 	}

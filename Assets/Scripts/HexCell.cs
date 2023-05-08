@@ -21,6 +21,12 @@ public class HexCell : MonoBehaviour
 	{ get; set; }
 
 	/// <summary>
+	/// Grid that contains the cell.
+	/// </summary>
+	public HexGrid Grid
+	{ get; set; }
+
+	/// <summary>
 	/// Grid chunk that contains the cell.
 	/// </summary>
 	public HexGridChunk Chunk
@@ -350,9 +356,6 @@ public class HexCell : MonoBehaviour
 
 	bool walled;
 
-	[SerializeField]
-	HexCell[] neighbors;
-
 	/// <summary>
 	/// Increment visibility level.
 	/// </summary>
@@ -391,22 +394,21 @@ public class HexCell : MonoBehaviour
 	}
 
 	/// <summary>
-	/// Get one of the neighbor cells.
+	/// Get one of the neighbor cells. Only valid if that neighbor exists.
 	/// </summary>
 	/// <param name="direction">Neighbor direction relative to the cell.</param>
 	/// <returns>Neighbor cell, if it exists.</returns>
-	public HexCell GetNeighbor (HexDirection direction) => neighbors[(int)direction];
+	public HexCell GetNeighbor (HexDirection direction) =>
+		Grid.GetCell(Coordinates.Step(direction));
 
 	/// <summary>
-	/// Set a specific neighbor.
+	/// Try to get one of the neighbor cells.
 	/// </summary>
 	/// <param name="direction">Neighbor direction relative to the cell.</param>
-	/// <param name="cell">Neighbor.</param>
-	public void SetNeighbor (HexDirection direction, HexCell cell)
-	{
-		neighbors[(int)direction] = cell;
-		cell.neighbors[(int)direction.Opposite()] = this;
-	}
+	/// <param name="cell">The neighbor cell, if it exists.</param>
+	/// <returns>Whether the neighbor exists.</returns>
+	public bool TryGetNeighbor (HexDirection direction, out HexCell cell) =>
+		Grid.TryGetCell(Coordinates.Step(direction), out cell);
 
 	/// <summary>
 	/// Get the <see cref="HexEdgeType"/> of a cell edge.
@@ -414,7 +416,7 @@ public class HexCell : MonoBehaviour
 	/// <param name="direction">Edge direction relative to the cell.</param>
 	/// <returns><see cref="HexEdgeType"/> based on the neighboring cells.</returns>
 	public HexEdgeType GetEdgeType (HexDirection direction) => HexMetrics.GetEdgeType(
-		elevation, neighbors[(int)direction].elevation
+		elevation, GetNeighbor(direction).elevation
 	);
 
 	/// <summary>
@@ -537,7 +539,7 @@ public class HexCell : MonoBehaviour
 		)
 		{
 			flags = flags.WithRoad(direction);
-			HexCell neighbor = neighbors[(int)direction];
+			HexCell neighbor = GetNeighbor(direction);
 			neighbor.flags = neighbor.flags.WithRoad(direction.Opposite());
 			neighbor.RefreshSelfOnly();
 			RefreshSelfOnly();
@@ -589,7 +591,7 @@ public class HexCell : MonoBehaviour
 	void RemoveRoad (HexDirection direction)
 	{
 		flags = flags.WithoutRoad(direction);
-		HexCell neighbor = neighbors[(int)direction];
+		HexCell neighbor = GetNeighbor(direction);
 		neighbor.flags = neighbor.flags.WithoutRoad(direction.Opposite());
 		neighbor.RefreshSelfOnly();
 		RefreshSelfOnly();
@@ -614,10 +616,9 @@ public class HexCell : MonoBehaviour
 		if (Chunk)
 		{
 			Chunk.Refresh();
-			for (int i = 0; i < neighbors.Length; i++)
+			for (HexDirection d = HexDirection.NE; d <= HexDirection.NW; d++)
 			{
-				HexCell neighbor = neighbors[i];
-				if (neighbor != null && neighbor.Chunk != Chunk)
+				if (TryGetNeighbor(d, out HexCell neighbor) && neighbor.Chunk != Chunk)
 				{
 					neighbor.Chunk.Refresh();
 				}

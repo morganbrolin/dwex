@@ -134,8 +134,9 @@ public class HexGridChunk : MonoBehaviour {
 	) {
 		center.y = cell.WaterSurfaceY;
 
-		HexCell neighbor = cell.GetNeighbor(direction);
-		if (neighbor != null && !neighbor.IsUnderwater) {
+		if (
+			cell.TryGetNeighbor(direction, out HexCell neighbor) && !neighbor.IsUnderwater
+		) {
 			TriangulateWaterShore(direction, cell, neighbor, center);
 		}
 		else {
@@ -164,8 +165,10 @@ public class HexGridChunk : MonoBehaviour {
 			water.AddQuadCellData(indices, weights1, weights2);
 
 			if (direction <= HexDirection.E) {
-				HexCell nextNeighbor = cell.GetNeighbor(direction.Next());
-				if (nextNeighbor == null || !nextNeighbor.IsUnderwater) {
+				if (
+					!cell.TryGetNeighbor(direction.Next(), out HexCell nextNeighbor) ||
+					!nextNeighbor.IsUnderwater
+				) {
 					return;
 				}
 				water.AddTriangle(
@@ -231,8 +234,7 @@ public class HexGridChunk : MonoBehaviour {
 			waterShore.AddQuadCellData(indices, weights1, weights2);
 		}
 
-		HexCell nextNeighbor = cell.GetNeighbor(direction.Next());
-		if (nextNeighbor != null) {
+		if (cell.TryGetNeighbor(direction.Next(), out HexCell nextNeighbor)) {
 			Vector3 center3 = nextNeighbor.Position;
 			if (nextNeighbor.ColumnIndex < cell.ColumnIndex - 1) {
 				center3.x += HexMetrics.wrapSize * HexMetrics.innerDiameter;
@@ -610,8 +612,7 @@ public class HexGridChunk : MonoBehaviour {
 	void TriangulateConnection (
 		HexDirection direction, HexCell cell, EdgeVertices e1
 	) {
-		HexCell neighbor = cell.GetNeighbor(direction);
-		if (neighbor == null) {
+		if (!cell.TryGetNeighbor(direction, out HexCell neighbor)) {
 			return;
 		}
 
@@ -672,8 +673,10 @@ public class HexGridChunk : MonoBehaviour {
 
 		features.AddWall(e1, cell, e2, neighbor, hasRiver, hasRoad);
 
-		HexCell nextNeighbor = cell.GetNeighbor(direction.Next());
-		if (direction <= HexDirection.E && nextNeighbor != null) {
+		if (
+			direction <= HexDirection.E &&
+			cell.TryGetNeighbor(direction.Next(), out HexCell nextNeighbor)
+		) {
 			Vector3 v5 = e1.v5 + HexMetrics.GetBridge(direction.Next());
 			v5.y = nextNeighbor.Position.y;
 

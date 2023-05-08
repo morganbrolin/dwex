@@ -5,8 +5,8 @@ using System.IO;
 /// Immutable three-component hexagonal coordinates.
 /// </summary>
 [System.Serializable]
-public struct HexCoordinates {
-
+public struct HexCoordinates
+{
 	[SerializeField]
 	private int x, z;
 
@@ -42,13 +42,17 @@ public struct HexCoordinates {
 	/// </summary>
 	/// <param name="x">X coordinate.</param>
 	/// <param name="z">Z coordinate.</param>
-	public HexCoordinates (int x, int z) {
-		if (HexMetrics.Wrapping) {
+	public HexCoordinates (int x, int z)
+	{
+		if (HexMetrics.Wrapping)
+		{
 			int oX = x + z / 2;
-			if (oX < 0) {
+			if (oX < 0)
+			{
 				x += HexMetrics.wrapSize;
 			}
-			else if (oX >= HexMetrics.wrapSize) {
+			else if (oX >= HexMetrics.wrapSize)
+			{
 				x -= HexMetrics.wrapSize;
 			}
 		}
@@ -62,25 +66,30 @@ public struct HexCoordinates {
 	/// </summary>
 	/// <param name="other">Coordinate to determine distance to.</param>
 	/// <returns>Distance in cells.</returns>
-	public int DistanceTo (HexCoordinates other) {
+	public int DistanceTo (HexCoordinates other)
+	{
 		int xy =
 			(x < other.x ? other.x - x : x - other.x) +
 			(Y < other.Y ? other.Y - Y : Y - other.Y);
 
-		if (HexMetrics.Wrapping) {
+		if (HexMetrics.Wrapping)
+		{
 			other.x += HexMetrics.wrapSize;
 			int xyWrapped =
 				(x < other.x ? other.x - x : x - other.x) +
 				(Y < other.Y ? other.Y - Y : Y - other.Y);
-			if (xyWrapped < xy) {
+			if (xyWrapped < xy)
+			{
 				xy = xyWrapped;
 			}
-			else {
+			else
+			{
 				other.x -= 2 * HexMetrics.wrapSize;
 				xyWrapped =
 					(x < other.x ? other.x - x : x - other.x) +
 					(Y < other.Y ? other.Y - Y : Y - other.Y);
-				if (xyWrapped < xy) {
+				if (xyWrapped < xy)
+				{
 					xy = xyWrapped;
 				}
 			}
@@ -88,6 +97,21 @@ public struct HexCoordinates {
 
 		return (xy + (z < other.z ? other.z - z : z - other.z)) / 2;
 	}
+
+	/// <summary>
+	/// Return (wrapped) coordinates after stepping one cell in a given direction.
+	/// </summary>
+	/// <param name="direction">Step direction.</param>
+	/// <returns>Coordinates.</returns>
+	public HexCoordinates Step (HexDirection direction) => direction switch
+	{
+		HexDirection.NE => new HexCoordinates(x, z + 1),
+		HexDirection.E => new HexCoordinates(x + 1, z),
+		HexDirection.SE => new HexCoordinates(x + 1, z - 1),
+		HexDirection.SW => new HexCoordinates(x, z - 1),
+		HexDirection.W => new HexCoordinates(x - 1, z),
+		_ => new HexCoordinates(x - 1, z + 1)
+	};
 
 	/// <summary>
 	/// Create hex coordinates from array offset coordinates.
@@ -103,7 +127,8 @@ public struct HexCoordinates {
 	/// </summary>
 	/// <param name="position">A 3D position assumed to lie inside the map.</param>
 	/// <returns>Hex coordinates.</returns>
-	public static HexCoordinates FromPosition (Vector3 position) {
+	public static HexCoordinates FromPosition (Vector3 position)
+	{
 		float x = position.x / HexMetrics.innerDiameter;
 		float y = -x;
 
@@ -115,15 +140,18 @@ public struct HexCoordinates {
 		int iY = Mathf.RoundToInt(y);
 		int iZ = Mathf.RoundToInt(-x -y);
 
-		if (iX + iY + iZ != 0) {
+		if (iX + iY + iZ != 0)
+		{
 			float dX = Mathf.Abs(x - iX);
 			float dY = Mathf.Abs(y - iY);
 			float dZ = Mathf.Abs(-x -y - iZ);
 
-			if (dX > dY && dX > dZ) {
+			if (dX > dY && dX > dZ)
+			{
 				iX = -iY - iZ;
 			}
-			else if (dZ > dY) {
+			else if (dZ > dY)
+			{
 				iZ = -iX - iY;
 			}
 		}
@@ -149,7 +177,8 @@ public struct HexCoordinates {
 	/// Save the coordinates.
 	/// </summary>
 	/// <param name="writer"><see cref="BinaryWriter"/> to use.</param>
-	public void Save (BinaryWriter writer) {
+	public void Save (BinaryWriter writer)
+	{
 		writer.Write(x);
 		writer.Write(z);
 	}
@@ -159,7 +188,8 @@ public struct HexCoordinates {
 	/// </summary>
 	/// <param name="reader"><see cref="BinaryReader"/> to use.</param>
 	/// <returns>The coordinates.</returns>
-	public static HexCoordinates Load (BinaryReader reader) {
+	public static HexCoordinates Load (BinaryReader reader)
+	{
 		HexCoordinates c;
 		c.x = reader.ReadInt32();
 		c.z = reader.ReadInt32();
