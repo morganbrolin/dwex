@@ -10,7 +10,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - *HexFlags* enumeration type to represent bit flags for cell data.
-- Store road and river *HexCell* data in a bit flag field.
 - *HexCell.Grid* property, which is used to retrieve neighbor cells.
 - *HexCell.HasIncomingRiverThroughEdge* method.
 - *HexCell.TryGetNeighbor* and *HexGrid.TryGetCell* methods, to make cell retrieval more efficient and convenient.
@@ -25,6 +24,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - *HexCell* neighbors and roads arrays.
 - *HexCell* incoming and outgoing river boolean and direction fields.
+- *HexCell* walled and explored fields.
 - *HexCell.RiverBeginOrEndDirection* property.
 
 ## [2.2.0] - 2023-03-10

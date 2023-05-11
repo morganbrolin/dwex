@@ -34,6 +34,11 @@ public enum HexFlags
 	RiverOut = 0b111111_000000_000000,
 
 	River = 0b111111_111111_000000,
+
+	Walled = 0b1_000000_000000_000000,
+
+	Explored   = 0b010_000000_000000_000000,
+	Explorable = 0b100_000000_000000_000000
 }
 
 public static class HexFlagsExtensions
@@ -47,13 +52,38 @@ public static class HexFlagsExtensions
 	public static bool HasAny (this HexFlags flags, HexFlags mask) => (flags & mask) != 0;
 
 	/// <summary>
+	/// Whether all flags of a mask are set.
+	/// </summary>
+	/// <param name="flags">Flags.</param>
+	/// <param name="mask">Mask.</param>
+	/// <returns>Whether all of the flags are set.</returns>
+	public static bool HasAll (this HexFlags flags, HexFlags mask) =>
+		(flags & mask) == mask;
+
+	/// <summary>
+	/// Whether no flags of a mask are set.
+	/// </summary>
+	/// <param name="flags">Flags.</param>
+	/// <param name="mask">Mask.</param>
+	/// <returns>Whether none of the flags are set.</returns>
+	public static bool HasNone (this HexFlags flags, HexFlags mask) =>
+		(flags & mask) == 0;
+
+	/// <summary>
+	/// Returns flags with bits of the given mask set.
+	/// </summary>
+	/// <param name="flags"><Flags./param>
+	/// <param name="mask">Mask to set.</param>
+	/// <returns>The set flags.</returns>
+	public static HexFlags With (this HexFlags flags, HexFlags mask) => flags | mask;
+
+	/// <summary>
 	/// Returns flags with bits of the given mask cleared.
 	/// </summary>
 	/// <param name="flags"><Flags./param>
 	/// <param name="mask">Mask to clear.</param>
 	/// <returns>The cleared flags.</returns>
-	public static HexFlags Without (this HexFlags flags, HexFlags mask) =>
-		flags &= ~mask;
+	public static HexFlags Without (this HexFlags flags, HexFlags mask) => flags & ~mask;
 
 	/// <summary>
 	/// Whether the flag for a road in a given direction is set.

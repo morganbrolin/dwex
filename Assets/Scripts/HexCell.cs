@@ -237,12 +237,14 @@ public class HexCell : MonoBehaviour
 	/// </summary>
 	public bool Walled
 	{
-		get => walled;
+		get => flags.HasAny(HexFlags.Walled);
 		set
 		{
-			if (walled != value)
+			HexFlags newFlags =
+				value ? flags.With(HexFlags.Walled) : flags.Without(HexFlags.Walled);
+			if (flags != newFlags)
 			{
-				walled = value;
+				flags = newFlags;
 				Refresh();
 			}
 		}
@@ -274,15 +276,20 @@ public class HexCell : MonoBehaviour
 	/// </summary>
 	public bool IsExplored
 	{
-		get => explored && Explorable;
-		private set => explored = value;
+		get => flags.HasAll(HexFlags.Explored | HexFlags.Explorable);
+		private set => flags = value ?
+			flags.With(HexFlags.Explored) : flags.Without(HexFlags.Explored);
 	}
 
 	/// <summary>
 	/// Whether the cell is explorable. If not it never counts as explored or visible.
 	/// </summary>
 	public bool Explorable
-	{ get; set; }
+	{
+		get => flags.HasAny(HexFlags.Explorable);
+		set => flags = value ?
+			flags.With(HexFlags.Explorable) : flags.Without(HexFlags.Explorable);
+	}
 
 	/// <summary>
 	/// Distance data used by pathfiding algorithm.
@@ -335,7 +342,7 @@ public class HexCell : MonoBehaviour
 	{ get; set; }
 
 	/// <summary>
-	/// Bit flags containing cell data, currently rivers and roads.
+	/// Bit flags for cell data, currently rivers, roads, walls, and exploration.
 	/// </summary>
 	HexFlags flags;
 
@@ -351,10 +358,6 @@ public class HexCell : MonoBehaviour
 	int distance;
 
 	int visibility;
-
-	bool explored;
-
-	bool walled;
 
 	/// <summary>
 	/// Increment visibility level.
@@ -652,7 +655,7 @@ public class HexCell : MonoBehaviour
 		writer.Write((byte)farmLevel);
 		writer.Write((byte)plantLevel);
 		writer.Write((byte)specialIndex);
-		writer.Write(walled);
+		writer.Write(Walled);
 
 		if (HasIncomingRiver)
 		{
@@ -683,6 +686,7 @@ public class HexCell : MonoBehaviour
 	/// <param name="header">Header version.</param>
 	public void Load (BinaryReader reader, int header)
 	{
+		flags &= HexFlags.Explorable;
 		terrainTypeIndex = reader.ReadByte();
 		elevation = reader.ReadByte();
 		if (header >= 4)
@@ -695,26 +699,22 @@ public class HexCell : MonoBehaviour
 		farmLevel = reader.ReadByte();
 		plantLevel = reader.ReadByte();
 		specialIndex = reader.ReadByte();
-		walled = reader.ReadBoolean();
+
+		if (reader.ReadBoolean())
+		{
+			flags = flags.With(HexFlags.Walled);
+		}
 
 		byte riverData = reader.ReadByte();
 		if (riverData >= 128)
 		{
 			flags = flags.WithRiverIn((HexDirection)(riverData - 128));
 		}
-		else
-		{
-			flags = flags.Without(HexFlags.RiverIn);
-		}
 
 		riverData = reader.ReadByte();
 		if (riverData >= 128)
 		{
 			flags = flags.WithRiverOut((HexDirection)(riverData - 128));
-		}
-		else
-		{
-			flags = flags.Without(HexFlags.RiverOut);
 		}
 
 		flags |= (HexFlags)reader.ReadByte();
