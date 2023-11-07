@@ -7,7 +7,7 @@ using UnityEngine.EventSystems;
 /// </summary>
 public class HexMapEditor : MonoBehaviour
 {
-	static int cellHighlightingId = Shader.PropertyToID("_CellHighlighting");
+	static readonly int cellHighlightingId = Shader.PropertyToID("_CellHighlighting");
 
 	[SerializeField]
 	HexGrid hexGrid;
@@ -40,43 +40,43 @@ public class HexMapEditor : MonoBehaviour
 	HexDirection dragDirection;
 	HexCell previousCell;
 
-	public void SetTerrainTypeIndex (int index) => activeTerrainTypeIndex = index;
+	public void SetTerrainTypeIndex(int index) => activeTerrainTypeIndex = index;
 
-	public void SetApplyElevation (bool toggle) => applyElevation = toggle;
+	public void SetApplyElevation(bool toggle) => applyElevation = toggle;
 
-	public void SetElevation (float elevation) => activeElevation = (int)elevation;
+	public void SetElevation(float elevation) => activeElevation = (int)elevation;
 
-	public void SetApplyWaterLevel (bool toggle) => applyWaterLevel = toggle;
+	public void SetApplyWaterLevel(bool toggle) => applyWaterLevel = toggle;
 
-	public void SetWaterLevel (float level) => activeWaterLevel = (int)level;
+	public void SetWaterLevel(float level) => activeWaterLevel = (int)level;
 
-	public void SetApplyUrbanLevel (bool toggle) => applyUrbanLevel = toggle;
+	public void SetApplyUrbanLevel(bool toggle) => applyUrbanLevel = toggle;
 
-	public void SetUrbanLevel (float level) => activeUrbanLevel = (int)level;
+	public void SetUrbanLevel(float level) => activeUrbanLevel = (int)level;
 
-	public void SetApplyFarmLevel (bool toggle) => applyFarmLevel = toggle;
+	public void SetApplyFarmLevel(bool toggle) => applyFarmLevel = toggle;
 
-	public void SetFarmLevel (float level) => activeFarmLevel = (int)level;
+	public void SetFarmLevel(float level) => activeFarmLevel = (int)level;
 
-	public void SetApplyPlantLevel (bool toggle) => applyPlantLevel = toggle;
+	public void SetApplyPlantLevel(bool toggle) => applyPlantLevel = toggle;
 
-	public void SetPlantLevel (float level) => activePlantLevel = (int)level;
+	public void SetPlantLevel(float level) => activePlantLevel = (int)level;
 
-	public void SetApplySpecialIndex (bool toggle) => applySpecialIndex = toggle;
+	public void SetApplySpecialIndex(bool toggle) => applySpecialIndex = toggle;
 
-	public void SetSpecialIndex (float index) => activeSpecialIndex = (int)index;
+	public void SetSpecialIndex(float index) => activeSpecialIndex = (int)index;
 
-	public void SetBrushSize (float size) => brushSize = (int)size;
+	public void SetBrushSize(float size) => brushSize = (int)size;
 
-	public void SetRiverMode (int mode) => riverMode = (OptionalToggle)mode;
+	public void SetRiverMode(int mode) => riverMode = (OptionalToggle)mode;
 
-	public void SetRoadMode (int mode) => roadMode = (OptionalToggle)mode;
+	public void SetRoadMode(int mode) => roadMode = (OptionalToggle)mode;
 
-	public void SetWalledMode (int mode) => walledMode = (OptionalToggle)mode;
+	public void SetWalledMode(int mode) => walledMode = (OptionalToggle)mode;
 
-	public void SetEditMode (bool toggle) => enabled = toggle;
+	public void SetEditMode(bool toggle) => enabled = toggle;
 
-	public void ShowGrid (bool visible)
+	public void ShowGrid(bool visible)
 	{
 		if (visible)
 		{
@@ -88,14 +88,14 @@ public class HexMapEditor : MonoBehaviour
 		}
 	}
 
-	void Awake ()
+	void Awake()
 	{
 		terrainMaterial.DisableKeyword("_SHOW_GRID");
 		Shader.EnableKeyword("_HEX_MAP_EDIT_MODE");
 		SetEditMode(true);
 	}
 
-	void Update ()
+	void Update()
 	{
 		if (!EventSystem.current.IsPointerOverGameObject())
 		{
@@ -129,10 +129,10 @@ public class HexMapEditor : MonoBehaviour
 		previousCell = null;
 	}
 
-	HexCell GetCellUnderCursor () =>
+	HexCell GetCellUnderCursor() =>
 		hexGrid.GetCell(Camera.main.ScreenPointToRay(Input.mousePosition));
 
-	void CreateUnit ()
+	void CreateUnit()
 	{
 		HexCell cell = GetCellUnderCursor();
 		if (cell && !cell.Unit)
@@ -143,7 +143,7 @@ public class HexMapEditor : MonoBehaviour
 		}
 	}
 
-	void DestroyUnit ()
+	void DestroyUnit()
 	{
 		HexCell cell = GetCellUnderCursor();
 		if (cell && cell.Unit)
@@ -152,7 +152,7 @@ public class HexMapEditor : MonoBehaviour
 		}
 	}
 
-	void HandleInput ()
+	void HandleInput()
 	{
 		HexCell currentCell = GetCellUnderCursor();
 		if (currentCell)
@@ -175,7 +175,7 @@ public class HexMapEditor : MonoBehaviour
 		UpdateCellHighlightData(currentCell);
 	}
 
-	void UpdateCellHighlightData (HexCell cell)
+	void UpdateCellHighlightData(HexCell cell)
 	{
 		if (cell == null)
 		{
@@ -195,16 +195,14 @@ public class HexMapEditor : MonoBehaviour
 		);
 	}
 
-	void ClearCellHighlightData () =>
+	void ClearCellHighlightData() =>
 		Shader.SetGlobalVector(cellHighlightingId, new Vector4(0f, 0f, -1f, 0f));
 
-	void ValidateDrag (HexCell currentCell)
+	void ValidateDrag(HexCell currentCell)
 	{
-		for (
-			dragDirection = HexDirection.NE;
+		for (dragDirection = HexDirection.NE;
 			dragDirection <= HexDirection.NW;
-			dragDirection++
-		)
+			dragDirection++)
 		{
 			if (previousCell.GetNeighbor(dragDirection) == currentCell)
 			{
@@ -215,7 +213,7 @@ public class HexMapEditor : MonoBehaviour
 		isDrag = false;
 	}
 
-	void EditCells (HexCell center)
+	void EditCells(HexCell center)
 	{
 		int centerX = center.Coordinates.X;
 		int centerZ = center.Coordinates.Z;
@@ -236,7 +234,7 @@ public class HexMapEditor : MonoBehaviour
 		}
 	}
 
-	void EditCell (HexCell cell)
+	void EditCell(HexCell cell)
 	{
 		if (cell)
 		{
@@ -280,8 +278,7 @@ public class HexMapEditor : MonoBehaviour
 			{
 				cell.Walled = walledMode == OptionalToggle.Yes;
 			}
-			if (
-				isDrag &&
+			if (isDrag &&
 				cell.TryGetNeighbor(dragDirection.Opposite(), out HexCell otherCell)
 			)
 			{

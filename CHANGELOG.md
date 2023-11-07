@@ -5,6 +5,24 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Changed
+
+- Upgraded to Unity 2022.3.12f1, URP 14.0.9, and Burst 1.8.9.
+- Upgraded *Transform* node of *Road* shader graph to new version.
+- Replaced custom *Terrain Texture Array* asset with imported texture array PNG.
+- Make use of `SetLocalPositionAndRotation` in `HexFeatureManager`.
+- Code style modernization.
+
+### Removed
+
+- *AI Navigation* package.
+- Separate terrain textures.
+- Unused `originalViewElevation` local variable in `HexCell.Elevation` and `HexCell.WaterLevel` setters.
+- Unused `direction` parameter from `HexGridChunk.TriangulateWithRiverBeginOrEnd` method.
+- *Scripts/Editor* folder and its contents, as they are no longer used.
+
 ## [2.3.0] - 2023-10-04
 
 ### Added
@@ -17,7 +35,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- Upgraded to Unity 2021.3.24f and URP 12.1.11.
+- Upgraded to Unity 2021.3.24f1 and URP 12.1.11.
 - Started changing code style to newer tutorial style, more like standard C# style.
 
 ### Removed

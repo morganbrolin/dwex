@@ -1,7 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 using System.IO;
-using System;
 
 /// <summary>
 /// Container component for hex cell data.
@@ -56,7 +55,6 @@ public class HexCell : MonoBehaviour
 			{
 				return;
 			}
-			int originalViewElevation = ViewElevation;
 			elevation = value;
 			ShaderData.ViewElevationChanged(this);
 			RefreshPosition();
@@ -86,7 +84,6 @@ public class HexCell : MonoBehaviour
 			{
 				return;
 			}
-			int originalViewElevation = ViewElevation;
 			waterLevel = value;
 			ShaderData.ViewElevationChanged(this);
 			ValidateRivers();
@@ -362,7 +359,7 @@ public class HexCell : MonoBehaviour
 	/// <summary>
 	/// Increment visibility level.
 	/// </summary>
-	public void IncreaseVisibility ()
+	public void IncreaseVisibility()
 	{
 		visibility += 1;
 		if (visibility == 1)
@@ -375,7 +372,7 @@ public class HexCell : MonoBehaviour
 	/// <summary>
 	/// Decrement visiblility level.
 	/// </summary>
-	public void DecreaseVisibility ()
+	public void DecreaseVisibility()
 	{
 		visibility -= 1;
 		if (visibility == 0)
@@ -387,7 +384,7 @@ public class HexCell : MonoBehaviour
 	/// <summary>
 	/// Reset visibility level to zero.
 	/// </summary>
-	public void ResetVisibility ()
+	public void ResetVisibility()
 	{
 		if (visibility > 0)
 		{
@@ -401,7 +398,7 @@ public class HexCell : MonoBehaviour
 	/// </summary>
 	/// <param name="direction">Neighbor direction relative to the cell.</param>
 	/// <returns>Neighbor cell, if it exists.</returns>
-	public HexCell GetNeighbor (HexDirection direction) =>
+	public HexCell GetNeighbor(HexDirection direction) =>
 		Grid.GetCell(Coordinates.Step(direction));
 
 	/// <summary>
@@ -410,7 +407,7 @@ public class HexCell : MonoBehaviour
 	/// <param name="direction">Neighbor direction relative to the cell.</param>
 	/// <param name="cell">The neighbor cell, if it exists.</param>
 	/// <returns>Whether the neighbor exists.</returns>
-	public bool TryGetNeighbor (HexDirection direction, out HexCell cell) =>
+	public bool TryGetNeighbor(HexDirection direction, out HexCell cell) =>
 		Grid.TryGetCell(Coordinates.Step(direction), out cell);
 
 	/// <summary>
@@ -418,7 +415,7 @@ public class HexCell : MonoBehaviour
 	/// </summary>
 	/// <param name="direction">Edge direction relative to the cell.</param>
 	/// <returns><see cref="HexEdgeType"/> based on the neighboring cells.</returns>
-	public HexEdgeType GetEdgeType (HexDirection direction) => HexMetrics.GetEdgeType(
+	public HexEdgeType GetEdgeType(HexDirection direction) => HexMetrics.GetEdgeType(
 		elevation, GetNeighbor(direction).elevation
 	);
 
@@ -427,7 +424,7 @@ public class HexCell : MonoBehaviour
 	/// </summary>
 	/// <param name="otherCell">Other cell to consider as neighbor.</param>
 	/// <returns><see cref="HexEdgeType"/> based on this and the other cell.</returns>
-	public HexEdgeType GetEdgeType (HexCell otherCell) => HexMetrics.GetEdgeType(
+	public HexEdgeType GetEdgeType(HexCell otherCell) => HexMetrics.GetEdgeType(
 		elevation, otherCell.elevation
 	);
 
@@ -436,7 +433,7 @@ public class HexCell : MonoBehaviour
 	/// </summary>
 	/// <param name="direction">Edge direction relative to the cell.</param>
 	/// <returns>Whether a river goes through the edge.</returns>
-	public bool HasRiverThroughEdge (HexDirection direction) =>
+	public bool HasRiverThroughEdge(HexDirection direction) =>
 		flags.HasRiverIn(direction) || flags.HasRiverOut(direction);
 
 	/// <summary>
@@ -444,13 +441,13 @@ public class HexCell : MonoBehaviour
 	/// </summary>
 	/// <param name="direction">Edge direction relative to the cell.</param>
 	/// <returns>Whether an incoming river goes through the edge.</returns>
-	public bool HasIncomingRiverThroughEdge (HexDirection direction) =>
+	public bool HasIncomingRiverThroughEdge(HexDirection direction) =>
 		flags.HasRiverIn(direction);
 
 	/// <summary>
 	/// Remove the incoming river, if it exists.
 	/// </summary>
-	public void RemoveIncomingRiver ()
+	public void RemoveIncomingRiver()
 	{
 		if (!HasIncomingRiver)
 		{
@@ -467,7 +464,7 @@ public class HexCell : MonoBehaviour
 	/// <summary>
 	/// Remove the outgoing river, if it exists.
 	/// </summary>
-	public void RemoveOutgoingRiver ()
+	public void RemoveOutgoingRiver()
 	{
 		if (!HasOutgoingRiver)
 		{
@@ -484,7 +481,7 @@ public class HexCell : MonoBehaviour
 	/// <summary>
 	/// Remove both incoming and outgoing rivers, if they exist.
 	/// </summary>
-	public void RemoveRiver ()
+	public void RemoveRiver()
 	{
 		RemoveOutgoingRiver();
 		RemoveIncomingRiver();
@@ -494,7 +491,7 @@ public class HexCell : MonoBehaviour
 	/// Define an outgoing river.
 	/// </summary>
 	/// <param name="direction">Direction of the river.</param>
-	public void SetOutgoingRiver (HexDirection direction)
+	public void SetOutgoingRiver(HexDirection direction)
 	{
 		if (flags.HasRiverOut(direction))
 		{
@@ -527,13 +524,13 @@ public class HexCell : MonoBehaviour
 	/// </summary>
 	/// <param name="direction">Edge direction relative to cell.</param>
 	/// <returns>Whether a road goes through the edge.</returns>
-	public bool HasRoadThroughEdge (HexDirection direction) => flags.HasRoad(direction);
+	public bool HasRoadThroughEdge(HexDirection direction) => flags.HasRoad(direction);
 
 	/// <summary>
 	/// Define a road that goes in a specific direction.
 	/// </summary>
 	/// <param name="direction">Direction relative to cell.</param>
-	public void AddRoad (HexDirection direction)
+	public void AddRoad(HexDirection direction)
 	{
 		if (
 			!flags.HasRoad(direction) && !HasRiverThroughEdge(direction) &&
@@ -552,7 +549,7 @@ public class HexCell : MonoBehaviour
 	/// <summary>
 	/// Remove all roads from the cell.
 	/// </summary>
-	public void RemoveRoads ()
+	public void RemoveRoads()
 	{
 		for (HexDirection d = HexDirection.NE; d <= HexDirection.NW; d++)
 		{
@@ -568,16 +565,16 @@ public class HexCell : MonoBehaviour
 	/// </summary>
 	/// <param name="direction">Direction to the neighbor, relative to the cell.</param>
 	/// <returns>Absolute elevation difference.</returns>
-	public int GetElevationDifference (HexDirection direction)
+	public int GetElevationDifference(HexDirection direction)
 	{
 		int difference = elevation - GetNeighbor(direction).elevation;
 		return difference >= 0 ? difference : -difference;
 	}
 
-	bool IsValidRiverDestination (HexCell neighbor) =>
+	bool IsValidRiverDestination(HexCell neighbor) =>
 		neighbor && (elevation >= neighbor.elevation || waterLevel == neighbor.elevation);
 
-	void ValidateRivers ()
+	void ValidateRivers()
 	{
 		if (HasOutgoingRiver && !IsValidRiverDestination(GetNeighbor(OutgoingRiver)))
 		{
@@ -591,7 +588,7 @@ public class HexCell : MonoBehaviour
 		}
 	}
 
-	void RemoveRoad (HexDirection direction)
+	void RemoveRoad(HexDirection direction)
 	{
 		flags = flags.WithoutRoad(direction);
 		HexCell neighbor = GetNeighbor(direction);
@@ -600,7 +597,7 @@ public class HexCell : MonoBehaviour
 		RefreshSelfOnly();
 	}
 
-	void RefreshPosition ()
+	void RefreshPosition()
 	{
 		Vector3 position = transform.localPosition;
 		position.y = elevation * HexMetrics.elevationStep;
@@ -614,7 +611,7 @@ public class HexCell : MonoBehaviour
 		UIRect.localPosition = uiPosition;
 	}
 
-	void Refresh ()
+	void Refresh()
 	{
 		if (Chunk)
 		{
@@ -633,7 +630,7 @@ public class HexCell : MonoBehaviour
 		}
 	}
 
-	void RefreshSelfOnly ()
+	void RefreshSelfOnly()
 	{
 		Chunk.Refresh();
 		if (Unit)
@@ -646,7 +643,7 @@ public class HexCell : MonoBehaviour
 	/// Save the cell data.
 	/// </summary>
 	/// <param name="writer"><see cref="BinaryWriter"/> to use.</param>
-	public void Save (BinaryWriter writer)
+	public void Save(BinaryWriter writer)
 	{
 		writer.Write((byte)terrainTypeIndex);
 		writer.Write((byte)(elevation + 127));
@@ -684,7 +681,7 @@ public class HexCell : MonoBehaviour
 	/// </summary>
 	/// <param name="reader"><see cref="BinaryReader"/> to use.</param>
 	/// <param name="header">Header version.</param>
-	public void Load (BinaryReader reader, int header)
+	public void Load(BinaryReader reader, int header)
 	{
 		flags &= HexFlags.Explorable;
 		terrainTypeIndex = reader.ReadByte();
@@ -719,7 +716,7 @@ public class HexCell : MonoBehaviour
 
 		flags |= (HexFlags)reader.ReadByte();
 
-		IsExplored = header >= 3 ? reader.ReadBoolean() : false;
+		IsExplored = header >= 3 && reader.ReadBoolean();
 		ShaderData.RefreshTerrain(this);
 		ShaderData.RefreshVisibility(this);
 	}
@@ -728,7 +725,7 @@ public class HexCell : MonoBehaviour
 	/// Set the cell's UI label.
 	/// </summary>
 	/// <param name="text">Label text.</param>
-	public void SetLabel (string text)
+	public void SetLabel(string text)
 	{
 		UnityEngine.UI.Text label = UIRect.GetComponent<Text>();
 		label.text = text;
@@ -737,7 +734,7 @@ public class HexCell : MonoBehaviour
 	/// <summary>
 	/// Disable the cell's highlight.
 	/// </summary>
-	public void DisableHighlight ()
+	public void DisableHighlight()
 	{
 		Image highlight = UIRect.GetChild(0).GetComponent<Image>();
 		highlight.enabled = false;
@@ -747,7 +744,7 @@ public class HexCell : MonoBehaviour
 	/// Enable the cell's highlight. 
 	/// </summary>
 	/// <param name="color">Highlight color.</param>
-	public void EnableHighlight (Color color)
+	public void EnableHighlight(Color color)
 	{
 		Image highlight = UIRect.GetChild(0).GetComponent<Image>();
 		highlight.color = color;
@@ -758,5 +755,5 @@ public class HexCell : MonoBehaviour
 	/// Set arbitrary map data for this cell's <see cref="ShaderData"/>.
 	/// </summary>
 	/// <param name="data">Data value, 0-1 inclusive.</param>
-	public void SetMapData (float data) => ShaderData.SetMapData(this, data);
+	public void SetMapData(float data) => ShaderData.SetMapData(this, data);
 }

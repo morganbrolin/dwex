@@ -27,7 +27,7 @@ public static class HexDirectionExtensions
 	/// </summary>
 	/// <param name="direction">A given direction.</param>
 	/// <returns>The opposite direction.</returns>
-	public static HexDirection Opposite (this HexDirection direction) =>
+	public static HexDirection Opposite(this HexDirection direction) =>
 		(int)direction < 3 ? (direction + 3) : (direction - 3);
 
 	/// <summary>
@@ -35,7 +35,7 @@ public static class HexDirectionExtensions
 	/// </summary>
 	/// <param name="direction">A given direction.</param>
 	/// <returns>A direction rotated one step counter-clockwise.</returns>
-	public static HexDirection Previous (this HexDirection direction) =>
+	public static HexDirection Previous(this HexDirection direction) =>
 		direction == HexDirection.NE ? HexDirection.NW : (direction - 1);
 
 	/// <summary>
@@ -43,7 +43,7 @@ public static class HexDirectionExtensions
 	/// </summary>
 	/// <param name="direction">A given direction.</param>
 	/// <returns>A direction rotated one step clockwise.</returns>
-	public static HexDirection Next (this HexDirection direction) =>
+	public static HexDirection Next(this HexDirection direction) =>
 		direction == HexDirection.NW ? HexDirection.NE : (direction + 1);
 
 	/// <summary>
@@ -51,7 +51,7 @@ public static class HexDirectionExtensions
 	/// </summary>
 	/// <param name="direction">A given direction.</param>
 	/// <returns>A direction rotated two steps counter-clockwise.</returns>
-	public static HexDirection Previous2 (this HexDirection direction)
+	public static HexDirection Previous2(this HexDirection direction)
 	{
 		direction -= 2;
 		return direction >= HexDirection.NE ? direction : (direction + 6);
@@ -62,7 +62,7 @@ public static class HexDirectionExtensions
 	/// </summary>
 	/// <param name="direction">A given direction.</param>
 	/// <returns>A direction rotated two steps clockwise.</returns>
-	public static HexDirection Next2 (this HexDirection direction)
+	public static HexDirection Next2(this HexDirection direction)
 	{
 		direction += 2;
 		return direction <= HexDirection.NW ? direction : (direction - 6);

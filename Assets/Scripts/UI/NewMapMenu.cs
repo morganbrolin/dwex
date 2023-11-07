@@ -4,8 +4,8 @@
 /// Component that applies actions from the new map menu UI to the hex map.
 /// Public methods are hooked up to the in-game UI.
 /// </summary>
-public class NewMapMenu : MonoBehaviour {
-
+public class NewMapMenu : MonoBehaviour
+{
 	[SerializeField]
 	HexGrid hexGrid;
 
@@ -16,31 +16,36 @@ public class NewMapMenu : MonoBehaviour {
 
 	bool wrapping = true;
 
-	public void ToggleMapGeneration (bool toggle) => generateMaps = toggle;
+	public void ToggleMapGeneration(bool toggle) => generateMaps = toggle;
 
-	public void ToggleWrapping (bool toggle) => wrapping = toggle;
+	public void ToggleWrapping(bool toggle) => wrapping = toggle;
 
-	public void Open () {
+	public void Open()
+	{
 		gameObject.SetActive(true);
 		HexMapCamera.Locked = true;
 	}
 
-	public void Close () {
+	public void Close()
+	{
 		gameObject.SetActive(false);
 		HexMapCamera.Locked = false;
 	}
 
-	public void CreateSmallMap () => CreateMap(20, 15);
+	public void CreateSmallMap() => CreateMap(20, 15);
 
-	public void CreateMediumMap () => CreateMap(40, 30);
+	public void CreateMediumMap() => CreateMap(40, 30);
 
-	public void CreateLargeMap () => CreateMap(80, 60);
+	public void CreateLargeMap() => CreateMap(80, 60);
 
-	void CreateMap (int x, int z) {
-		if (generateMaps) {
+	void CreateMap(int x, int z)
+	{
+		if (generateMaps)
+		{
 			mapGenerator.GenerateMap(x, z, wrapping);
 		}
-		else {
+		else
+		{
 			hexGrid.CreateMap(x, z, wrapping);
 		}
 		HexMapCamera.ValidatePosition();

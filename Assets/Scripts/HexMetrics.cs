@@ -3,8 +3,8 @@
 /// <summary>
 /// Constant metrics and utility methods for the hex map.
 /// </summary>
-public static class HexMetrics {
-
+public static class HexMetrics
+{
 	/// <summary>
 	/// Ratio of outer to inner radius of a hex cell.
 	/// </summary>
@@ -152,7 +152,7 @@ public static class HexMetrics {
 
 	static HexHash[] hashGrid;
 
-	static Vector3[] corners = {
+	static readonly Vector3[] corners = {
 		new Vector3(0f, 0f, outerRadius),
 		new Vector3(innerRadius, 0f, 0.5f * outerRadius),
 		new Vector3(innerRadius, 0f, -0.5f * outerRadius),
@@ -162,7 +162,7 @@ public static class HexMetrics {
 		new Vector3(0f, 0f, outerRadius)
 	};
 
-	static float[][] featureThresholds = {
+	static readonly float[][] featureThresholds = {
 		new float[] {0.0f, 0.0f, 0.4f},
 		new float[] {0.0f, 0.4f, 0.6f},
 		new float[] {0.4f, 0.6f, 0.8f}
@@ -178,20 +178,19 @@ public static class HexMetrics {
 	/// </summary>
 	/// <param name="position">Sample position.</param>
 	/// <returns>Four-component noise sample.</returns>
-	public static Vector4 SampleNoise (Vector3 position) {
+	public static Vector4 SampleNoise(Vector3 position)
+	{
 		Vector4 sample = noiseSource.GetPixelBilinear(
 			position.x * noiseScale,
-			position.z * noiseScale
-		);
+			position.z * noiseScale);
 
-		if (Wrapping && position.x < innerDiameter * 1.5f) {
+		if (Wrapping && position.x < innerDiameter * 1.5f)
+		{
 			Vector4 sample2 = noiseSource.GetPixelBilinear(
 				(position.x + wrapSize * innerDiameter) * noiseScale,
-				position.z * noiseScale
-			);
+				position.z * noiseScale);
 			sample = Vector4.Lerp(
-				sample2, sample, position.x * (1f / innerDiameter) - 0.5f
-			);
+				sample2, sample, position.x * (1f / innerDiameter) - 0.5f);
 		}
 
 		return sample;
@@ -211,11 +210,13 @@ public static class HexMetrics {
 	/// Initialize the hash grid.
 	/// </summary>
 	/// <param name="seed">Seed to use for initialization.</param>
-	public static void InitializeHashGrid (int seed) {
+	public static void InitializeHashGrid(int seed)
+	{
 		hashGrid = new HexHash[hashGridSize * hashGridSize];
 		Random.State currentState = Random.state;
 		Random.InitState(seed);
-		for (int i = 0; i < hashGrid.Length; i++) {
+		for (int i = 0; i < hashGrid.Length; i++)
+		{
 			hashGrid[i] = HexHash.Create();
 		}
 		Random.state = currentState;
@@ -226,13 +227,16 @@ public static class HexMetrics {
 	/// </summary>
 	/// <param name="position">Sample position</param>
 	/// <returns>Sampled <see cref="HexHash"/>.</returns>
-	public static HexHash SampleHashGrid (Vector3 position) {
+	public static HexHash SampleHashGrid(Vector3 position)
+	{
 		int x = (int)(position.x * hashGridScale) % hashGridSize;
-		if (x < 0) {
+		if (x < 0)
+		{
 			x += hashGridSize;
 		}
 		int z = (int)(position.z * hashGridScale) % hashGridSize;
-		if (z < 0) {
+		if (z < 0)
+		{
 			z += hashGridSize;
 		}
 		return hashGrid[x + z * hashGridSize];
@@ -243,14 +247,14 @@ public static class HexMetrics {
 	/// </summary>
 	/// <param name="level">Feature level.</param>
 	/// <returns>Array containing the thresholds.</returns>
-	public static float[] GetFeatureThresholds (int level) => featureThresholds[level];
+	public static float[] GetFeatureThresholds(int level) => featureThresholds[level];
 
 	/// <summary>
 	/// Get the first outer cell corner for a direction.
 	/// </summary>
 	/// <param name="direction">The desired direction.</param>
 	/// <returns>The corner on the counter-clockwise side.</returns>
-	public static Vector3 GetFirstCorner (HexDirection direction) =>
+	public static Vector3 GetFirstCorner(HexDirection direction) =>
 		corners[(int)direction];
 
 	/// <summary>
@@ -258,7 +262,7 @@ public static class HexMetrics {
 	/// </summary>
 	/// <param name="direction">The desired direction.</param>
 	/// <returns>The corner on the clockwise side.</returns>
-	public static Vector3 GetSecondCorner (HexDirection direction) =>
+	public static Vector3 GetSecondCorner(HexDirection direction) =>
 		corners[(int)direction + 1];
 
 	/// <summary>
@@ -266,7 +270,7 @@ public static class HexMetrics {
 	/// </summary>
 	/// <param name="direction">The desired direction.</param>
 	/// <returns>The corner on the counter-clockwise side.</returns>
-	public static Vector3 GetFirstSolidCorner (HexDirection direction) =>
+	public static Vector3 GetFirstSolidCorner(HexDirection direction) =>
 		corners[(int)direction] * solidFactor;
 
 	/// <summary>
@@ -274,7 +278,7 @@ public static class HexMetrics {
 	/// </summary>
 	/// <param name="direction">The desired direction.</param>
 	/// <returns>The corner on the clockwise side.</returns>
-	public static Vector3 GetSecondSolidCorner (HexDirection direction) =>
+	public static Vector3 GetSecondSolidCorner(HexDirection direction) =>
 		corners[(int)direction + 1] * solidFactor;
 
 	/// <summary>
@@ -282,7 +286,7 @@ public static class HexMetrics {
 	/// </summary>
 	/// <param name="direction">The desired direction.</param>
 	/// <returns>The position in between the two inner solid cell corners.</returns>
-	public static Vector3 GetSolidEdgeMiddle (HexDirection direction) =>
+	public static Vector3 GetSolidEdgeMiddle(HexDirection direction) =>
 		(corners[(int)direction] + corners[(int)direction + 1]) *
 		(0.5f * solidFactor);
 
@@ -291,7 +295,7 @@ public static class HexMetrics {
 	/// </summary>
 	/// <param name="direction">The desired direction.</param>
 	/// <returns>The corner on the counter-clockwise side.</returns>
-	public static Vector3 GetFirstWaterCorner (HexDirection direction) =>
+	public static Vector3 GetFirstWaterCorner(HexDirection direction) =>
 		corners[(int)direction] * waterFactor;
 
 	/// <summary>
@@ -299,7 +303,7 @@ public static class HexMetrics {
 	/// </summary>
 	/// <param name="direction">The desired direction.</param>
 	/// <returns>The corner on the clockwise side.</returns>
-	public static Vector3 GetSecondWaterCorner (HexDirection direction) =>
+	public static Vector3 GetSecondWaterCorner(HexDirection direction) =>
 		corners[(int)direction + 1] * waterFactor;
 
 	/// <summary>
@@ -307,7 +311,7 @@ public static class HexMetrics {
 	/// </summary>
 	/// <param name="direction">The desired direction.</param>
 	/// <returns>The bridge vector.</returns>
-	public static Vector3 GetBridge (HexDirection direction) =>
+	public static Vector3 GetBridge(HexDirection direction) =>
 		(corners[(int)direction] + corners[(int)direction + 1]) * blendFactor;
 
 	/// <summary>
@@ -315,7 +319,7 @@ public static class HexMetrics {
 	/// </summary>
 	/// <param name="direction">The desired direction.</param>
 	/// <returns>The bridge vector.</returns>
-	public static Vector3 GetWaterBridge (HexDirection direction) =>
+	public static Vector3 GetWaterBridge(HexDirection direction) =>
 		(corners[(int)direction] + corners[(int)direction + 1]) * waterBlendFactor;
 
 	/// <summary>
@@ -325,7 +329,7 @@ public static class HexMetrics {
 	/// <param name="b">End position.</param>
 	/// <param name="step">Terrace interpolation step.</param>
 	/// <returns>The position found by applying terrace interpolation.</returns>
-	public static Vector3 TerraceLerp (Vector3 a, Vector3 b, int step) {
+	public static Vector3 TerraceLerp(Vector3 a, Vector3 b, int step) {
 		float h = step * horizontalTerraceStepSize;
 		a.x += (b.x - a.x) * h;
 		a.z += (b.z - a.z) * h;
@@ -341,7 +345,7 @@ public static class HexMetrics {
 	/// <param name="b">End color.</param>
 	/// <param name="step">Terrace interpolation step.</param>
 	/// <returns>The color found by applying terrace interpolation.</returns>
-	public static Color TerraceLerp (Color a, Color b, int step) {
+	public static Color TerraceLerp(Color a, Color b, int step) {
 		float h = step * horizontalTerraceStepSize;
 		return Color.Lerp(a, b, h);
 	}
@@ -352,11 +356,10 @@ public static class HexMetrics {
 	/// <param name="near">Near position.</param>
 	/// <param name="far">Far position.</param>
 	/// <returns>The middle position with appropriate Y coordinate.</returns>
-	public static Vector3 WallLerp (Vector3 near, Vector3 far) {
+	public static Vector3 WallLerp(Vector3 near, Vector3 far) {
 		near.x += (far.x - near.x) * 0.5f;
 		near.z += (far.z - near.z) * 0.5f;
-		float v =
-			near.y < far.y ? wallElevationOffset : (1f - wallElevationOffset);
+		float v = near.y < far.y ? wallElevationOffset : (1f - wallElevationOffset);
 		near.y += (far.y - near.y) * v + wallYOffset;
 		return near;
 	}
@@ -367,7 +370,7 @@ public static class HexMetrics {
 	/// <param name="near">Near position.</param>
 	/// <param name="far">Far position.</param>
 	/// <returns>Position taking wall thickness into account.</returns>
-	public static Vector3 WallThicknessOffset (Vector3 near, Vector3 far) {
+	public static Vector3 WallThicknessOffset(Vector3 near, Vector3 far) {
 		Vector3 offset;
 		offset.x = far.x - near.x;
 		offset.y = 0f;
@@ -381,12 +384,14 @@ public static class HexMetrics {
 	/// <param name="elevation1">First elevation.</param>
 	/// <param name="elevation2">Second elevation.</param>
 	/// <returns>Matching <see cref="HexEdgeType"/>.</returns>
-	public static HexEdgeType GetEdgeType (int elevation1, int elevation2) {
-		if (elevation1 == elevation2) {
+	public static HexEdgeType GetEdgeType(int elevation1, int elevation2) {
+		if (elevation1 == elevation2)
+		{
 			return HexEdgeType.Flat;
 		}
 		int delta = elevation2 - elevation1;
-		if (delta == 1 || delta == -1) {
+		if (delta == 1 || delta == -1)
+		{
 			return HexEdgeType.Slope;
 		}
 		return HexEdgeType.Cliff;
@@ -397,7 +402,8 @@ public static class HexMetrics {
 	/// </summary>
 	/// <param name="position">A position.</param>
 	/// <returns>The positions with noise applied to its XZ components.</returns>
-	public static Vector3 Perturb (Vector3 position) {
+	public static Vector3 Perturb(Vector3 position)
+	{
 		Vector4 sample = SampleNoise(position);
 		position.x += (sample.x * 2f - 1f) * cellPerturbStrength;
 		position.z += (sample.z * 2f - 1f) * cellPerturbStrength;

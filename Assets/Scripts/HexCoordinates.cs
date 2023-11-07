@@ -13,36 +13,36 @@ public struct HexCoordinates
 	/// <summary>
 	/// X coordinate.
 	/// </summary>
-	public int X => x;
+	public readonly int X => x;
 
 	/// <summary>
 	/// Z coordinate.
 	/// </summary>
-	public int Z => z;
+	public readonly int Z => z;
 
 	/// <summary>
 	/// Y coordinate, derived from X and Z.
 	/// </summary>
-	public int Y => -X - Z;
+	public readonly int Y => -X - Z;
 
 	/// <summary>
 	/// X position in hex space,
 	/// where the distance between cell centers of east-west neighbors is one unit.
 	/// </summary>
-	public float HexX => X + Z / 2 + ((Z & 1) == 0 ? 0f : 0.5f);
+	public readonly float HexX => X + Z / 2 + ((Z & 1) == 0 ? 0f : 0.5f);
 
 	/// <summary>
 	/// Z position in hex space,
 	/// where the distance between cell centers of east-west neighbors is one unit.
 	/// </summary>
-	public float HexZ => Z * HexMetrics.outerToInner;
+	public readonly float HexZ => Z * HexMetrics.outerToInner;
 
 	/// <summary>
 	/// Create hex coordinates.
 	/// </summary>
 	/// <param name="x">X coordinate.</param>
 	/// <param name="z">Z coordinate.</param>
-	public HexCoordinates (int x, int z)
+	public HexCoordinates(int x, int z)
 	{
 		if (HexMetrics.Wrapping)
 		{
@@ -66,7 +66,7 @@ public struct HexCoordinates
 	/// </summary>
 	/// <param name="other">Coordinate to determine distance to.</param>
 	/// <returns>Distance in cells.</returns>
-	public int DistanceTo (HexCoordinates other)
+	public readonly int DistanceTo(HexCoordinates other)
 	{
 		int xy =
 			(x < other.x ? other.x - x : x - other.x) +
@@ -103,7 +103,7 @@ public struct HexCoordinates
 	/// </summary>
 	/// <param name="direction">Step direction.</param>
 	/// <returns>Coordinates.</returns>
-	public HexCoordinates Step (HexDirection direction) => direction switch
+	public readonly HexCoordinates Step(HexDirection direction) => direction switch
 	{
 		HexDirection.NE => new HexCoordinates(x, z + 1),
 		HexDirection.E => new HexCoordinates(x + 1, z),
@@ -119,15 +119,14 @@ public struct HexCoordinates
 	/// <param name="x">X offset coordinate.</param>
 	/// <param name="z">Z offset coordinate.</param>
 	/// <returns>Hex coordinates.</returns>
-	public static HexCoordinates FromOffsetCoordinates (int x, int z) =>
-		new HexCoordinates(x - z / 2, z);
+	public static HexCoordinates FromOffsetCoordinates(int x, int z) => new(x - z / 2, z);
 
 	/// <summary>
 	/// Create hex coordinates for the cell that contains a position.
 	/// </summary>
 	/// <param name="position">A 3D position assumed to lie inside the map.</param>
 	/// <returns>Hex coordinates.</returns>
-	public static HexCoordinates FromPosition (Vector3 position)
+	public static HexCoordinates FromPosition(Vector3 position)
 	{
 		float x = position.x / HexMetrics.innerDiameter;
 		float y = -x;
@@ -163,21 +162,21 @@ public struct HexCoordinates
 	/// Create a string representation of the coordinates.
 	/// </summary>
 	/// <returns>A string of the form (X, Y, Z).</returns>
-	public override string ToString () =>
+	public readonly override string ToString() =>
 		"(" + X.ToString() + ", " + Y.ToString() + ", " + Z.ToString() + ")";
 
 	/// <summary>
 	/// Create a multi-line string representation of the coordinates.
 	/// </summary>
 	/// <returns>A string of the form X\nY\nZ\n.</returns>
-	public string ToStringOnSeparateLines () =>
+	public readonly string ToStringOnSeparateLines() =>
 		X.ToString() + "\n" + Y.ToString() + "\n" + Z.ToString();
 
 	/// <summary>
 	/// Save the coordinates.
 	/// </summary>
 	/// <param name="writer"><see cref="BinaryWriter"/> to use.</param>
-	public void Save (BinaryWriter writer)
+	public readonly void Save(BinaryWriter writer)
 	{
 		writer.Write(x);
 		writer.Write(z);
@@ -188,7 +187,7 @@ public struct HexCoordinates
 	/// </summary>
 	/// <param name="reader"><see cref="BinaryReader"/> to use.</param>
 	/// <returns>The coordinates.</returns>
-	public static HexCoordinates Load (BinaryReader reader)
+	public static HexCoordinates Load(BinaryReader reader)
 	{
 		HexCoordinates c;
 		c.x = reader.ReadInt32();

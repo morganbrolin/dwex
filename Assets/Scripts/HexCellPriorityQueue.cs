@@ -3,9 +3,9 @@
 /// <summary>
 /// Priority queue to store hex cells for the pathfinding algorithm.
 /// </summary>
-public class HexCellPriorityQueue {
-
-	List<HexCell> list = new List<HexCell>();
+public class HexCellPriorityQueue
+{
+	readonly List<HexCell> list = new();
 
 	int count = 0;
 	int minimum = int.MaxValue;
@@ -19,13 +19,16 @@ public class HexCellPriorityQueue {
 	/// Add a cell to the queue.
 	/// </summary>
 	/// <param name="cell">Cell to add.</param>
-	public void Enqueue (HexCell cell) {
+	public void Enqueue(HexCell cell)
+	{
 		count += 1;
 		int priority = cell.SearchPriority;
-		if (priority < minimum) {
+		if (priority < minimum)
+		{
 			minimum = priority;
 		}
-		while (priority >= list.Count) {
+		while (priority >= list.Count)
+		{
 			list.Add(null);
 		}
 		cell.NextWithSamePriority = list[priority];
@@ -36,11 +39,14 @@ public class HexCellPriorityQueue {
 	/// Remove a cell from the queue.
 	/// </summary>
 	/// <returns>The cell with the highest priority.</returns>
-	public HexCell Dequeue () {
+	public HexCell Dequeue()
+	{
 		count -= 1;
-		for (; minimum < list.Count; minimum++) {
+		for (; minimum < list.Count; minimum++)
+		{
 			HexCell cell = list[minimum];
-			if (cell != null) {
+			if (cell != null)
+			{
 				list[minimum] = cell.NextWithSamePriority;
 				return cell;
 			}
@@ -53,14 +59,18 @@ public class HexCellPriorityQueue {
 	/// </summary>
 	/// <param name="cell">Cell to update</param>
 	/// <param name="oldPriority">Priority of the cell before it was changed.</param>
-	public void Change (HexCell cell, int oldPriority) {
+	public void Change(HexCell cell, int oldPriority)
+	{
 		HexCell current = list[oldPriority];
 		HexCell next = current.NextWithSamePriority;
-		if (current == cell) {
+		if (current == cell)
+		{
 			list[oldPriority] = next;
 		}
-		else {
-			while (next != cell) {
+		else
+		{
+			while (next != cell)
+			{
 				current = next;
 				next = current.NextWithSamePriority;
 			}
@@ -73,7 +83,8 @@ public class HexCellPriorityQueue {
 	/// <summary>
 	/// Clear the queue.
 	/// </summary>
-	public void Clear () {
+	public void Clear()
+	{
 		list.Clear();
 		count = 0;
 		minimum = int.MaxValue;

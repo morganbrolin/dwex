@@ -3,14 +3,15 @@
 /// <summary>
 /// Component that manages the map feature visualizations for a hex grid chunk.
 /// </summary>
-public class HexFeatureManager : MonoBehaviour {
-
+public class HexFeatureManager : MonoBehaviour
+{
 	[System.Serializable]
-	public struct HexFeatureCollection {
-
+	public struct HexFeatureCollection
+	{
 		public Transform[] prefabs;
 
-		public Transform Pick (float choice) => prefabs[(int)(choice * prefabs.Length)];
+		public readonly Transform Pick(float choice) =>
+			prefabs[(int)(choice * prefabs.Length)];
 	}
 
 	[SerializeField]
@@ -30,8 +31,10 @@ public class HexFeatureManager : MonoBehaviour {
 	/// <summary>
 	/// Clear all features.
 	/// </summary>
-	public void Clear () {
-		if (container) {
+	public void Clear()
+	{
+		if (container)
+		{
 			Destroy(container.gameObject);
 		}
 		container = new GameObject("Features Container").transform;
@@ -42,16 +45,18 @@ public class HexFeatureManager : MonoBehaviour {
 	/// <summary>
 	/// Apply triangulation.
 	/// </summary>
-	public void Apply () => walls.Apply();
+	public void Apply() => walls.Apply();
 
-	Transform PickPrefab (
-		HexFeatureCollection[] collection,
-		int level, float hash, float choice
-	) {
-		if (level > 0) {
+	Transform PickPrefab(
+		HexFeatureCollection[] collection, int level, float hash, float choice)
+	{
+		if (level > 0)
+		{
 			float[] thresholds = HexMetrics.GetFeatureThresholds(level - 1);
-			for (int i = 0; i < thresholds.Length; i++) {
-				if (hash < thresholds[i]) {
+			for (int i = 0; i < thresholds.Length; i++)
+			{
+				if (hash < thresholds[i])
+				{
 					return collection[i].Pick(choice);
 				}
 			}
@@ -64,7 +69,8 @@ public class HexFeatureManager : MonoBehaviour {
 	/// </summary>
 	/// <param name="roadCenter1">Center position of first road.</param>
 	/// <param name="roadCenter2">Center position of second road.</param>
-	public void AddBridge (Vector3 roadCenter1, Vector3 roadCenter2) {
+	public void AddBridge(Vector3 roadCenter1, Vector3 roadCenter2)
+	{
 		roadCenter1 = HexMetrics.Perturb(roadCenter1);
 		roadCenter2 = HexMetrics.Perturb(roadCenter2);
 		Transform instance = Instantiate(bridge);
@@ -72,8 +78,7 @@ public class HexFeatureManager : MonoBehaviour {
 		instance.forward = roadCenter2 - roadCenter1;
 		float length = Vector3.Distance(roadCenter1, roadCenter2);
 		instance.localScale = new Vector3(
-			1f,	1f, length * (1f / HexMetrics.bridgeDesignLength)
-		);
+			1f,	1f, length * (1f / HexMetrics.bridgeDesignLength));
 		instance.SetParent(container, false);
 	}
 
@@ -82,48 +87,52 @@ public class HexFeatureManager : MonoBehaviour {
 	/// </summary>
 	/// <param name="cell">Cell with one or more features.</param>
 	/// <param name="position">Feature position.</param>
-	public void AddFeature (HexCell cell, Vector3 position) {
-		if (cell.IsSpecial) {
+	public void AddFeature(HexCell cell, Vector3 position)
+	{
+		if (cell.IsSpecial)
+		{
 			return;
 		}
 
 		HexHash hash = HexMetrics.SampleHashGrid(position);
-		Transform prefab = PickPrefab(
-			urbanCollections, cell.UrbanLevel, hash.a, hash.d
-		);
+		Transform prefab = PickPrefab(urbanCollections, cell.UrbanLevel, hash.a, hash.d);
 		Transform otherPrefab = PickPrefab(
-			farmCollections, cell.FarmLevel, hash.b, hash.d
-		);
+			farmCollections, cell.FarmLevel, hash.b, hash.d);
 		float usedHash = hash.a;
-		if (prefab) {
-			if (otherPrefab && hash.b < hash.a) {
+		if (prefab)
+		{
+			if (otherPrefab && hash.b < hash.a)
+			{
 				prefab = otherPrefab;
 				usedHash = hash.b;
 			}
 		}
-		else if (otherPrefab) {
+		else if (otherPrefab)
+		{
 			prefab = otherPrefab;
 			usedHash = hash.b;
 		}
-		otherPrefab = PickPrefab(
-			plantCollections, cell.PlantLevel, hash.c, hash.d
-		);
-		if (prefab) {
-			if (otherPrefab && hash.c < usedHash) {
+		otherPrefab = PickPrefab(plantCollections, cell.PlantLevel, hash.c, hash.d);
+		if (prefab)
+		{
+			if (otherPrefab && hash.c < usedHash)
+			{
 				prefab = otherPrefab;
 			}
 		}
-		else if (otherPrefab) {
+		else if (otherPrefab)
+		{
 			prefab = otherPrefab;
 		}
-		else {
+		else
+		{
 			return;
 		}
 
 		Transform instance = Instantiate(prefab);
 		position.y += instance.localScale.y * 0.5f;
-		instance.localPosition = HexMetrics.Perturb(position);
-		instance.localRotation = Quaternion.Euler(0f, 360f * hash.e, 0f);
+		instance.SetLocalPositionAndRotation(
+			HexMetrics.Perturb(position), Quaternion.Euler(0f, 360f * hash.e, 0f));
 		instance.SetParent(container, false);
 	}
 
@@ -132,11 +141,12 @@ public class HexFeatureManager : MonoBehaviour {
 	/// </summary>
 	/// <param name="cell">Cell with special feature.</param>
 	/// <param name="position">Feature position.</param>
-	public void AddSpecialFeature (HexCell cell, Vector3 position) {
+	public void AddSpecialFeature(HexCell cell, Vector3 position)
+	{
 		HexHash hash = HexMetrics.SampleHashGrid(position);
 		Transform instance = Instantiate(special[cell.SpecialIndex - 1]);
-		instance.localPosition = HexMetrics.Perturb(position);
-		instance.localRotation = Quaternion.Euler(0f, 360f * hash.e, 0f);
+		instance.SetLocalPositionAndRotation(
+			HexMetrics.Perturb(position), Quaternion.Euler(0f, 360f * hash.e, 0f));
 		instance.SetParent(container, false);
 	}
 
@@ -149,22 +159,23 @@ public class HexFeatureManager : MonoBehaviour {
 	/// <param name="farCell">Far cell.</param>
 	/// <param name="hasRiver">Whether a river crosses the edge.</param>
 	/// <param name="hasRoad">Whether a road crosses the edge.</param>
-	public void AddWall (
+	public void AddWall(
 		EdgeVertices near, HexCell nearCell,
 		EdgeVertices far, HexCell farCell,
-		bool hasRiver, bool hasRoad
-	) {
-		if (
-			nearCell.Walled != farCell.Walled &&
+		bool hasRiver, bool hasRoad)
+	{
+		if (nearCell.Walled != farCell.Walled &&
 			!nearCell.IsUnderwater && !farCell.IsUnderwater &&
-			nearCell.GetEdgeType(farCell) != HexEdgeType.Cliff
-		) {
+			nearCell.GetEdgeType(farCell) != HexEdgeType.Cliff)
+		{
 			AddWallSegment(near.v1, far.v1, near.v2, far.v2);
-			if (hasRiver || hasRoad) {
+			if (hasRiver || hasRoad)
+			{
 				AddWallCap(near.v2, far.v2);
 				AddWallCap(far.v4, near.v4);
 			}
-			else {
+			else
+			{
 				AddWallSegment(near.v2, far.v2, near.v3, far.v3);
 				AddWallSegment(near.v3, far.v3, near.v4, far.v4);
 			}
@@ -181,41 +192,50 @@ public class HexFeatureManager : MonoBehaviour {
 	/// <param name="cell2">Second corner cell.</param>
 	/// <param name="c3">Third corner position.</param>
 	/// <param name="cell3">Third corner cell.</param>
-	public void AddWall (
+	public void AddWall(
 		Vector3 c1, HexCell cell1,
 		Vector3 c2, HexCell cell2,
-		Vector3 c3, HexCell cell3
-	) {
-		if (cell1.Walled) {
-			if (cell2.Walled) {
-				if (!cell3.Walled) {
+		Vector3 c3, HexCell cell3)
+	{
+		if (cell1.Walled)
+		{
+			if (cell2.Walled)
+			{
+				if (!cell3.Walled)
+				{
 					AddWallSegment(c3, cell3, c1, cell1, c2, cell2);
 				}
 			}
-			else if (cell3.Walled) {
+			else if (cell3.Walled)
+			{
 				AddWallSegment(c2, cell2, c3, cell3, c1, cell1);
 			}
-			else {
+			else
+			{
 				AddWallSegment(c1, cell1, c2, cell2, c3, cell3);
 			}
 		}
-		else if (cell2.Walled) {
-			if (cell3.Walled) {
+		else if (cell2.Walled)
+		{
+			if (cell3.Walled)
+			{
 				AddWallSegment(c1, cell1, c2, cell2, c3, cell3);
 			}
-			else {
+			else
+			{
 				AddWallSegment(c2, cell2, c3, cell3, c1, cell1);
 			}
 		}
-		else if (cell3.Walled) {
+		else if (cell3.Walled)
+		{
 			AddWallSegment(c3, cell3, c1, cell1, c2, cell2);
 		}
 	}
 
-	void AddWallSegment (
+	void AddWallSegment(
 		Vector3 nearLeft, Vector3 farLeft, Vector3 nearRight, Vector3 farRight,
-		bool addTower = false
-	) {
+		bool addTower = false)
+	{
 		nearLeft = HexMetrics.Perturb(nearLeft);
 		farLeft = HexMetrics.Perturb(farLeft);
 		nearRight = HexMetrics.Perturb(nearRight);
@@ -249,7 +269,8 @@ public class HexFeatureManager : MonoBehaviour {
 
 		walls.AddQuadUnperturbed(t1, t2, v3, v4);
 
-		if (addTower) {
+		if (addTower)
+		{
 			Transform towerInstance = Instantiate(wallTower);
 			towerInstance.transform.localPosition = (left + right) * 0.5f;
 			Vector3 rightDirection = right - left;
@@ -259,12 +280,13 @@ public class HexFeatureManager : MonoBehaviour {
 		}
 	}
 
-	void AddWallSegment (
+	void AddWallSegment(
 		Vector3 pivot, HexCell pivotCell,
 		Vector3 left, HexCell leftCell,
-		Vector3 right, HexCell rightCell
-	) {
-		if (pivotCell.IsUnderwater) {
+		Vector3 right, HexCell rightCell)
+	{
+		if (pivotCell.IsUnderwater)
+		{
 			return;
 		}
 
@@ -273,35 +295,43 @@ public class HexFeatureManager : MonoBehaviour {
 		bool hasRighWall = !rightCell.IsUnderwater &&
 			pivotCell.GetEdgeType(rightCell) != HexEdgeType.Cliff;
 
-		if (hasLeftWall) {
-			if (hasRighWall) {
+		if (hasLeftWall)
+		{
+			if (hasRighWall)
+			{
 				bool hasTower = false;
-				if (leftCell.Elevation == rightCell.Elevation) {
+				if (leftCell.Elevation == rightCell.Elevation)
+				{
 					HexHash hash = HexMetrics.SampleHashGrid(
-						(pivot + left + right) * (1f / 3f)
-					);
+						(pivot + left + right) * (1f / 3f));
 					hasTower = hash.e < HexMetrics.wallTowerThreshold;
 				}
 				AddWallSegment(pivot, left, pivot, right, hasTower);
 			}
-			else if (leftCell.Elevation < rightCell.Elevation) {
+			else if (leftCell.Elevation < rightCell.Elevation)
+			{
 				AddWallWedge(pivot, left, right);
 			}
-			else {
+			else
+			{
 				AddWallCap(pivot, left);
 			}
 		}
-		else if (hasRighWall) {
-			if (rightCell.Elevation < leftCell.Elevation) {
+		else if (hasRighWall)
+		{
+			if (rightCell.Elevation < leftCell.Elevation)
+			{
 				AddWallWedge(right, pivot, left);
 			}
-			else {
+			else
+			{
 				AddWallCap(right, pivot);
 			}
 		}
 	}
 
-	void AddWallCap (Vector3 near, Vector3 far) {
+	void AddWallCap(Vector3 near, Vector3 far)
+	{
 		near = HexMetrics.Perturb(near);
 		far = HexMetrics.Perturb(far);
 
@@ -316,7 +346,8 @@ public class HexFeatureManager : MonoBehaviour {
 		walls.AddQuadUnperturbed(v1, v2, v3, v4);
 	}
 
-	void AddWallWedge (Vector3 near, Vector3 far, Vector3 point) {
+	void AddWallWedge(Vector3 near, Vector3 far, Vector3 point)
+	{
 		near = HexMetrics.Perturb(near);
 		far = HexMetrics.Perturb(far);
 		point = HexMetrics.Perturb(point);

@@ -4,8 +4,8 @@ using UnityEngine.EventSystems;
 /// <summary>
 /// Component that manages the game UI.
 /// </summary>
-public class HexGameUI : MonoBehaviour {
-
+public class HexGameUI : MonoBehaviour
+{
 	[SerializeField]
 	HexGrid grid;
 
@@ -17,64 +17,82 @@ public class HexGameUI : MonoBehaviour {
 	/// Set whether map edit mode is active.
 	/// </summary>
 	/// <param name="toggle">Whether edit mode is enabled.</param>
-	public void SetEditMode (bool toggle) {
+	public void SetEditMode(bool toggle)
+	{
 		enabled = !toggle;
 		grid.ShowUI(!toggle);
 		grid.ClearPath();
-		if (toggle) {
+		if (toggle)
+		{
 			Shader.EnableKeyword("_HEX_MAP_EDIT_MODE");
 		}
-		else {
+		else
+		{
 			Shader.DisableKeyword("_HEX_MAP_EDIT_MODE");
 		}
 	}
 
-	void Update () {
-		if (!EventSystem.current.IsPointerOverGameObject()) {
-			if (Input.GetMouseButtonDown(0)) {
+	void Update()
+	{
+		if (!EventSystem.current.IsPointerOverGameObject())
+		{
+			if (Input.GetMouseButtonDown(0))
+			{
 				DoSelection();
 			}
-			else if (selectedUnit) {
-				if (Input.GetMouseButtonDown(1)) {
+			else if (selectedUnit)
+			{
+				if (Input.GetMouseButtonDown(1))
+				{
 					DoMove();
 				}
-				else {
+				else
+				{
 					DoPathfinding();
 				}
 			}
 		}
 	}
 
-	void DoSelection () {
+	void DoSelection()
+	{
 		grid.ClearPath();
 		UpdateCurrentCell();
-		if (currentCell) {
+		if (currentCell)
+		{
 			selectedUnit = currentCell.Unit;
 		}
 	}
 
-	void DoPathfinding () {
-		if (UpdateCurrentCell()) {
-			if (currentCell && selectedUnit.IsValidDestination(currentCell)) {
+	void DoPathfinding()
+	{
+		if (UpdateCurrentCell())
+		{
+			if (currentCell && selectedUnit.IsValidDestination(currentCell))
+			{
 				grid.FindPath(selectedUnit.Location, currentCell, selectedUnit);
 			}
-			else {
+			else
+			{
 				grid.ClearPath();
 			}
 		}
 	}
 
-	void DoMove () {
-		if (grid.HasPath) {
+	void DoMove()
+	{
+		if (grid.HasPath)
+		{
 			selectedUnit.Travel(grid.GetPath());
 			grid.ClearPath();
 		}
 	}
 
-	bool UpdateCurrentCell () {
-		HexCell cell =
-			grid.GetCell(Camera.main.ScreenPointToRay(Input.mousePosition));
-		if (cell != currentCell) {
+	bool UpdateCurrentCell()
+	{
+		HexCell cell = grid.GetCell(Camera.main.ScreenPointToRay(Input.mousePosition));
+		if (cell != currentCell)
+		{
 			currentCell = cell;
 			return true;
 		}
