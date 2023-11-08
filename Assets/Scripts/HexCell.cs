@@ -5,7 +5,8 @@ using System.IO;
 /// <summary>
 /// Container component for hex cell data.
 /// </summary>
-public class HexCell : MonoBehaviour
+[System.Serializable]
+public class HexCell
 {
 	/// <summary>
 	/// Hexagonal coordinates unique to the cell.
@@ -56,7 +57,7 @@ public class HexCell : MonoBehaviour
 				return;
 			}
 			elevation = value;
-			ShaderData.ViewElevationChanged(this);
+			Grid.ShaderData.ViewElevationChanged(this);
 			RefreshPosition();
 			ValidateRivers();
 
@@ -85,7 +86,7 @@ public class HexCell : MonoBehaviour
 				return;
 			}
 			waterLevel = value;
-			ShaderData.ViewElevationChanged(this);
+			Grid.ShaderData.ViewElevationChanged(this);
 			ValidateRivers();
 			Refresh();
 		}
@@ -137,9 +138,10 @@ public class HexCell : MonoBehaviour
 	public HexDirection OutgoingRiver => flags.RiverOutDirection();
 
 	/// <summary>
-	/// Local position of this cell's game object.
+	/// Local position of this cell.
 	/// </summary>
-	public Vector3 Position => transform.localPosition;
+	public Vector3 Position
+	{ get; set; }
 
 	/// <summary>
 	/// Vertical positions the the stream bed, if applicable.
@@ -258,7 +260,7 @@ public class HexCell : MonoBehaviour
 			if (terrainTypeIndex != value)
 			{
 				terrainTypeIndex = value;
-				ShaderData.RefreshTerrain(this);
+				Grid.ShaderData.RefreshTerrain(this);
 			}
 		}
 	}
@@ -306,7 +308,7 @@ public class HexCell : MonoBehaviour
 	/// <summary>
 	/// Pathing data used by pathfinding algorithm.
 	/// </summary>
-	public HexCell PathFrom
+	public int PathFromIndex
 	{ get; set; }
 
 	/// <summary>
@@ -330,12 +332,6 @@ public class HexCell : MonoBehaviour
 	/// Linked list reference used by <see cref="HexCellPriorityQueue"/> for pathfinding.
 	/// </summary>
 	public HexCell NextWithSamePriority
-	{ get; set; }
-
-	/// <summary>
-	/// Reference to <see cref="HexCellShaderData"/> that contains the cell.
-	/// </summary>
-	public HexCellShaderData ShaderData
 	{ get; set; }
 
 	/// <summary>
@@ -365,7 +361,7 @@ public class HexCell : MonoBehaviour
 		if (visibility == 1)
 		{
 			IsExplored = true;
-			ShaderData.RefreshVisibility(this);
+			Grid.ShaderData.RefreshVisibility(this);
 		}
 	}
 
@@ -377,7 +373,7 @@ public class HexCell : MonoBehaviour
 		visibility -= 1;
 		if (visibility == 0)
 		{
-			ShaderData.RefreshVisibility(this);
+			Grid.ShaderData.RefreshVisibility(this);
 		}
 	}
 
@@ -389,7 +385,7 @@ public class HexCell : MonoBehaviour
 		if (visibility > 0)
 		{
 			visibility = 0;
-			ShaderData.RefreshVisibility(this);
+			Grid.ShaderData.RefreshVisibility(this);
 		}
 	}
 
@@ -599,12 +595,12 @@ public class HexCell : MonoBehaviour
 
 	void RefreshPosition()
 	{
-		Vector3 position = transform.localPosition;
+		Vector3 position = Position;
 		position.y = elevation * HexMetrics.elevationStep;
 		position.y +=
 			(HexMetrics.SampleNoise(position).y * 2f - 1f) *
 			HexMetrics.elevationPerturbStrength;
-		transform.localPosition = position;
+		Position = position;
 
 		Vector3 uiPosition = UIRect.localPosition;
 		uiPosition.z = -position.y;
@@ -717,8 +713,8 @@ public class HexCell : MonoBehaviour
 		flags |= (HexFlags)reader.ReadByte();
 
 		IsExplored = header >= 3 && reader.ReadBoolean();
-		ShaderData.RefreshTerrain(this);
-		ShaderData.RefreshVisibility(this);
+		Grid.ShaderData.RefreshTerrain(this);
+		Grid.ShaderData.RefreshVisibility(this);
 	}
 
 	/// <summary>
@@ -755,5 +751,11 @@ public class HexCell : MonoBehaviour
 	/// Set arbitrary map data for this cell's <see cref="ShaderData"/>.
 	/// </summary>
 	/// <param name="data">Data value, 0-1 inclusive.</param>
-	public void SetMapData(float data) => ShaderData.SetMapData(this, data);
+	public void SetMapData(float data) => Grid.ShaderData.SetMapData(this, data);
+
+	/// <summary>
+	/// A cell counts as true if it is not null, otherwise as false.
+	/// </summary>
+	/// <param name="cell">The cell to check.</param>
+	public static implicit operator bool(HexCell cell) => cell != null;
 }

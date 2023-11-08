@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- `HexGrid.ShaderData` property.
+
 ### Changed
 
 - Upgraded to Unity 2022.3.12f1, URP 14.0.9, and Burst 1.8.9.
@@ -14,6 +18,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Replaced custom *Terrain Texture Array* asset with imported texture array PNG.
 - Make use of `SetLocalPositionAndRotation` in `HexFeatureManager`.
 - Code style modernization.
+- Replaced all `HexCell` lists and fields that have to survive hot reloads with indices, except `HexGrid.cells`.
+- `HexCell` no longer extends `MonoBehavior`.
 
 ### Removed
 
@@ -21,7 +27,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Separate terrain textures.
 - Unused `originalViewElevation` local variable in `HexCell.Elevation` and `HexCell.WaterLevel` setters.
 - Unused `direction` parameter from `HexGridChunk.TriangulateWithRiverBeginOrEnd` method.
-- *Scripts/Editor* folder and its contents, as they are no longer used.
+- *Scripts / Editor* folder and its contents, as they are no longer used.
+- `HexCell.ShaderData` property.
+- *Prefabs / Hex Cell* prefab.
 
 ## [2.3.0] - 2023-10-04
 

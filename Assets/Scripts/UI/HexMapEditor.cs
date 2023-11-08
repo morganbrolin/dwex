@@ -38,7 +38,7 @@ public class HexMapEditor : MonoBehaviour
 
 	bool isDrag;
 	HexDirection dragDirection;
-	HexCell previousCell;
+	int previousCellIndex = -1;
 
 	public void SetTerrainTypeIndex(int index) => activeTerrainTypeIndex = index;
 
@@ -126,7 +126,7 @@ public class HexMapEditor : MonoBehaviour
 		{
 			ClearCellHighlightData();
 		}
-		previousCell = null;
+		previousCellIndex = -1;
 	}
 
 	HexCell GetCellUnderCursor() =>
@@ -157,7 +157,7 @@ public class HexMapEditor : MonoBehaviour
 		HexCell currentCell = GetCellUnderCursor();
 		if (currentCell)
 		{
-			if (previousCell && previousCell != currentCell)
+			if (previousCellIndex >= 0 && previousCellIndex != currentCell.Index)
 			{
 				ValidateDrag(currentCell);
 			}
@@ -166,11 +166,11 @@ public class HexMapEditor : MonoBehaviour
 				isDrag = false;
 			}
 			EditCells(currentCell);
-			previousCell = currentCell;
+			previousCellIndex = currentCell.Index;
 		}
 		else
 		{
-			previousCell = null;
+			previousCellIndex = -1;
 		}
 		UpdateCellHighlightData(currentCell);
 	}
@@ -204,7 +204,8 @@ public class HexMapEditor : MonoBehaviour
 			dragDirection <= HexDirection.NW;
 			dragDirection++)
 		{
-			if (previousCell.GetNeighbor(dragDirection) == currentCell)
+			if (hexGrid.GetCell(previousCellIndex).GetNeighbor(dragDirection) ==
+				currentCell)
 			{
 				isDrag = true;
 				return;

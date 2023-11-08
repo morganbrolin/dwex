@@ -5,24 +5,27 @@
 /// </summary>
 public class HexGridChunk : MonoBehaviour
 {
+	static Color weights1 = new(1f, 0f, 0f);
+	static Color weights2 = new(0f, 1f, 0f);
+	static Color weights3 = new(0f, 0f, 1f);
+
+	public HexGrid Grid
+	{ get; set; }
+
 	[SerializeField]
 	HexMesh terrain, rivers, roads, water, waterShore, estuaries;
 
 	[SerializeField]
 	HexFeatureManager features;
 
-	HexCell[] cells;
+	int[] cellIndices;
 
 	Canvas gridCanvas;
-
-	static Color weights1 = new(1f, 0f, 0f);
-	static Color weights2 = new(0f, 1f, 0f);
-	static Color weights3 = new(0f, 0f, 1f);
 
 	void Awake()
 	{
 		gridCanvas = GetComponentInChildren<Canvas>();
-		cells = new HexCell[HexMetrics.chunkSizeX * HexMetrics.chunkSizeZ];
+		cellIndices = new int[HexMetrics.chunkSizeX * HexMetrics.chunkSizeZ];
 	}
 
 	/// <summary>
@@ -32,9 +35,10 @@ public class HexGridChunk : MonoBehaviour
 	/// <param name="cell">Cell to add.</param>
 	public void AddCell(int index, HexCell cell)
 	{
-		cells[index] = cell;
+		//cells[index] = cell;
+		cellIndices[index] = cell.Index;
 		cell.Chunk = this;
-		cell.transform.SetParent(transform, false);
+		//cell.transform.SetParent(transform, false);
 		cell.UIRect.SetParent(gridCanvas.transform, false);
 	}
 
@@ -67,9 +71,9 @@ public class HexGridChunk : MonoBehaviour
 		waterShore.Clear();
 		estuaries.Clear();
 		features.Clear();
-		for (int i = 0; i < cells.Length; i++)
+		for (int i = 0; i < cellIndices.Length; i++)
 		{
-			Triangulate(cells[i]);
+			Triangulate(Grid.GetCell(cellIndices[i]));
 		}
 		terrain.Apply();
 		rivers.Apply();

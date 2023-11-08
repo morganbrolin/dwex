@@ -9,7 +9,7 @@ public class HexGameUI : MonoBehaviour
 	[SerializeField]
 	HexGrid grid;
 
-	HexCell currentCell;
+	int currentCellIndex = -1;
 
 	HexUnit selectedUnit;
 
@@ -58,9 +58,9 @@ public class HexGameUI : MonoBehaviour
 	{
 		grid.ClearPath();
 		UpdateCurrentCell();
-		if (currentCell)
+		if (currentCellIndex >= 0)
 		{
-			selectedUnit = currentCell.Unit;
+			selectedUnit = grid.GetCell(currentCellIndex).Unit;
 		}
 	}
 
@@ -68,9 +68,11 @@ public class HexGameUI : MonoBehaviour
 	{
 		if (UpdateCurrentCell())
 		{
-			if (currentCell && selectedUnit.IsValidDestination(currentCell))
+			if (currentCellIndex >= 0 &&
+				selectedUnit.IsValidDestination(grid.GetCell(currentCellIndex)))
 			{
-				grid.FindPath(selectedUnit.Location, currentCell, selectedUnit);
+				grid.FindPath(
+					selectedUnit.Location, grid.GetCell(currentCellIndex), selectedUnit);
 			}
 			else
 			{
@@ -91,9 +93,10 @@ public class HexGameUI : MonoBehaviour
 	bool UpdateCurrentCell()
 	{
 		HexCell cell = grid.GetCell(Camera.main.ScreenPointToRay(Input.mousePosition));
-		if (cell != currentCell)
+		int index = cell ? cell.Index : -1;
+		if (index != currentCellIndex)
 		{
-			currentCell = cell;
+			currentCellIndex = index;
 			return true;
 		}
 		return false;

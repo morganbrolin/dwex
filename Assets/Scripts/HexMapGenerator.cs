@@ -424,8 +424,9 @@ public class HexMapGenerator : MonoBehaviour
 
 			if (!IsErodible(cell))
 			{
-				erodibleCells[index] = erodibleCells[^1];
-				erodibleCells.RemoveAt(erodibleCells.Count - 1);
+				int lastIndex = erodibleCells.Count - 1;
+				erodibleCells[index] = erodibleCells[lastIndex];
+				erodibleCells.RemoveAt(lastIndex);
 			}
 
 			for (HexDirection d = HexDirection.NE; d <= HexDirection.NW; d++)

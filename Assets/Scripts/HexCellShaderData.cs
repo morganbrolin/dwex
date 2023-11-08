@@ -14,7 +14,7 @@ public class HexCellShaderData : MonoBehaviour
 
 	bool[] visibilityTransitions;
 
-	List<HexCell> transitioningCells = new();
+	List<int> transitioningCellIndices = new();
 
 	bool needsVisibilityReset;
 
@@ -61,7 +61,7 @@ public class HexCellShaderData : MonoBehaviour
 			}
 		}
 
-		transitioningCells.Clear();
+		transitioningCellIndices.Clear();
 		enabled = true;
 	}
 
@@ -93,7 +93,7 @@ public class HexCellShaderData : MonoBehaviour
 		else if (!visibilityTransitions[index])
 		{
 			visibilityTransitions[index] = true;
-			transitioningCells.Add(cell);
+			transitioningCellIndices.Add(cell.Index);
 		}
 		enabled = true;
 	}
@@ -135,23 +135,24 @@ public class HexCellShaderData : MonoBehaviour
 		{
 			delta = 1;
 		}
-		for (int i = 0; i < transitioningCells.Count; i++)
+		for (int i = 0; i < transitioningCellIndices.Count; i++)
 		{
-			if (!UpdateCellData(transitioningCells[i], delta))
+			if (!UpdateCellData(transitioningCellIndices[i], delta))
 			{
-				transitioningCells[i--] = transitioningCells[^1];
-				transitioningCells.RemoveAt(transitioningCells.Count - 1);
+				int lastIndex = transitioningCellIndices.Count - 1;
+				transitioningCellIndices[i--] = transitioningCellIndices[lastIndex];
+				transitioningCellIndices.RemoveAt(lastIndex);
 			}
 		}
 
 		cellTexture.SetPixels32(cellTextureData);
 		cellTexture.Apply();
-		enabled = transitioningCells.Count > 0;
+		enabled = transitioningCellIndices.Count > 0;
 	}
 
-	bool UpdateCellData(HexCell cell, int delta)
+	bool UpdateCellData(int index, int delta)
 	{
-		int index = cell.Index;
+		HexCell cell = Grid.GetCell(index);
 		Color32 data = cellTextureData[index];
 		bool stillUpdating = false;
 
