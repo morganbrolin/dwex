@@ -331,6 +331,7 @@ public class HexCell
 	/// <summary>
 	/// Linked list reference used by <see cref="HexCellPriorityQueue"/> for pathfinding.
 	/// </summary>
+	[field: System.NonSerialized]
 	public HexCell NextWithSamePriority
 	{ get; set; }
 

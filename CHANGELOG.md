@@ -5,31 +5,32 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [3.0.0] - 2023-11-09
 
 ### Added
 
-- `HexGrid.ShaderData` property.
+- `HexGrid.ShaderData` and `HexGridChunk.Grid` properties.
 
 ### Changed
 
 - Upgraded to Unity 2022.3.12f1, URP 14.0.9, and Burst 1.8.9.
 - Upgraded *Transform* node of *Road* shader graph to new version.
 - Replaced custom *Terrain Texture Array* asset with imported texture array PNG.
-- Make use of `SetLocalPositionAndRotation` in `HexFeatureManager`.
 - Code style modernization.
+- Make use of `SetLocalPositionAndRotation` in `HexFeatureManager`.
 - Replaced all `HexCell` lists and fields that have to survive hot reloads with indices, except `HexGrid.cells`.
-- `HexCell` no longer extends `MonoBehavior`.
+- `HexCell` has become a serializable class that no longer extends `MonoBehavior`.
 
 ### Removed
 
-- *AI Navigation* package.
-- Separate terrain textures.
 - Unused `originalViewElevation` local variable in `HexCell.Elevation` and `HexCell.WaterLevel` setters.
 - Unused `direction` parameter from `HexGridChunk.TriangulateWithRiverBeginOrEnd` method.
-- *Scripts / Editor* folder and its contents, as they are no longer used.
 - `HexCell.ShaderData` property.
+- Separate terrain textures and custom texture array asset.
+- *AI Navigation* package.
+- *Scripts / Editor* folder and its contents, as they are no longer used.
 - *Prefabs / Hex Cell* prefab.
+- In-project *Documentation* folder and its contents, see the tutorials instead.
 
 ## [2.3.0] - 2023-10-04
 
