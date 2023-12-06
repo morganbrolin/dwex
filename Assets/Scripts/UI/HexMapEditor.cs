@@ -7,7 +7,8 @@ using UnityEngine.EventSystems;
 /// </summary>
 public class HexMapEditor : MonoBehaviour
 {
-	static readonly int cellHighlightingId = Shader.PropertyToID("_CellHighlighting");
+	static readonly int cellHighlightingId = Shader.PropertyToID(
+		"_CellHighlighting");
 
 	[SerializeField]
 	HexGrid hexGrid;
@@ -40,11 +41,13 @@ public class HexMapEditor : MonoBehaviour
 	HexDirection dragDirection;
 	int previousCellIndex = -1;
 
-	public void SetTerrainTypeIndex(int index) => activeTerrainTypeIndex = index;
+	public void SetTerrainTypeIndex(int index) =>
+		activeTerrainTypeIndex = index;
 
 	public void SetApplyElevation(bool toggle) => applyElevation = toggle;
 
-	public void SetElevation(float elevation) => activeElevation = (int)elevation;
+	public void SetElevation(float elevation) =>
+		activeElevation = (int)elevation;
 
 	public void SetApplyWaterLevel(bool toggle) => applyWaterLevel = toggle;
 
@@ -106,7 +109,8 @@ public class HexMapEditor : MonoBehaviour
 			}
 			else
 			{
-				// Potential optimization: only do this if camera or cursor has changed.
+				// Potential optimization:
+				// only do this if camera or cursor has changed.
 				UpdateCellHighlightData(GetCellUnderCursor());
 			}
 			if (Input.GetKeyDown(KeyCode.U))
@@ -157,7 +161,8 @@ public class HexMapEditor : MonoBehaviour
 		HexCell currentCell = GetCellUnderCursor();
 		if (currentCell)
 		{
-			if (previousCellIndex >= 0 && previousCellIndex != currentCell.Index)
+			if (previousCellIndex >= 0 &&
+				previousCellIndex != currentCell.Index)
 			{
 				ValidateDrag(currentCell);
 			}
@@ -195,8 +200,8 @@ public class HexMapEditor : MonoBehaviour
 		);
 	}
 
-	void ClearCellHighlightData() =>
-		Shader.SetGlobalVector(cellHighlightingId, new Vector4(0f, 0f, -1f, 0f));
+	void ClearCellHighlightData() => Shader.SetGlobalVector(
+		cellHighlightingId, new Vector4(0f, 0f, -1f, 0f));
 
 	void ValidateDrag(HexCell currentCell)
 	{
@@ -279,8 +284,8 @@ public class HexMapEditor : MonoBehaviour
 			{
 				cell.Walled = walledMode == OptionalToggle.Yes;
 			}
-			if (isDrag &&
-				cell.TryGetNeighbor(dragDirection.Opposite(), out HexCell otherCell)
+			if (isDrag && cell.TryGetNeighbor(
+				dragDirection.Opposite(), out HexCell otherCell)
 			)
 			{
 				if (riverMode == OptionalToggle.Yes)

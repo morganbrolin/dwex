@@ -95,7 +95,8 @@ public class HexFeatureManager : MonoBehaviour
 		}
 
 		HexHash hash = HexMetrics.SampleHashGrid(position);
-		Transform prefab = PickPrefab(urbanCollections, cell.UrbanLevel, hash.a, hash.d);
+		Transform prefab = PickPrefab(
+			urbanCollections, cell.UrbanLevel, hash.a, hash.d);
 		Transform otherPrefab = PickPrefab(
 			farmCollections, cell.FarmLevel, hash.b, hash.d);
 		float usedHash = hash.a;
@@ -112,7 +113,8 @@ public class HexFeatureManager : MonoBehaviour
 			prefab = otherPrefab;
 			usedHash = hash.b;
 		}
-		otherPrefab = PickPrefab(plantCollections, cell.PlantLevel, hash.c, hash.d);
+		otherPrefab = PickPrefab(
+			plantCollections, cell.PlantLevel, hash.c, hash.d);
 		if (prefab)
 		{
 			if (otherPrefab && hash.c < usedHash)
@@ -132,7 +134,8 @@ public class HexFeatureManager : MonoBehaviour
 		Transform instance = Instantiate(prefab);
 		position.y += instance.localScale.y * 0.5f;
 		instance.SetLocalPositionAndRotation(
-			HexMetrics.Perturb(position), Quaternion.Euler(0f, 360f * hash.e, 0f));
+			HexMetrics.Perturb(position),
+			Quaternion.Euler(0f, 360f * hash.e, 0f));
 		instance.SetParent(container, false);
 	}
 
@@ -146,7 +149,8 @@ public class HexFeatureManager : MonoBehaviour
 		HexHash hash = HexMetrics.SampleHashGrid(position);
 		Transform instance = Instantiate(special[cell.SpecialIndex - 1]);
 		instance.SetLocalPositionAndRotation(
-			HexMetrics.Perturb(position), Quaternion.Euler(0f, 360f * hash.e, 0f));
+			HexMetrics.Perturb(position),
+			Quaternion.Euler(0f, 360f * hash.e, 0f));
 		instance.SetParent(container, false);
 	}
 

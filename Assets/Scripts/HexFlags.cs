@@ -49,7 +49,8 @@ public static class HexFlagsExtensions
 	/// <param name="flags">Flags.</param>
 	/// <param name="mask">Mask.</param>
 	/// <returns>Whether any of the flags are set.</returns>
-	public static bool HasAny(this HexFlags flags, HexFlags mask) => (flags & mask) != 0;
+	public static bool HasAny(this HexFlags flags, HexFlags mask) =>
+		(flags & mask) != 0;
 
 	/// <summary>
 	/// Whether all flags of a mask are set.
@@ -75,7 +76,8 @@ public static class HexFlagsExtensions
 	/// <param name="flags"><Flags./param>
 	/// <param name="mask">Mask to set.</param>
 	/// <returns>The set flags.</returns>
-	public static HexFlags With(this HexFlags flags, HexFlags mask) => flags | mask;
+	public static HexFlags With(this HexFlags flags, HexFlags mask) =>
+		flags | mask;
 
 	/// <summary>
 	/// Returns flags with bits of the given mask cleared.
@@ -83,7 +85,8 @@ public static class HexFlagsExtensions
 	/// <param name="flags"><Flags./param>
 	/// <param name="mask">Mask to clear.</param>
 	/// <returns>The cleared flags.</returns>
-	public static HexFlags Without(this HexFlags flags, HexFlags mask) => flags & ~mask;
+	public static HexFlags Without(this HexFlags flags, HexFlags mask) =>
+		flags & ~mask;
 
 	/// <summary>
 	/// Whether the flag for a road in a given direction is set.
@@ -100,7 +103,8 @@ public static class HexFlagsExtensions
 	/// <param name="flags">Flags.</param>
 	/// <param name="direction">Road direction.</param>
 	/// <returns>Flags with the road bit set.</returns>
-	public static HexFlags WithRoad(this HexFlags flags, HexDirection direction) =>
+	public static HexFlags WithRoad(
+		this HexFlags flags, HexDirection direction) =>
 		flags.With(HexFlags.RoadNE, direction);
 
 	/// <summary>
@@ -109,7 +113,8 @@ public static class HexFlagsExtensions
 	/// <param name="flags">Flags.</param>
 	/// <param name="direction">Road direction.</param>
 	/// <returns>Flags without the road bit set.</returns>
-	public static HexFlags WithoutRoad(this HexFlags flags, HexDirection direction) =>
+	public static HexFlags WithoutRoad(
+		this HexFlags flags, HexDirection direction) =>
 		flags.Without(HexFlags.RoadNE, direction);
 
 	/// <summary>
@@ -118,7 +123,8 @@ public static class HexFlagsExtensions
 	/// <param name="flags">Flags.</param>
 	/// <param name="direction">Incoming river direction.</param>
 	/// <returns>Whether the river is set.</returns>
-	public static bool HasRiverIn(this HexFlags flags, HexDirection direction) =>
+	public static bool HasRiverIn(
+		this HexFlags flags, HexDirection direction) =>
 		flags.Has(HexFlags.RiverInNE, direction);
 
 	/// <summary>
@@ -127,7 +133,8 @@ public static class HexFlagsExtensions
 	/// <param name="flags">Flags.</param>
 	/// <param name="direction">Incoming river direction.</param>
 	/// <returns>Flags with the river bit set.</returns>
-	public static HexFlags WithRiverIn(this HexFlags flags, HexDirection direction) =>
+	public static HexFlags WithRiverIn(
+		this HexFlags flags, HexDirection direction) =>
 		flags.With(HexFlags.RiverInNE, direction);
 
 	/// <summary>
@@ -136,7 +143,8 @@ public static class HexFlagsExtensions
 	/// <param name="flags">Flags.</param>
 	/// <param name="direction">Incoming river direction.</param>
 	/// <returns>Flags without the river bit set.</returns>
-	public static HexFlags WithoutRiverIn(this HexFlags flags, HexDirection direction) =>
+	public static HexFlags WithoutRiverIn(
+		this HexFlags flags, HexDirection direction) =>
 		flags.Without(HexFlags.RiverInNE, direction);
 
 	/// <summary>
@@ -145,7 +153,8 @@ public static class HexFlagsExtensions
 	/// <param name="flags">Flags.</param>
 	/// <param name="direction">Outgoing river direction.</param>
 	/// <returns>Whether the river is set.</returns>
-	public static bool HasRiverOut(this HexFlags flags, HexDirection direction) =>
+	public static bool HasRiverOut(
+		this HexFlags flags, HexDirection direction) =>
 		flags.Has(HexFlags.RiverOutNE, direction);
 
 	/// <summary>
@@ -154,7 +163,8 @@ public static class HexFlagsExtensions
 	/// <param name="flags">Flags.</param>
 	/// <param name="direction">Outgoing river direction.</param>
 	/// <returns>Flags with the river bit set.</returns>
-	public static HexFlags WithRiverOut(this HexFlags flags, HexDirection direction) =>
+	public static HexFlags WithRiverOut(
+		this HexFlags flags, HexDirection direction) =>
 		flags.With(HexFlags.RiverOutNE, direction);
 
 	/// <summary>
@@ -183,10 +193,12 @@ public static class HexFlagsExtensions
 	public static HexDirection RiverOutDirection(this HexFlags flags) =>
 		flags.ToDirection(12);
 
-	static bool Has(this HexFlags flags, HexFlags start, HexDirection direction) =>
+	static bool Has(
+		this HexFlags flags, HexFlags start, HexDirection direction) =>
 		((int)flags & ((int)start << (int)direction)) != 0;
 
-	static HexFlags With(this HexFlags flags, HexFlags start, HexDirection direction) =>
+	static HexFlags With(
+		this HexFlags flags, HexFlags start, HexDirection direction) =>
 		flags | (HexFlags)((int)start << (int)direction);
 
 	static HexFlags Without(

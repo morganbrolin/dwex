@@ -61,7 +61,8 @@ public static class HexMetrics
 	public const int terracesPerSlope = 2;
 
 	/// <summary>
-	/// Amount of terraces steps per slope needed for <see cref="terracesPerSlope"/>.
+	/// Amount of terraces steps per slope
+	/// needed for <see cref="terracesPerSlope"/>.
 	/// </summary>
 	public const int terraceSteps = terracesPerSlope * 2 + 1;
 
@@ -101,7 +102,8 @@ public static class HexMetrics
 	public const float wallHeight = 4f;
 
 	/// <summary>
-	/// Vertical wall offset, negative to prevent them from floating above the surface.
+	/// Vertical wall offset,
+	/// negative to prevent them from floating above the surface.
 	/// </summary>
 	public const float wallYOffset = -1f;
 
@@ -197,7 +199,8 @@ public static class HexMetrics
 	}
 
 	/// <summary>
-	/// Wrap size of the map, matching its X size if east-west wrapping is enabled.
+	/// Wrap size of the map,
+	/// matching its X size if east-west wrapping is enabled.
 	/// </summary>
 	public static int wrapSize;
 
@@ -247,7 +250,8 @@ public static class HexMetrics
 	/// </summary>
 	/// <param name="level">Feature level.</param>
 	/// <returns>Array containing the thresholds.</returns>
-	public static float[] GetFeatureThresholds(int level) => featureThresholds[level];
+	public static float[] GetFeatureThresholds(int level) =>
+		featureThresholds[level];
 
 	/// <summary>
 	/// Get the first outer cell corner for a direction.
@@ -285,7 +289,8 @@ public static class HexMetrics
 	/// Get the middle of the inner solid cell edge for a direction.
 	/// </summary>
 	/// <param name="direction">The desired direction.</param>
-	/// <returns>The position in between the two inner solid cell corners.</returns>
+	/// <returns>The position in between
+	/// the two inner solid cell corners.</returns>
 	public static Vector3 GetSolidEdgeMiddle(HexDirection direction) =>
 		(corners[(int)direction] + corners[(int)direction + 1]) *
 		(0.5f * solidFactor);
@@ -315,12 +320,14 @@ public static class HexMetrics
 		(corners[(int)direction] + corners[(int)direction + 1]) * blendFactor;
 
 	/// <summary>
-	/// Get the vector needed to bridge to the next water cell for a given direction.
+	/// Get the vector needed to bridge to the next water cell
+	/// for a given direction.
 	/// </summary>
 	/// <param name="direction">The desired direction.</param>
 	/// <returns>The bridge vector.</returns>
 	public static Vector3 GetWaterBridge(HexDirection direction) =>
-		(corners[(int)direction] + corners[(int)direction + 1]) * waterBlendFactor;
+		(corners[(int)direction] + corners[(int)direction + 1]) *
+		waterBlendFactor;
 
 	/// <summary>
 	/// Interpolate a position along a terraced edge.
@@ -329,7 +336,8 @@ public static class HexMetrics
 	/// <param name="b">End position.</param>
 	/// <param name="step">Terrace interpolation step.</param>
 	/// <returns>The position found by applying terrace interpolation.</returns>
-	public static Vector3 TerraceLerp(Vector3 a, Vector3 b, int step) {
+	public static Vector3 TerraceLerp(Vector3 a, Vector3 b, int step)
+	{
 		float h = step * horizontalTerraceStepSize;
 		a.x += (b.x - a.x) * h;
 		a.z += (b.z - a.z) * h;
@@ -345,7 +353,8 @@ public static class HexMetrics
 	/// <param name="b">End color.</param>
 	/// <param name="step">Terrace interpolation step.</param>
 	/// <returns>The color found by applying terrace interpolation.</returns>
-	public static Color TerraceLerp(Color a, Color b, int step) {
+	public static Color TerraceLerp(Color a, Color b, int step)
+	{
 		float h = step * horizontalTerraceStepSize;
 		return Color.Lerp(a, b, h);
 	}
@@ -356,10 +365,12 @@ public static class HexMetrics
 	/// <param name="near">Near position.</param>
 	/// <param name="far">Far position.</param>
 	/// <returns>The middle position with appropriate Y coordinate.</returns>
-	public static Vector3 WallLerp(Vector3 near, Vector3 far) {
+	public static Vector3 WallLerp(Vector3 near, Vector3 far)
+	{
 		near.x += (far.x - near.x) * 0.5f;
 		near.z += (far.z - near.z) * 0.5f;
-		float v = near.y < far.y ? wallElevationOffset : (1f - wallElevationOffset);
+		float v = near.y < far.y ?
+			wallElevationOffset : (1f - wallElevationOffset);
 		near.y += (far.y - near.y) * v + wallYOffset;
 		return near;
 	}
@@ -370,7 +381,8 @@ public static class HexMetrics
 	/// <param name="near">Near position.</param>
 	/// <param name="far">Far position.</param>
 	/// <returns>Position taking wall thickness into account.</returns>
-	public static Vector3 WallThicknessOffset(Vector3 near, Vector3 far) {
+	public static Vector3 WallThicknessOffset(Vector3 near, Vector3 far)
+	{
 		Vector3 offset;
 		offset.x = far.x - near.x;
 		offset.y = 0f;
@@ -384,7 +396,8 @@ public static class HexMetrics
 	/// <param name="elevation1">First elevation.</param>
 	/// <param name="elevation2">Second elevation.</param>
 	/// <returns>Matching <see cref="HexEdgeType"/>.</returns>
-	public static HexEdgeType GetEdgeType(int elevation1, int elevation2) {
+	public static HexEdgeType GetEdgeType(int elevation1, int elevation2)
+	{
 		if (elevation1 == elevation2)
 		{
 			return HexEdgeType.Flat;
@@ -401,7 +414,8 @@ public static class HexMetrics
 	/// Perturn a position.
 	/// </summary>
 	/// <param name="position">A position.</param>
-	/// <returns>The positions with noise applied to its XZ components.</returns>
+	/// <returns>The positions with noise applied
+	/// to its XZ components.</returns>
 	public static Vector3 Perturb(Vector3 position)
 	{
 		Vector4 sample = SampleNoise(position);

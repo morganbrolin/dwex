@@ -1,7 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 using System.IO;
-using System.Collections;
 using System.Collections.Generic;
 
 /// <summary>
@@ -52,7 +51,8 @@ public class HexGrid : MonoBehaviour
 	HexCell[] cells;
 
 	/// <summary>
-	/// The <see cref="HexCellShaderData"/> container for cell visualization data.
+	/// The <see cref="HexCellShaderData"/> container
+	/// for cell visualization data.
 	/// </summary>
 	public HexCellShaderData ShaderData => cellShaderData;
 
@@ -110,7 +110,8 @@ public class HexGrid : MonoBehaviour
 	/// <summary>
 	/// Make a game object a child of a map column.
 	/// </summary>
-	/// <param name="child"><see cref="Transform"/> of the child game object.</param>
+	/// <param name="child"><see cref="Transform"/>
+	/// of the child game object.</param>
 	/// <param name="columnIndex">Index of the parent column.</param>
 	public void MakeChildOfColumn(Transform child, int columnIndex) =>
 		child.SetParent(columns[columnIndex], false);
@@ -121,8 +122,8 @@ public class HexGrid : MonoBehaviour
 	/// <param name="x">X size of the map.</param>
 	/// <param name="z">Z size of the map.</param>
 	/// <param name="wrapping">Whether the map wraps east-west.</param>
-	/// <returns>Whether the map was successfully created. It fails if the X or Z size
-	/// is not a multiple of the respective chunk size.</returns>
+	/// <returns>Whether the map was successfully created. It fails when the X
+	/// or Z size is not a multiple of the respective chunk size.</returns>
 	public bool CreateMap(int x, int z, bool wrapping)
 	{
 		if (
@@ -241,7 +242,8 @@ public class HexGrid : MonoBehaviour
 	/// <summary>
 	/// Get the cell with specific <see cref="HexCoordinates"/>.
 	/// </summary>
-	/// <param name="coordinates"><see cref="HexCoordinates"/> of the cell.</param>
+	/// <param name="coordinates"><see cref="HexCoordinates"/>
+	/// of the cell.</param>
 	/// <returns>The cell with the given coordinates, if it exists.</returns>
 	public HexCell GetCell(HexCoordinates coordinates)
 	{
@@ -257,7 +259,8 @@ public class HexGrid : MonoBehaviour
 	/// <summary>
 	/// Try to get the cell with specific <see cref="HexCoordinates"/>.
 	/// </summary>
-	/// <param name="coordinates"><see cref="HexCoordinates"/> of the cell.</param>
+	/// <param name="coordinates"><see cref="HexCoordinates"/>
+	/// of the cell.</param>
 	/// <param name="cell">The cell, if it exists.</param>
 	/// <returns>Whether the cell exists.</returns>
 	public bool TryGetCell(HexCoordinates coordinates, out HexCell cell)

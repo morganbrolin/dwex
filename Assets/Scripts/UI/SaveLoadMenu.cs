@@ -93,7 +93,8 @@ public class SaveLoadMenu : MonoBehaviour
 		{
 			Destroy(listContent.GetChild(i).gameObject);
 		}
-		string[] paths = Directory.GetFiles(Application.persistentDataPath, "*.map");
+		string[] paths = Directory.GetFiles(
+			Application.persistentDataPath, "*.map");
 		Array.Sort(paths);
 		for (int i = 0; i < paths.Length; i++)
 		{

@@ -299,7 +299,8 @@ public class HexMapGenerator : MonoBehaviour
 		}
 		if (landBudget > 0)
 		{
-			Debug.LogWarning("Failed to use up " + landBudget + " land budget.");
+			Debug.LogWarning(
+				"Failed to use up " + landBudget + " land budget.");
 			landCells -= landBudget;
 		}
 	}
@@ -631,7 +632,8 @@ public class HexMapGenerator : MonoBehaviour
 			if (!origin.HasRiver)
 			{
 				bool isValidOrigin = true;
-				for (HexDirection d = HexDirection.NE; d <= HexDirection.NW; d++)
+				for (HexDirection d = HexDirection.NE;
+					d <= HexDirection.NW; d++)
 				{
 					if (origin.TryGetNeighbor(d, out HexCell neighbor) &&
 						(neighbor.HasRiver || neighbor.IsUnderwater))
@@ -699,7 +701,8 @@ public class HexMapGenerator : MonoBehaviour
 					flowDirections.Add(d);
 					flowDirections.Add(d);
 				}
-				if (length == 1 || (d != direction.Next2() && d != direction.Previous2()))
+				if (length == 1 ||
+					(d != direction.Next2() && d != direction.Previous2()))
 				{
 					flowDirections.Add(d);
 				}
@@ -743,7 +746,8 @@ public class HexMapGenerator : MonoBehaviour
 	void SetTerrainType()
 	{
 		temperatureJitterChannel = Random.Range(0, 4);
-		int rockDesertElevation = elevationMaximum - (elevationMaximum - waterLevel) / 2;
+		int rockDesertElevation =
+			elevationMaximum - (elevationMaximum - waterLevel) / 2;
 		
 		for (int i = 0; i < cellCount; i++)
 		{
@@ -800,7 +804,8 @@ public class HexMapGenerator : MonoBehaviour
 				if (cell.Elevation == waterLevel - 1)
 				{
 					int cliffs = 0, slopes = 0;
-					for (HexDirection d = HexDirection.NE; d <= HexDirection.NW; d++)
+					for (HexDirection d = HexDirection.NE;
+						d <= HexDirection.NW; d++)
 					{
 						if (!cell.TryGetNeighbor(d, out HexCell neighbor))
 						{
@@ -878,8 +883,8 @@ public class HexMapGenerator : MonoBehaviour
 		temperature *= 1f - (cell.ViewElevation - waterLevel) /
 			(elevationMaximum - waterLevel + 1f);
 
-		float jitter =
-			HexMetrics.SampleNoise(cell.Position * 0.1f)[temperatureJitterChannel];
+		float jitter = HexMetrics.SampleNoise(
+			cell.Position * 0.1f)[temperatureJitterChannel];
 
 		temperature += (jitter * 2f - 1f) * temperatureJitter;
 

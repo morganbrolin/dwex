@@ -26,14 +26,14 @@ public struct HexCoordinates
 	public readonly int Y => -X - Z;
 
 	/// <summary>
-	/// X position in hex space,
-	/// where the distance between cell centers of east-west neighbors is one unit.
+	/// X position in hex space, where the distance between cell centers
+	/// of east-west neighbors is one unit.
 	/// </summary>
 	public readonly float HexX => X + Z / 2 + ((Z & 1) == 0 ? 0f : 0.5f);
 
 	/// <summary>
-	/// Z position in hex space,
-	/// where the distance between cell centers of east-west neighbors is one unit.
+	/// Z position in hex space, where the distance between cell centers
+	/// of east-west neighbors is one unit.
 	/// </summary>
 	public readonly float HexZ => Z * HexMetrics.outerToInner;
 
@@ -99,19 +99,20 @@ public struct HexCoordinates
 	}
 
 	/// <summary>
-	/// Return (wrapped) coordinates after stepping one cell in a given direction.
+	/// Return (wrapped) coordinates after a single step in a given direction.
 	/// </summary>
 	/// <param name="direction">Step direction.</param>
 	/// <returns>Coordinates.</returns>
-	public readonly HexCoordinates Step(HexDirection direction) => direction switch
-	{
-		HexDirection.NE => new HexCoordinates(x, z + 1),
-		HexDirection.E => new HexCoordinates(x + 1, z),
-		HexDirection.SE => new HexCoordinates(x + 1, z - 1),
-		HexDirection.SW => new HexCoordinates(x, z - 1),
-		HexDirection.W => new HexCoordinates(x - 1, z),
-		_ => new HexCoordinates(x - 1, z + 1)
-	};
+	public readonly HexCoordinates Step(HexDirection direction) =>
+		direction switch
+		{
+			HexDirection.NE => new HexCoordinates(x, z + 1),
+			HexDirection.E => new HexCoordinates(x + 1, z),
+			HexDirection.SE => new HexCoordinates(x + 1, z - 1),
+			HexDirection.SW => new HexCoordinates(x, z - 1),
+			HexDirection.W => new HexCoordinates(x - 1, z),
+			_ => new HexCoordinates(x - 1, z + 1)
+		};
 
 	/// <summary>
 	/// Create hex coordinates from array offset coordinates.
@@ -119,12 +120,14 @@ public struct HexCoordinates
 	/// <param name="x">X offset coordinate.</param>
 	/// <param name="z">Z offset coordinate.</param>
 	/// <returns>Hex coordinates.</returns>
-	public static HexCoordinates FromOffsetCoordinates(int x, int z) => new(x - z / 2, z);
+	public static HexCoordinates FromOffsetCoordinates(int x, int z) =>
+		new(x - z / 2, z);
 
 	/// <summary>
 	/// Create hex coordinates for the cell that contains a position.
 	/// </summary>
-	/// <param name="position">A 3D position assumed to lie inside the map.</param>
+	/// <param name="position">A 3D position assumed to lie
+	/// inside the map.</param>
 	/// <returns>Hex coordinates.</returns>
 	public static HexCoordinates FromPosition(Vector3 position)
 	{

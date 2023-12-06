@@ -27,6 +27,7 @@ public static class Bezier
 	/// <param name="c">Third control point.</param>
 	/// <param name="t">Interpolator, 0-1 inclusive.</param>
 	/// <returns>The derivative found via interpolation.</returns>
-	public static Vector3 GetDerivative(Vector3 a, Vector3 b, Vector3 c, float t) =>
+	public static Vector3 GetDerivative(
+		Vector3 a, Vector3 b, Vector3 c, float t) =>
 		2f * ((1f - t) * (b - a) + t * (c - b));
 }

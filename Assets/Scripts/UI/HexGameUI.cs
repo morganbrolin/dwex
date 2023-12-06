@@ -72,7 +72,9 @@ public class HexGameUI : MonoBehaviour
 				selectedUnit.IsValidDestination(grid.GetCell(currentCellIndex)))
 			{
 				grid.FindPath(
-					selectedUnit.Location, grid.GetCell(currentCellIndex), selectedUnit);
+					selectedUnit.Location,
+					grid.GetCell(currentCellIndex),
+					selectedUnit);
 			}
 			else
 			{
@@ -92,7 +94,8 @@ public class HexGameUI : MonoBehaviour
 
 	bool UpdateCurrentCell()
 	{
-		HexCell cell = grid.GetCell(Camera.main.ScreenPointToRay(Input.mousePosition));
+		HexCell cell = grid.GetCell(
+			Camera.main.ScreenPointToRay(Input.mousePosition));
 		int index = cell ? cell.Index : -1;
 		if (index != currentCellIndex)
 		{

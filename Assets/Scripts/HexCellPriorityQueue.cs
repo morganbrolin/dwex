@@ -55,10 +55,10 @@ public class HexCellPriorityQueue
 	}
 
 	/// <summary>
-	/// Apply the currently priority of a cell that was previously enqueued.
+	/// Apply the current priority of a cell that was previously enqueued.
 	/// </summary>
 	/// <param name="cell">Cell to update</param>
-	/// <param name="oldPriority">Priority of the cell before it was changed.</param>
+	/// <param name="oldPriority">Cell priority before it was changed.</param>
 	public void Change(HexCell cell, int oldPriority)
 	{
 		HexCell current = list[oldPriority];

@@ -8,7 +8,8 @@ public struct EdgeVertices
 	public Vector3 v1, v2, v3, v4, v5;
 
 	/// <summary>
-	/// Create a straight edge with equidistant vertices between two corner positions.
+	/// Create a straight edge with equidistant vertices
+	/// between two corner positions.
 	/// </summary>
 	/// <param name="corner1">Frist corner.</param>
 	/// <param name="corner2">Second corner.</param>
@@ -22,11 +23,13 @@ public struct EdgeVertices
 	}
 
 	/// <summary>
-	/// Create a straight edge between two corner positions, with configurable outer step.
+	/// Create a straight edge between two corner positions,
+	/// with configurable outer step.
 	/// </summary>
 	/// <param name="corner1">First corner.</param>
 	/// <param name="corner2">Second corner.</param>
-	/// <param name="outerStep">First step away from corners, as fraction of edge.</param>
+	/// <param name="outerStep">First step away from corners,
+	/// as fraction of edge.</param>
 	public EdgeVertices(Vector3 corner1, Vector3 corner2, float outerStep)
 	{
 		v1 = corner1;
@@ -44,7 +47,8 @@ public struct EdgeVertices
 	/// <param name="step">Terrace interpolation step,
 	/// 0-<see cref="HexMetrics.terraceSteps"/> inclusive.</param>
 	/// <returns>Edge vertices interpolated along terrace.</returns>
-	public static EdgeVertices TerraceLerp(EdgeVertices a, EdgeVertices b, int step)
+	public static EdgeVertices TerraceLerp(
+		EdgeVertices a, EdgeVertices b, int step)
 	{
 		EdgeVertices result;
 		result.v1 = HexMetrics.TerraceLerp(a.v1, b.v1, step);

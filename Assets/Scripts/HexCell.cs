@@ -93,12 +93,15 @@ public class HexCell
 	}
 
 	/// <summary>
-	/// Elevation at which the cell is visible. Highest of surface and water level.
+	/// Elevation at which the cell is visible.
+	/// Highest of surface and water level.
 	/// </summary>
-	public int ViewElevation => elevation >= waterLevel ? elevation : waterLevel;
+	public int ViewElevation =>
+		elevation >= waterLevel ? elevation : waterLevel;
 
 	/// <summary>
-	/// Whether the cell counts as underwater, which is when water is higher than surface.
+	/// Whether the cell counts as underwater,
+	/// which is when water is higher than surface.
 	/// </summary>
 	public bool IsUnderwater => waterLevel > elevation;
 
@@ -147,19 +150,22 @@ public class HexCell
 	/// Vertical positions the the stream bed, if applicable.
 	/// </summary>
 	public float StreamBedY =>
-		(elevation + HexMetrics.streamBedElevationOffset) * HexMetrics.elevationStep;
+		(elevation + HexMetrics.streamBedElevationOffset) *
+		HexMetrics.elevationStep;
 
 	/// <summary>
 	/// Vertical position of the river's surface, if applicable.
 	/// </summary>
 	public float RiverSurfaceY =>
-		(elevation + HexMetrics.waterElevationOffset) * HexMetrics.elevationStep;
+		(elevation + HexMetrics.waterElevationOffset) *
+		HexMetrics.elevationStep;
 
 	/// <summary>
 	/// Vertical position of the water surface, if applicable.
 	/// </summary>
 	public float WaterSurfaceY =>
-		(waterLevel + HexMetrics.waterElevationOffset) * HexMetrics.elevationStep;
+		(waterLevel + HexMetrics.waterElevationOffset) *
+		HexMetrics.elevationStep;
 
 	/// <summary>
 	/// Urban feature level.
@@ -239,8 +245,8 @@ public class HexCell
 		get => flags.HasAny(HexFlags.Walled);
 		set
 		{
-			HexFlags newFlags =
-				value ? flags.With(HexFlags.Walled) : flags.Without(HexFlags.Walled);
+			HexFlags newFlags = value ?
+				flags.With(HexFlags.Walled) : flags.Without(HexFlags.Walled);
 			if (flags != newFlags)
 			{
 				flags = newFlags;
@@ -281,13 +287,15 @@ public class HexCell
 	}
 
 	/// <summary>
-	/// Whether the cell is explorable. If not it never counts as explored or visible.
+	/// Whether the cell is explorable.
+	/// If not it never counts as explored or visible.
 	/// </summary>
 	public bool Explorable
 	{
 		get => flags.HasAny(HexFlags.Explorable);
 		set => flags = value ?
-			flags.With(HexFlags.Explorable) : flags.Without(HexFlags.Explorable);
+			flags.With(HexFlags.Explorable) :
+			flags.Without(HexFlags.Explorable);
 	}
 
 	/// <summary>
@@ -329,14 +337,16 @@ public class HexCell
 	{ get; set; }
 
 	/// <summary>
-	/// Linked list reference used by <see cref="HexCellPriorityQueue"/> for pathfinding.
+	/// Linked list reference used by <see cref="HexCellPriorityQueue"/>
+	/// for pathfinding.
 	/// </summary>
 	[field: System.NonSerialized]
 	public HexCell NextWithSamePriority
 	{ get; set; }
 
 	/// <summary>
-	/// Bit flags for cell data, currently rivers, roads, walls, and exploration.
+	/// Bit flags for cell data, currently rivers, roads, walls,
+	/// and exploration.
 	/// </summary>
 	HexFlags flags;
 
@@ -411,19 +421,17 @@ public class HexCell
 	/// Get the <see cref="HexEdgeType"/> of a cell edge.
 	/// </summary>
 	/// <param name="direction">Edge direction relative to the cell.</param>
-	/// <returns><see cref="HexEdgeType"/> based on the neighboring cells.</returns>
-	public HexEdgeType GetEdgeType(HexDirection direction) => HexMetrics.GetEdgeType(
-		elevation, GetNeighbor(direction).elevation
-	);
+	/// <returns><see cref="HexEdgeType"/> based on neighbor cells.</returns>
+	public HexEdgeType GetEdgeType(HexDirection direction) =>
+		HexMetrics.GetEdgeType(elevation, GetNeighbor(direction).elevation);
 
 	/// <summary>
 	/// Get the <see cref="HexEdgeType"/> based on this and another cell.
 	/// </summary>
 	/// <param name="otherCell">Other cell to consider as neighbor.</param>
-	/// <returns><see cref="HexEdgeType"/> based on this and the other cell.</returns>
-	public HexEdgeType GetEdgeType(HexCell otherCell) => HexMetrics.GetEdgeType(
-		elevation, otherCell.elevation
-	);
+	/// <returns><see cref="HexEdgeType"/> between cells.</returns>
+	public HexEdgeType GetEdgeType(HexCell otherCell) =>
+		HexMetrics.GetEdgeType(elevation, otherCell.elevation);
 
 	/// <summary>
 	/// Whether a river goes through a specific cell edge.
@@ -521,7 +529,8 @@ public class HexCell
 	/// </summary>
 	/// <param name="direction">Edge direction relative to cell.</param>
 	/// <returns>Whether a road goes through the edge.</returns>
-	public bool HasRoadThroughEdge(HexDirection direction) => flags.HasRoad(direction);
+	public bool HasRoadThroughEdge(HexDirection direction) =>
+		flags.HasRoad(direction);
 
 	/// <summary>
 	/// Define a road that goes in a specific direction.
@@ -558,9 +567,10 @@ public class HexCell
 	}
 
 	/// <summary>
-	/// Get the elevation difference with a neighbor. The indicated neighbor must exist.
+	/// Get the elevation difference with a neighbor.
+	/// The indicated neighbor must exist.
 	/// </summary>
-	/// <param name="direction">Direction to the neighbor, relative to the cell.</param>
+	/// <param name="direction">Relative direction to the neighbor.</param>
 	/// <returns>Absolute elevation difference.</returns>
 	public int GetElevationDifference(HexDirection direction)
 	{
@@ -568,18 +578,18 @@ public class HexCell
 		return difference >= 0 ? difference : -difference;
 	}
 
-	bool IsValidRiverDestination(HexCell neighbor) =>
-		neighbor && (elevation >= neighbor.elevation || waterLevel == neighbor.elevation);
+	bool IsValidRiverDestination(HexCell neighbor) => neighbor &&
+		(elevation >= neighbor.elevation || waterLevel == neighbor.elevation);
 
 	void ValidateRivers()
 	{
-		if (HasOutgoingRiver && !IsValidRiverDestination(GetNeighbor(OutgoingRiver)))
+		if (HasOutgoingRiver &&
+			!IsValidRiverDestination(GetNeighbor(OutgoingRiver)))
 		{
 			RemoveOutgoingRiver();
 		}
-		if (
-			HasIncomingRiver && !GetNeighbor(IncomingRiver).IsValidRiverDestination(this)
-		)
+		if (HasIncomingRiver &&
+			!GetNeighbor(IncomingRiver).IsValidRiverDestination(this))
 		{
 			RemoveIncomingRiver();
 		}
@@ -615,7 +625,8 @@ public class HexCell
 			Chunk.Refresh();
 			for (HexDirection d = HexDirection.NE; d <= HexDirection.NW; d++)
 			{
-				if (TryGetNeighbor(d, out HexCell neighbor) && neighbor.Chunk != Chunk)
+				if (TryGetNeighbor(d, out HexCell neighbor) &&
+					neighbor.Chunk != Chunk)
 				{
 					neighbor.Chunk.Refresh();
 				}
@@ -752,7 +763,8 @@ public class HexCell
 	/// Set arbitrary map data for this cell's <see cref="ShaderData"/>.
 	/// </summary>
 	/// <param name="data">Data value, 0-1 inclusive.</param>
-	public void SetMapData(float data) => Grid.ShaderData.SetMapData(this, data);
+	public void SetMapData(float data) =>
+		Grid.ShaderData.SetMapData(this, data);
 
 	/// <summary>
 	/// A cell counts as true if it is not null, otherwise as false.

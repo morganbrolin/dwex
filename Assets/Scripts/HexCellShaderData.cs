@@ -66,13 +66,15 @@ public class HexCellShaderData : MonoBehaviour
 	}
 
 	/// <summary>
-	/// Refresh the terrain data of a cell. Supports water surfaces up to 30 units high.
+	/// Refresh the terrain data of a cell.
+	/// Supports water surfaces up to 30 units high.
 	/// </summary>
 	/// <param name="cell">Cell with changed terrain type.</param>
 	public void RefreshTerrain(HexCell cell)
 	{
 		Color32 data = cellTextureData[cell.Index];
-		data.b = cell.IsUnderwater ? (byte)(cell.WaterSurfaceY * (255f / 30f)) : (byte)0;
+		data.b = cell.IsUnderwater ?
+			(byte)(cell.WaterSurfaceY * (255f / 30f)) : (byte)0;
 		data.a = (byte)cell.TerrainTypeIndex;
 		cellTextureData[cell.Index] = data;
 		enabled = true;
@@ -110,7 +112,8 @@ public class HexCellShaderData : MonoBehaviour
 	}
 
 	/// <summary>
-	/// Indicate that view elevation data has changed, requiring a visibility reset.
+	/// Indicate that view elevation data has changed,
+	/// requiring a visibility reset.
 	/// Supports water surfaces up to 30 units high.
 	/// </summary>
 	/// <param name="cell">Changed cell.</param>
@@ -140,7 +143,8 @@ public class HexCellShaderData : MonoBehaviour
 			if (!UpdateCellData(transitioningCellIndices[i], delta))
 			{
 				int lastIndex = transitioningCellIndices.Count - 1;
-				transitioningCellIndices[i--] = transitioningCellIndices[lastIndex];
+				transitioningCellIndices[i--] =
+					transitioningCellIndices[lastIndex];
 				transitioningCellIndices.RemoveAt(lastIndex);
 			}
 		}

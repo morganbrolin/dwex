@@ -25,7 +25,7 @@ public class HexUnit : MonoBehaviour
 		{
 			if (locationCellIndex >= 0)
 			{
-				HexCell location = Grid.GetCell(locationCellIndex); // new
+				HexCell location = Grid.GetCell(locationCellIndex);
 				Grid.DecreaseVisibility(location, VisionRange);
 				location.Unit = null;
 			}
@@ -105,7 +105,8 @@ public class HexUnit : MonoBehaviour
 		{
 			currentTravelLocationCellIndex = pathToTravel[0];
 		}
-		HexCell currentTravelLocation = Grid.GetCell(currentTravelLocationCellIndex);
+		HexCell currentTravelLocation = Grid.GetCell(
+			currentTravelLocationCellIndex);
 		Grid.DecreaseVisibility(currentTravelLocation, VisionRange);
 		int currentColumn = currentTravelLocation.ColumnIndex;
 
@@ -194,9 +195,11 @@ public class HexUnit : MonoBehaviour
 		if (angle > 0f)
 		{
 			float speed = rotationSpeed / angle;
-			for (float t = Time.deltaTime * speed; t < 1f; t += Time.deltaTime * speed)
+			for (float t = Time.deltaTime * speed;
+				t < 1f; t += Time.deltaTime * speed)
 			{
-				transform.localRotation = Quaternion.Slerp(fromRotation, toRotation, t);
+				transform.localRotation = Quaternion.Slerp(
+					fromRotation, toRotation, t);
 				yield return null;
 			}
 		}
@@ -212,7 +215,8 @@ public class HexUnit : MonoBehaviour
 	/// <param name="toCell">Cell to move to.</param>
 	/// <param name="direction">Movement direction.</param>
 	/// <returns></returns>
-	public int GetMoveCost(HexCell fromCell, HexCell toCell, HexDirection direction)
+	public int GetMoveCost(
+		HexCell fromCell, HexCell toCell, HexDirection direction)
 	{
 		if (!IsValidDestination(toCell))
 		{
@@ -272,7 +276,8 @@ public class HexUnit : MonoBehaviour
 	{
 		HexCoordinates coordinates = HexCoordinates.Load(reader);
 		float orientation = reader.ReadSingle();
-		grid.AddUnit(Instantiate(unitPrefab), grid.GetCell(coordinates), orientation);
+		grid.AddUnit(
+			Instantiate(unitPrefab), grid.GetCell(coordinates), orientation);
 	}
 
 	void OnEnable()

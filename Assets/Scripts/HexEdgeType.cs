@@ -1,5 +1,6 @@
 ﻿/// <summary>
-/// Hexagon edge type, determined by absolute elevation difference of adjacent cells.
+/// Hexagon edge type, determined by absolute elevation difference
+/// of adjacent cells.
 /// </summary>
 public enum HexEdgeType
 {
