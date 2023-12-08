@@ -101,17 +101,6 @@ public class HexCellShaderData : MonoBehaviour
 	}
 
 	/// <summary>
-	/// Set arbitrary map data of a cell, overriding water data.
-	/// </summary>
-	/// <param name="cell">Cell to apply data for.</param>
-	/// <param name="data">Cell data value, 0-1 inclusive.</param>
-	public void SetMapData(HexCell cell, float data) {
-		cellTextureData[cell.Index].b =
-			data < 0f ? (byte)0 : (data < 1f ? (byte)(data * 255f) : (byte)255);
-		enabled = true;
-	}
-
-	/// <summary>
 	/// Indicate that view elevation data has changed,
 	/// requiring a visibility reset.
 	/// Supports water surfaces up to 30 units high.

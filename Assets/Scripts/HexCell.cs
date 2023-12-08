@@ -178,7 +178,7 @@ public class HexCell
 			if (values.UrbanLevel != value)
 			{
 				values = values.WithUrbanLevel(value);
-				RefreshSelfOnly();
+				Chunk.Refresh();
 			}
 		}
 	}
@@ -194,7 +194,7 @@ public class HexCell
 			if (values.FarmLevel != value)
 			{
 				values = values.WithFarmLevel(value);
-				RefreshSelfOnly();
+				Chunk.Refresh();
 			}
 		}
 	}
@@ -210,7 +210,7 @@ public class HexCell
 			if (values.PlantLevel != value)
 			{
 				values = values.WithPlantLevel(value);
-				RefreshSelfOnly();
+				Chunk.Refresh();
 			}
 		}
 	}
@@ -227,7 +227,7 @@ public class HexCell
 			{
 				values = values.WithSpecialIndex(value);
 				RemoveRoads();
-				RefreshSelfOnly();
+				Chunk.Refresh();
 			}
 		}
 	}
@@ -279,12 +279,8 @@ public class HexCell
 	/// <summary>
 	/// Whether the cell counts as explored.
 	/// </summary>
-	public bool IsExplored
-	{
-		get => flags.HasAll(HexFlags.Explored | HexFlags.Explorable);
-		private set => flags = value ?
-			flags.With(HexFlags.Explored) : flags.Without(HexFlags.Explored);
-	}
+	public bool IsExplored =>
+		flags.HasAll(HexFlags.Explored | HexFlags.Explorable);
 
 	/// <summary>
 	/// Whether the cell is explorable.
@@ -360,7 +356,7 @@ public class HexCell
 		visibility += 1;
 		if (visibility == 1)
 		{
-			IsExplored = true;
+			flags = flags.With(HexFlags.Explored);
 			Grid.ShaderData.RefreshVisibility(this);
 		}
 	}
@@ -407,14 +403,6 @@ public class HexCell
 		Grid.TryGetCell(Coordinates.Step(direction), out cell);
 
 	/// <summary>
-	/// Get the <see cref="HexEdgeType"/> of a cell edge.
-	/// </summary>
-	/// <param name="direction">Edge direction relative to the cell.</param>
-	/// <returns><see cref="HexEdgeType"/> based on neighbor cells.</returns>
-	public HexEdgeType GetEdgeType(HexDirection direction) =>
-		HexMetrics.GetEdgeType(Elevation, GetNeighbor(direction).Elevation);
-
-	/// <summary>
 	/// Get the <see cref="HexEdgeType"/> based on this and another cell.
 	/// </summary>
 	/// <param name="otherCell">Other cell to consider as neighbor.</param>
@@ -448,8 +436,8 @@ public class HexCell
 		HexCell neighbor = GetNeighbor(IncomingRiver);
 		flags = flags.Without(HexFlags.RiverIn);
 		neighbor.flags = neighbor.flags.Without(HexFlags.RiverOut);
-		neighbor.RefreshSelfOnly();
-		RefreshSelfOnly();
+		neighbor.Chunk.Refresh();
+		Chunk.Refresh();
 	}
 
 	/// <summary>
@@ -465,8 +453,8 @@ public class HexCell
 		HexCell neighbor = GetNeighbor(OutgoingRiver);
 		flags = flags.Without(HexFlags.RiverOut);
 		neighbor.flags = neighbor.flags.Without(HexFlags.RiverIn);
-		neighbor.RefreshSelfOnly();
-		RefreshSelfOnly();
+		neighbor.Chunk.Refresh();
+		Chunk.Refresh();
 	}
 
 	/// <summary>
@@ -533,8 +521,8 @@ public class HexCell
 			flags = flags.WithRoad(direction);
 			HexCell neighbor = GetNeighbor(direction);
 			neighbor.flags = neighbor.flags.WithRoad(direction.Opposite());
-			neighbor.RefreshSelfOnly();
-			RefreshSelfOnly();
+			neighbor.Chunk.Refresh();
+			Chunk.Refresh();
 		}
 	}
 
@@ -580,8 +568,8 @@ public class HexCell
 		flags = flags.WithoutRoad(direction);
 		HexCell neighbor = GetNeighbor(direction);
 		neighbor.flags = neighbor.flags.WithoutRoad(direction.Opposite());
-		neighbor.RefreshSelfOnly();
-		RefreshSelfOnly();
+		neighbor.Chunk.Refresh();
+		Chunk.Refresh();
 	}
 
 	void RefreshPosition()
@@ -615,15 +603,6 @@ public class HexCell
 			{
 				Unit.ValidateLocation();
 			}
-		}
-	}
-
-	void RefreshSelfOnly()
-	{
-		Chunk.Refresh();
-		if (Unit)
-		{
-			Unit.ValidateLocation();
 		}
 	}
 
@@ -674,13 +653,6 @@ public class HexCell
 		highlight.color = color;
 		highlight.enabled = true;
 	}
-
-	/// <summary>
-	/// Set arbitrary map data for this cell's <see cref="ShaderData"/>.
-	/// </summary>
-	/// <param name="data">Data value, 0-1 inclusive.</param>
-	public void SetMapData(float data) =>
-		Grid.ShaderData.SetMapData(this, data);
 
 	/// <summary>
 	/// A cell counts as true if it is not null, otherwise as false.

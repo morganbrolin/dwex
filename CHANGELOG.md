@@ -16,6 +16,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Limited C# code line width to 80.
 - Methods that weren't used outside `HexCell` are now private.
 - Loading and saving moved from `HexCell` to `HexValues` and `HexFlags`.
+- `HexCell` code trimming.
+
+### Removed
+
+- Unused debug method `SetMapData` from `HexCell` and `HexCellShaderData`.
 
 ### Fixed
 

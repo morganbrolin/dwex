@@ -685,7 +685,7 @@ public class HexGridChunk : MonoBehaviour
 			}
 		}
 
-		if (cell.GetEdgeType(direction) == HexEdgeType.Slope)
+		if (cell.GetEdgeType(neighbor) == HexEdgeType.Slope)
 		{
 			TriangulateEdgeTerraces(e1, cell, e2, neighbor, hasRoad);
 		}
