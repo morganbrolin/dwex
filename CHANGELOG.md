@@ -15,6 +15,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Upgraded to Unity 2022.3.15f1 and Burst 1.8.11.
 - Limited C# code line width to 80.
 - Methods that weren't used outside `HexCell` are now private.
+- Loading and saving moved from `HexCell` to `HexValues` and `HexFlags`.
+
+### Fixed
+
+- Sharing violation when saving a map that was recently loaded.
 
 ## [3.0.0] - 2023-11-09
 

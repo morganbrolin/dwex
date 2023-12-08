@@ -1,4 +1,7 @@
-﻿/// <summary>
+﻿using System.IO;
+using UnityEngine.UIElements;
+
+/// <summary>
 /// Flags that describe the contents of a cell.
 /// </summary>
 [System.Flags]
@@ -206,13 +209,81 @@ public static class HexFlagsExtensions
 		flags & ~(HexFlags)((int)start << (int)direction);
 
 	static HexDirection ToDirection(this HexFlags flags, int shift) =>
-		 (((int)flags >> shift) & 0b111111) switch
-		 {
-			 0b000001 => HexDirection.NE,
-			 0b000010 => HexDirection.E,
-			 0b000100 => HexDirection.SE,
-			 0b001000 => HexDirection.SW,
-			 0b010000 => HexDirection.W,
-			 _ => HexDirection.NW
-		 };
+		(((int)flags >> shift) & 0b111111) switch
+		{
+			0b000001 => HexDirection.NE,
+			0b000010 => HexDirection.E,
+			0b000100 => HexDirection.SE,
+			0b001000 => HexDirection.SW,
+			0b010000 => HexDirection.W,
+			_ => HexDirection.NW
+		};
+	
+	/// <summary>
+	/// Save the flags.
+	/// </summary>
+	/// <param name="flags">Flags.</param>
+	/// <param name="writer"><see cref="BinaryWriter"/> to use.</param>
+	public static void Save(this HexFlags flags, BinaryWriter writer)
+	{
+		writer.Write(flags.HasAny(HexFlags.Walled));
+
+		if (flags.HasAny(HexFlags.RiverIn))
+		{
+			writer.Write((byte)(flags.RiverInDirection() + 128));
+		}
+		else
+		{
+			writer.Write((byte)0);
+		}
+
+		if (flags.HasAny(HexFlags.RiverOut))
+		{
+			writer.Write((byte)(flags.RiverOutDirection() + 128));
+		}
+		else
+		{
+			writer.Write((byte)0);
+		}
+
+		writer.Write((byte)(flags & HexFlags.Roads));
+		writer.Write(flags.HasAll(HexFlags.Explored | HexFlags.Explorable));
+	}
+
+		/// <summary>
+	/// Load the cell data.
+	/// </summary>
+	/// <param name="flags">Flags.</param>
+	/// <param name="reader"><see cref="BinaryReader"/> to use.</param>
+	/// <param name="header">Header version.</param>
+	public static HexFlags Load(
+		this HexFlags basis, BinaryReader reader, int header)
+	{
+		HexFlags flags = basis & HexFlags.Explorable;
+
+		if (reader.ReadBoolean())
+		{
+			flags = flags.With(HexFlags.Walled);
+		}
+
+		byte riverData = reader.ReadByte();
+		if (riverData >= 128)
+		{
+			flags = flags.WithRiverIn((HexDirection)(riverData - 128));
+		}
+
+		riverData = reader.ReadByte();
+		if (riverData >= 128)
+		{
+			flags = flags.WithRiverOut((HexDirection)(riverData - 128));
+		}
+
+		flags |= (HexFlags)reader.ReadByte();
+
+		if (header >= 3 && reader.ReadBoolean())
+		{
+			flags = flags.With(HexFlags.Explored);
+		}
+		return flags;
+	}
 }

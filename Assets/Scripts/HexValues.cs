@@ -1,4 +1,6 @@
-﻿/// <summary>
+﻿using System.IO;
+
+/// <summary>
 /// Values that describe the contents of a cell.
 /// </summary>
 [System.Serializable]
@@ -51,4 +53,41 @@ public struct HexValues
 	
 	public readonly HexValues WithTerrainTypeIndex(int index) =>
 		With(index, 255, 24);
+
+	/// <summary>
+	/// Save the values.
+	/// </summary>
+	/// <param name="writer"><see cref="BinaryWriter"/> to use.</param>
+	public readonly void Save(BinaryWriter writer)
+	{
+		writer.Write((byte)TerrainTypeIndex);
+		writer.Write((byte)(Elevation + 127));
+		writer.Write((byte)WaterLevel);
+		writer.Write((byte)UrbanLevel);
+		writer.Write((byte)FarmLevel);
+		writer.Write((byte)PlantLevel);
+		writer.Write((byte)SpecialIndex);
+	}
+
+	/// <summary>
+	/// Load the values.
+	/// </summary>
+	/// <param name="reader"><see cref="BinaryReader"/> to use.</param>
+	/// <param name="header">Header version.</param>
+	public static HexValues Load(BinaryReader reader, int header)
+	{
+		HexValues values = default;
+		values = values.WithTerrainTypeIndex(reader.ReadByte());
+		int elevation = reader.ReadByte();
+		if (header >= 4)
+		{
+			elevation -= 127;
+		}
+		values = values.WithElevation(elevation);
+		values = values.WithWaterLevel(reader.ReadByte());
+		values = values.WithUrbanLevel(reader.ReadByte());
+		values = values.WithFarmLevel(reader.ReadByte());
+		values = values.WithPlantLevel(reader.ReadByte());
+		return values.WithSpecialIndex(reader.ReadByte());
+	}
 }

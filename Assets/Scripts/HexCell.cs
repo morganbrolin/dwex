@@ -633,35 +633,8 @@ public class HexCell
 	/// <param name="writer"><see cref="BinaryWriter"/> to use.</param>
 	public void Save(BinaryWriter writer)
 	{
-		writer.Write((byte)TerrainTypeIndex);
-		writer.Write((byte)(Elevation + 127));
-		writer.Write((byte)WaterLevel);
-		writer.Write((byte)UrbanLevel);
-		writer.Write((byte)FarmLevel);
-		writer.Write((byte)PlantLevel);
-		writer.Write((byte)SpecialIndex);
-		writer.Write(Walled);
-
-		if (HasIncomingRiver)
-		{
-			writer.Write((byte)(IncomingRiver + 128));
-		}
-		else
-		{
-			writer.Write((byte)0);
-		}
-
-		if (HasOutgoingRiver)
-		{
-			writer.Write((byte)(OutgoingRiver + 128));
-		}
-		else
-		{
-			writer.Write((byte)0);
-		}
-
-		writer.Write((byte)(flags & HexFlags.Roads));
-		writer.Write(IsExplored);
+		values.Save(writer);
+		flags.Save(writer);
 	}
 
 	/// <summary>
@@ -671,41 +644,9 @@ public class HexCell
 	/// <param name="header">Header version.</param>
 	public void Load(BinaryReader reader, int header)
 	{
-		flags &= HexFlags.Explorable;
-		TerrainTypeIndex = reader.ReadByte();
-		int elevation = reader.ReadByte();
-		if (header >= 4)
-		{
-			elevation -= 127;
-		}
-		Elevation = elevation;
+		values = HexValues.Load(reader, header);
+		flags = flags.Load(reader, header);
 		RefreshPosition();
-		WaterLevel = reader.ReadByte();
-		UrbanLevel = reader.ReadByte();
-		FarmLevel = reader.ReadByte();
-		PlantLevel = reader.ReadByte();
-		SpecialIndex = reader.ReadByte();
-
-		if (reader.ReadBoolean())
-		{
-			flags = flags.With(HexFlags.Walled);
-		}
-
-		byte riverData = reader.ReadByte();
-		if (riverData >= 128)
-		{
-			flags = flags.WithRiverIn((HexDirection)(riverData - 128));
-		}
-
-		riverData = reader.ReadByte();
-		if (riverData >= 128)
-		{
-			flags = flags.WithRiverOut((HexDirection)(riverData - 128));
-		}
-
-		flags |= (HexFlags)reader.ReadByte();
-
-		IsExplored = header >= 3 && reader.ReadBoolean();
 		Grid.ShaderData.RefreshTerrain(this);
 		Grid.ShaderData.RefreshVisibility(this);
 	}

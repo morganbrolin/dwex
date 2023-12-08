@@ -117,7 +117,7 @@ public class SaveLoadMenu : MonoBehaviour
 
 	void Save (string path)
 	{
-		var writer = new BinaryWriter(File.Open(path, FileMode.Create));
+		using var writer = new BinaryWriter(File.Open(path, FileMode.Create));
 		writer.Write(mapFileVersion);
 		hexGrid.Save(writer);
 	}
@@ -129,7 +129,7 @@ public class SaveLoadMenu : MonoBehaviour
 			Debug.LogError("File does not exist " + path);
 			return;
 		}
-		var reader = new BinaryReader(File.OpenRead(path));
+		using var reader = new BinaryReader(File.OpenRead(path));
 		int header = reader.ReadInt32();
 		if (header <= mapFileVersion)
 		{
