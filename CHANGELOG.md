@@ -7,10 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- `HexValues` struct that packs multiple values of `HexCell` in 32 bits.
+
 ### Changed
 
 - Upgraded to Unity 2022.3.15f1 and Burst 1.8.11.
 - Limited C# code line width to 80.
+- Methods that weren't used outside `HexCell` are now private.
 
 ## [3.0.0] - 2023-11-09
 
@@ -43,11 +47,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- *HexFlags* enumeration type to represent bit flags for cell data.
-- *HexCell.Grid* property, which is used to retrieve neighbor cells.
-- *HexCell.HasIncomingRiverThroughEdge* method.
-- *HexCell.TryGetNeighbor* and *HexGrid.TryGetCell* methods, to make cell retrieval more efficient and convenient.
-- *HexCoordinates.Step* method, to help retrieve cell neighbors based on coordinates.
+- `HexFlags` enumeration type to represent bit flags for cell data.
+- `HexCell.Grid` property, which is used to retrieve neighbor cells.
+- `HexCell.HasIncomingRiverThroughEdge` method.
+- `HexCell.TryGetNeighbor` and `HexGrid.TryGetCell` methods, to make cell retrieval more efficient and convenient.
+- `HexCoordinates.Step` method, to help retrieve cell neighbors based on coordinates.
 
 ### Changed
 
@@ -56,10 +60,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 
-- *HexCell* neighbors and roads arrays.
-- *HexCell* incoming and outgoing river boolean and direction fields.
-- *HexCell* walled and explored fields.
-- *HexCell.RiverBeginOrEndDirection* property.
+- `HexCell` neighbors and roads arrays.
+- `HexCell` incoming and outgoing river boolean and direction fields.
+- `HexCell` walled and explored fields.
+- `HexCell.RiverBeginOrEndDirection` property.
 
 ## [2.2.0] - 2023-03-10
 
@@ -75,7 +79,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Upgraded to Unity 2021.3.20f1 and URP 12.1.10.
 - *HexCellData.hlsl* relies upon and includes *HexMetrics.hlsl*.
-- *HexCellShaderData* uses a separate boolean array to track visibility transitions.
+- `HexCellShaderData` uses a separate boolean array to track visibility transitions.
 - Shaders use world position XZ to calculate hex grid position data analytically.
 - Grid visualization no longer uses a texture.
 - Material documentation update.
@@ -97,7 +101,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Upgraded to Unity 2021.3.16f1.
 - Public configuration fields are now private serializable.
 - Non-static public fields that are referenced outside their containing classes have become properties.
-- *HexFeatureCollection* has become a nested type inside *HexFeatureManager*.
+- `HexFeatureCollection` has become a nested type inside `HexFeatureManager`.
 - Default map has wrapping disabled, as it makes no sense for small maps.
 
 ### Fixed

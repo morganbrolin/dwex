@@ -49,14 +49,14 @@ public class HexCell
 	/// </summary>
 	public int Elevation
 	{
-		get => elevation;
+		get => values.Elevation;
 		set
 		{
-			if (elevation == value)
+			if (values.Elevation == value)
 			{
 				return;
 			}
-			elevation = value;
+			values = values.WithElevation(value);
 			Grid.ShaderData.ViewElevationChanged(this);
 			RefreshPosition();
 			ValidateRivers();
@@ -78,14 +78,14 @@ public class HexCell
 	/// </summary>
 	public int WaterLevel
 	{
-		get => waterLevel;
+		get => values.WaterLevel;
 		set
 		{
-			if (waterLevel == value)
+			if (values.WaterLevel == value)
 			{
 				return;
 			}
-			waterLevel = value;
+			values = values.WithWaterLevel(value);
 			Grid.ShaderData.ViewElevationChanged(this);
 			ValidateRivers();
 			Refresh();
@@ -97,13 +97,13 @@ public class HexCell
 	/// Highest of surface and water level.
 	/// </summary>
 	public int ViewElevation =>
-		elevation >= waterLevel ? elevation : waterLevel;
+		Elevation >= WaterLevel ? Elevation : WaterLevel;
 
 	/// <summary>
 	/// Whether the cell counts as underwater,
 	/// which is when water is higher than surface.
 	/// </summary>
-	public bool IsUnderwater => waterLevel > elevation;
+	public bool IsUnderwater => WaterLevel > Elevation;
 
 	/// <summary>
 	/// Whether there is an incoming river.
@@ -150,21 +150,21 @@ public class HexCell
 	/// Vertical positions the the stream bed, if applicable.
 	/// </summary>
 	public float StreamBedY =>
-		(elevation + HexMetrics.streamBedElevationOffset) *
+		(Elevation + HexMetrics.streamBedElevationOffset) *
 		HexMetrics.elevationStep;
 
 	/// <summary>
 	/// Vertical position of the river's surface, if applicable.
 	/// </summary>
 	public float RiverSurfaceY =>
-		(elevation + HexMetrics.waterElevationOffset) *
+		(Elevation + HexMetrics.waterElevationOffset) *
 		HexMetrics.elevationStep;
 
 	/// <summary>
 	/// Vertical position of the water surface, if applicable.
 	/// </summary>
 	public float WaterSurfaceY =>
-		(waterLevel + HexMetrics.waterElevationOffset) *
+		(WaterLevel + HexMetrics.waterElevationOffset) *
 		HexMetrics.elevationStep;
 
 	/// <summary>
@@ -172,12 +172,12 @@ public class HexCell
 	/// </summary>
 	public int UrbanLevel
 	{
-		get => urbanLevel;
+		get => values.UrbanLevel;
 		set
 		{
-			if (urbanLevel != value)
+			if (values.UrbanLevel != value)
 			{
-				urbanLevel = value;
+				values = values.WithUrbanLevel(value);
 				RefreshSelfOnly();
 			}
 		}
@@ -188,12 +188,12 @@ public class HexCell
 	/// </summary>
 	public int FarmLevel
 	{
-		get => farmLevel;
+		get => values.FarmLevel;
 		set
 		{
-			if (farmLevel != value)
+			if (values.FarmLevel != value)
 			{
-				farmLevel = value;
+				values = values.WithFarmLevel(value);
 				RefreshSelfOnly();
 			}
 		}
@@ -204,12 +204,12 @@ public class HexCell
 	/// </summary>
 	public int PlantLevel
 	{
-		get => plantLevel;
+		get => values.PlantLevel;
 		set
 		{
-			if (plantLevel != value)
+			if (values.PlantLevel != value)
 			{
-				plantLevel = value;
+				values = values.WithPlantLevel(value);
 				RefreshSelfOnly();
 			}
 		}
@@ -220,12 +220,12 @@ public class HexCell
 	/// </summary>
 	public int SpecialIndex
 	{
-		get => specialIndex;
+		get => values.SpecialIndex;
 		set
 		{
-			if (specialIndex != value && !HasRiver)
+			if (values.SpecialIndex != value && !HasRiver)
 			{
-				specialIndex = value;
+				values = values.WithSpecialIndex(value);
 				RemoveRoads();
 				RefreshSelfOnly();
 			}
@@ -235,7 +235,7 @@ public class HexCell
 	/// <summary>
 	/// Whether the cell contains a special feature.
 	/// </summary>
-	public bool IsSpecial => specialIndex > 0;
+	public bool IsSpecial => SpecialIndex > 0;
 
 	/// <summary>
 	/// Whether the cell is considered inside a walled region.
@@ -260,12 +260,12 @@ public class HexCell
 	/// </summary>
 	public int TerrainTypeIndex
 	{
-		get => terrainTypeIndex;
+		get => values.TerrainTypeIndex;
 		set
 		{
-			if (terrainTypeIndex != value)
+			if (values.TerrainTypeIndex != value)
 			{
-				terrainTypeIndex = value;
+				values = values.WithTerrainTypeIndex(value);
 				Grid.ShaderData.RefreshTerrain(this);
 			}
 		}
@@ -344,20 +344,9 @@ public class HexCell
 	public HexCell NextWithSamePriority
 	{ get; set; }
 
-	/// <summary>
-	/// Bit flags for cell data, currently rivers, roads, walls,
-	/// and exploration.
-	/// </summary>
 	HexFlags flags;
 
-	int terrainTypeIndex;
-
-	int elevation = int.MinValue;
-	int waterLevel;
-
-	int urbanLevel, farmLevel, plantLevel;
-
-	int specialIndex;
+	HexValues values;
 
 	int distance;
 
@@ -423,7 +412,7 @@ public class HexCell
 	/// <param name="direction">Edge direction relative to the cell.</param>
 	/// <returns><see cref="HexEdgeType"/> based on neighbor cells.</returns>
 	public HexEdgeType GetEdgeType(HexDirection direction) =>
-		HexMetrics.GetEdgeType(elevation, GetNeighbor(direction).elevation);
+		HexMetrics.GetEdgeType(Elevation, GetNeighbor(direction).Elevation);
 
 	/// <summary>
 	/// Get the <see cref="HexEdgeType"/> based on this and another cell.
@@ -431,7 +420,7 @@ public class HexCell
 	/// <param name="otherCell">Other cell to consider as neighbor.</param>
 	/// <returns><see cref="HexEdgeType"/> between cells.</returns>
 	public HexEdgeType GetEdgeType(HexCell otherCell) =>
-		HexMetrics.GetEdgeType(elevation, otherCell.elevation);
+		HexMetrics.GetEdgeType(Elevation, otherCell.Elevation);
 
 	/// <summary>
 	/// Whether a river goes through a specific cell edge.
@@ -449,10 +438,7 @@ public class HexCell
 	public bool HasIncomingRiverThroughEdge(HexDirection direction) =>
 		flags.HasRiverIn(direction);
 
-	/// <summary>
-	/// Remove the incoming river, if it exists.
-	/// </summary>
-	public void RemoveIncomingRiver()
+	void RemoveIncomingRiver()
 	{
 		if (!HasIncomingRiver)
 		{
@@ -469,7 +455,7 @@ public class HexCell
 	/// <summary>
 	/// Remove the outgoing river, if it exists.
 	/// </summary>
-	public void RemoveOutgoingRiver()
+	void RemoveOutgoingRiver()
 	{
 		if (!HasOutgoingRiver)
 		{
@@ -516,10 +502,10 @@ public class HexCell
 		}
 
 		flags = flags.WithRiverOut(direction);
-		specialIndex = 0;
+		SpecialIndex = 0;
 		neighbor.RemoveIncomingRiver();
 		neighbor.flags = neighbor.flags.WithRiverIn(direction.Opposite());
-		neighbor.specialIndex = 0;
+		neighbor.SpecialIndex = 0;
 
 		RemoveRoad(direction);
 	}
@@ -566,20 +552,14 @@ public class HexCell
 		}
 	}
 
-	/// <summary>
-	/// Get the elevation difference with a neighbor.
-	/// The indicated neighbor must exist.
-	/// </summary>
-	/// <param name="direction">Relative direction to the neighbor.</param>
-	/// <returns>Absolute elevation difference.</returns>
-	public int GetElevationDifference(HexDirection direction)
+	int GetElevationDifference(HexDirection direction)
 	{
-		int difference = elevation - GetNeighbor(direction).elevation;
+		int difference = Elevation - GetNeighbor(direction).Elevation;
 		return difference >= 0 ? difference : -difference;
 	}
 
 	bool IsValidRiverDestination(HexCell neighbor) => neighbor &&
-		(elevation >= neighbor.elevation || waterLevel == neighbor.elevation);
+		(Elevation >= neighbor.Elevation || WaterLevel == neighbor.Elevation);
 
 	void ValidateRivers()
 	{
@@ -607,7 +587,7 @@ public class HexCell
 	void RefreshPosition()
 	{
 		Vector3 position = Position;
-		position.y = elevation * HexMetrics.elevationStep;
+		position.y = Elevation * HexMetrics.elevationStep;
 		position.y +=
 			(HexMetrics.SampleNoise(position).y * 2f - 1f) *
 			HexMetrics.elevationPerturbStrength;
@@ -653,13 +633,13 @@ public class HexCell
 	/// <param name="writer"><see cref="BinaryWriter"/> to use.</param>
 	public void Save(BinaryWriter writer)
 	{
-		writer.Write((byte)terrainTypeIndex);
-		writer.Write((byte)(elevation + 127));
-		writer.Write((byte)waterLevel);
-		writer.Write((byte)urbanLevel);
-		writer.Write((byte)farmLevel);
-		writer.Write((byte)plantLevel);
-		writer.Write((byte)specialIndex);
+		writer.Write((byte)TerrainTypeIndex);
+		writer.Write((byte)(Elevation + 127));
+		writer.Write((byte)WaterLevel);
+		writer.Write((byte)UrbanLevel);
+		writer.Write((byte)FarmLevel);
+		writer.Write((byte)PlantLevel);
+		writer.Write((byte)SpecialIndex);
 		writer.Write(Walled);
 
 		if (HasIncomingRiver)
@@ -692,18 +672,19 @@ public class HexCell
 	public void Load(BinaryReader reader, int header)
 	{
 		flags &= HexFlags.Explorable;
-		terrainTypeIndex = reader.ReadByte();
-		elevation = reader.ReadByte();
+		TerrainTypeIndex = reader.ReadByte();
+		int elevation = reader.ReadByte();
 		if (header >= 4)
 		{
 			elevation -= 127;
 		}
+		Elevation = elevation;
 		RefreshPosition();
-		waterLevel = reader.ReadByte();
-		urbanLevel = reader.ReadByte();
-		farmLevel = reader.ReadByte();
-		plantLevel = reader.ReadByte();
-		specialIndex = reader.ReadByte();
+		WaterLevel = reader.ReadByte();
+		UrbanLevel = reader.ReadByte();
+		FarmLevel = reader.ReadByte();
+		PlantLevel = reader.ReadByte();
+		SpecialIndex = reader.ReadByte();
 
 		if (reader.ReadBoolean())
 		{
@@ -733,20 +714,14 @@ public class HexCell
 	/// Set the cell's UI label.
 	/// </summary>
 	/// <param name="text">Label text.</param>
-	public void SetLabel(string text)
-	{
-		UnityEngine.UI.Text label = UIRect.GetComponent<Text>();
-		label.text = text;
-	}
+	public void SetLabel(string text) =>
+		UIRect.GetComponent<Text>().text = text;
 
 	/// <summary>
 	/// Disable the cell's highlight.
 	/// </summary>
-	public void DisableHighlight()
-	{
-		Image highlight = UIRect.GetChild(0).GetComponent<Image>();
-		highlight.enabled = false;
-	}
+	public void DisableHighlight() =>
+		UIRect.GetChild(0).GetComponent<Image>().enabled = false;
 
 	/// <summary>
 	/// Enable the cell's highlight. 
