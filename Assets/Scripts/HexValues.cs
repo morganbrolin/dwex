@@ -15,13 +15,13 @@ public struct HexValues
 	int values;
 #pragma warning restore IDE0044 // Add readonly modifier
 
-	HexValues(int v) => values = v;
-	
-	readonly HexValues With(int value, int mask, int shift) =>
-		new((values & ~(mask << shift)) | ((value & mask) << shift));
-
 	readonly int Get(int mask, int shift) =>
 		(int)((uint)values >> shift) & mask;
+
+	readonly HexValues With(int value, int mask, int shift) => new()
+	{
+		values = (values & ~(mask << shift)) | ((value & mask) << shift)
+	};
 
 	public readonly int Elevation => Get(31, 0) - 15;
 

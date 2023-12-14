@@ -5,18 +5,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [3.1.0] - 2023-12-14
 
 ### Added
-- `HexValues` struct that packs multiple values of `HexCell` in 32 bits.
+- `HexValues` struct that packs seven values of `HexCell` in 32 bits.
 
 ### Changed
 
 - Upgraded to Unity 2022.3.15f1 and Burst 1.8.11.
 - Limited C# code line width to 80.
 - Methods that weren't used outside `HexCell` are now private.
-- Loading and saving moved from `HexCell` to `HexValues` and `HexFlags`.
-- `HexCell` code trimming.
+- Loading and saving code moved from `HexCell` to `HexValues` and `HexFlags`.
+- More `HexCell` simplification.
+- HLSL code uses same code style as C#.
 
 ### Removed
 

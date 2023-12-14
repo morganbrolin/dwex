@@ -1,8 +1,10 @@
-﻿float Foam (float shore, float2 worldXZ, float time, UnityTexture2D noiseTex) {
+﻿float Foam(float shore, float2 worldXZ, float time, UnityTexture2D noiseTex)
+{
 	shore = sqrt(shore) * 0.9;
 
 	float2 noiseUV = worldXZ + _Time.y * 0.25;
-	float4 noise = noiseTex.Sample(noiseTex.samplerstate, noiseUV * (2 * TILING_SCALE));
+	float4 noise = noiseTex.Sample(
+		noiseTex.samplerstate, noiseUV * (2 * TILING_SCALE));
 
 	float distortion1 = noise.x * (1 - shore);
 	float foam1 = sin((shore + distortion1) * 10 - _Time.y);
@@ -15,7 +17,8 @@
 	return max(foam1, foam2) * shore;
 }
 
-float River (float2 riverUV, float time, UnityTexture2D noiseTex) {
+float River(float2 riverUV, float time, UnityTexture2D noiseTex)
+{
 	float2 uv = riverUV;
 	uv.x = uv.x * 0.0625 + _Time.y * 0.005;
 	uv.y -= _Time.y * 0.25;
@@ -29,19 +32,21 @@ float River (float2 riverUV, float time, UnityTexture2D noiseTex) {
 	return noise.r * noise2.w;
 }
 
-float Waves (float2 worldXZ, float time, UnityTexture2D noiseTex) {
+float Waves(float2 worldXZ, float time, UnityTexture2D noiseTex)
+{
 	float2 uv1 = worldXZ;
 	uv1.y += time;
-	float4 noise1 = noiseTex.Sample(noiseTex.samplerstate, uv1 * (3 * TILING_SCALE));
+	float4 noise1 = noiseTex.Sample(
+		noiseTex.samplerstate, uv1 * (3 * TILING_SCALE));
 
 	float2 uv2 = worldXZ;
 	uv2.x += time;
-	float4 noise2 = noiseTex.Sample(noiseTex.samplerstate, uv2 * (3 * TILING_SCALE));
+	float4 noise2 = noiseTex.Sample(
+		noiseTex.samplerstate, uv2 * (3 * TILING_SCALE));
 
 	float blendWave = sin(
 		(worldXZ.x + worldXZ.y) * 0.1 +
-		(noise1.y + noise2.z) + time
-	);
+		(noise1.y + noise2.z) + time);
 	blendWave *= blendWave;
 
 	float waves =

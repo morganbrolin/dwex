@@ -2,29 +2,31 @@
 #include "Water.hlsl"
 
 // Used by Water and Water Shore shader graphs.
-void GetVertexCellData_float (
+void GetVertexCellData_float(
 	float3 Indices,
 	float3 Weights,
 	bool EditMode,
-	out float2 Visibility
-) {
+	out float2 Visibility)
+{
 	float4 cell0 = GetCellData(Indices, 0, EditMode);
 	float4 cell1 = GetCellData(Indices, 1, EditMode);
 	float4 cell2 = GetCellData(Indices, 2, EditMode);
 	
 	Visibility = 0;
-	Visibility.x = cell0.x * Weights.x + cell1.x * Weights.y + cell2.x * Weights.z;
+	Visibility.x =
+		cell0.x * Weights.x + cell1.x * Weights.y + cell2.x * Weights.z;
 	Visibility.x = lerp(0.25, 1, Visibility.x);
-	Visibility.y = cell0.y * Weights.x + cell1.y * Weights.y + cell2.y * Weights.z;
+	Visibility.y =
+		cell0.y * Weights.x + cell1.y * Weights.y + cell2.y * Weights.z;
 }
 
 // Used by shader graphs that cross a cell edge: Estuary, River, and Road.
-void GetVertexCellDataEdge_float (
+void GetVertexCellDataEdge_float(
 	float3 Indices,
 	float2 Weights,
 	bool EditMode,
-	out float2 Visibility
-) {
+	out float2 Visibility)
+{
 	float4 cell0 = GetCellData(Indices, 0, EditMode);
 	float4 cell1 = GetCellData(Indices, 1, EditMode);
 	
@@ -34,7 +36,7 @@ void GetVertexCellDataEdge_float (
 	Visibility.y = cell0.y * Weights.x + cell1.y * Weights.y;
 }
 
-void GetFragmentDataEstuary_float (
+void GetFragmentDataEstuary_float(
 	UnityTexture2D NoiseTexture,
 	float2 RiverUV,
 	float2 ShoreUV,
@@ -44,8 +46,8 @@ void GetFragmentDataEstuary_float (
 	float Time,
 	out float3 BaseColor,
 	out float Alpha,
-	out float Exploration
-) {
+	out float Exploration)
+{
 	float shore = ShoreUV.y;
 	float foam = Foam(shore, WorldPosition.xz, Time, NoiseTexture);
 	float waves = Waves(WorldPosition.xz, Time, NoiseTexture);
@@ -62,7 +64,7 @@ void GetFragmentDataEstuary_float (
 	Exploration = Visibility.y;
 }
 
-void GetFragmentDataRoad_float (
+void GetFragmentDataRoad_float(
 	UnityTexture2D NoiseTexture,
 	float2 BlendUV,
 	float3 WorldPosition,
@@ -70,11 +72,10 @@ void GetFragmentDataRoad_float (
 	float2 Visibility,
 	out float3 BaseColor,
 	out float Alpha,
-	out float Exploration
-) {
+	out float Exploration)
+{
 	float4 noise = NoiseTexture.Sample(
-		NoiseTexture.samplerstate, WorldPosition.xz * (3 * TILING_SCALE)
-	);
+		NoiseTexture.samplerstate, WorldPosition.xz * (3 * TILING_SCALE));
 	BaseColor = Color.rgb * ((noise.y * 0.75 + 0.25) * Visibility.x);
 	Alpha = BlendUV.x;
 	Alpha *= noise.x + 0.5;
@@ -82,7 +83,7 @@ void GetFragmentDataRoad_float (
 	Exploration = Visibility.y;
 }
 
-void GetFragmentDataRiver_float (
+void GetFragmentDataRiver_float(
 	UnityTexture2D NoiseTexture,
 	float2 RiverUV,
 	float4 Color,
@@ -90,8 +91,8 @@ void GetFragmentDataRiver_float (
 	float Time,
 	out float3 BaseColor,
 	out float Alpha,
-	out float Exploration
-) {
+	out float Exploration)
+{
 	float river = River(RiverUV, Time, NoiseTexture);
 	float4 c = saturate(Color + river);
 	BaseColor = c.rgb * Visibility.x;
@@ -99,7 +100,7 @@ void GetFragmentDataRiver_float (
 	Exploration = Visibility.y;
 }
 
-void GetFragmentDataWater_float (
+void GetFragmentDataWater_float(
 	UnityTexture2D NoiseTexture,
 	float3 WorldPosition,
 	float4 Color,
@@ -107,8 +108,8 @@ void GetFragmentDataWater_float (
 	float Time,
 	out float3 BaseColor,
 	out float Alpha,
-	out float Exploration
-) {
+	out float Exploration)
+{
 	float waves = Waves(WorldPosition.xz, Time, NoiseTexture);
 	float4 c = saturate(Color + waves);
 
@@ -117,7 +118,7 @@ void GetFragmentDataWater_float (
 	Exploration = Visibility.y;
 }
 
-void GetFragmentDataShore_float (
+void GetFragmentDataShore_float(
 	UnityTexture2D NoiseTexture,
 	float2 ShoreUV,
 	float3 WorldPosition,
@@ -126,8 +127,8 @@ void GetFragmentDataShore_float (
 	float Time,
 	out float3 BaseColor,
 	out float Alpha,
-	out float Exploration
-) {
+	out float Exploration)
+{
 	float shore = ShoreUV.y;
 	float foam = Foam(shore, WorldPosition.xz, Time, NoiseTexture);
 	float waves = Waves(WorldPosition.xz, Time, NoiseTexture);

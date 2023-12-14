@@ -5,6 +5,7 @@
 
 // Convert from 2D world space to hex space,
 // where the distance between cell centers of east-west neighbors is one unit.
-float2 WoldToHexSpace (float2 p) {
+float2 WoldToHexSpace(float2 p)
+{
 	return p * (1.0 / (2.0 * OUTER_RADIUS * OUTER_TO_INNER));
 }
