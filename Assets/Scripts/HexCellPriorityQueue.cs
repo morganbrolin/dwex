@@ -1,83 +1,81 @@
 ﻿using System.Collections.Generic;
 
 /// <summary>
-/// Priority queue to store hex cells for the pathfinding algorithm.
+/// Priority queue to store hex cell indices for the pathfinding algorithm.
 /// </summary>
 public class HexCellPriorityQueue
 {
-	readonly List<HexCell> list = new();
+	readonly List<int> list = new();
 
-	int count = 0;
+	readonly HexGrid grid;
+
+	public HexCellPriorityQueue(HexGrid grid) => this.grid = grid;
+
 	int minimum = int.MaxValue;
 
 	/// <summary>
-	/// How many cells are in the queue.
+	/// Add a cell index to the queue.
 	/// </summary>
-	public int Count => count;
-
-	/// <summary>
-	/// Add a cell to the queue.
-	/// </summary>
-	/// <param name="cell">Cell to add.</param>
-	public void Enqueue(HexCell cell)
+	/// <param name="cellIndex">Cell index to add.</param>
+	public void Enqueue(int cellIndex)
 	{
-		count += 1;
-		int priority = cell.SearchPriority;
+		int priority = grid.SearchData[cellIndex].SearchPriority;
 		if (priority < minimum)
 		{
 			minimum = priority;
 		}
 		while (priority >= list.Count)
 		{
-			list.Add(null);
+			list.Add(-1);
 		}
-		cell.NextWithSamePriority = list[priority];
-		list[priority] = cell;
+		grid.SearchData[cellIndex].nextWithSamePriority = list[priority];
+		list[priority] = cellIndex;
 	}
 
 	/// <summary>
-	/// Remove a cell from the queue.
+	/// Try to remove a cell index from the queue. Fails if the queue is empty.
 	/// </summary>
-	/// <returns>The cell with the highest priority.</returns>
-	public HexCell Dequeue()
+	/// <param name="cellIndex">The dequeued cell index.</param>
+	/// <returns>Whether the dequeue succeeded.</returns>
+	public bool TryDequeue(out int cellIndex)
 	{
-		count -= 1;
 		for (; minimum < list.Count; minimum++)
 		{
-			HexCell cell = list[minimum];
-			if (cell != null)
+			cellIndex = list[minimum];
+			if (cellIndex >= 0)
 			{
-				list[minimum] = cell.NextWithSamePriority;
-				return cell;
+				list[minimum] = grid.SearchData[cellIndex].nextWithSamePriority;
+				return true;
 			}
 		}
-		return null;
+		cellIndex = -1;
+		return false;
 	}
 
 	/// <summary>
-	/// Apply the current priority of a cell that was previously enqueued.
+	/// Apply the current priority of a cell index that was previously enqueued.
 	/// </summary>
-	/// <param name="cell">Cell to update</param>
+	/// <param name="cellIndex">Cell index to update</param>
 	/// <param name="oldPriority">Cell priority before it was changed.</param>
-	public void Change(HexCell cell, int oldPriority)
+	public void Change(int cellIndex, int oldPriority)
 	{
-		HexCell current = list[oldPriority];
-		HexCell next = current.NextWithSamePriority;
-		if (current == cell)
+		int current = list[oldPriority];
+		int next = grid.SearchData[current].nextWithSamePriority;
+		if (current == cellIndex)
 		{
 			list[oldPriority] = next;
 		}
 		else
 		{
-			while (next != cell)
+			while (next != cellIndex)
 			{
 				current = next;
-				next = current.NextWithSamePriority;
+				next = grid.SearchData[current].nextWithSamePriority;
 			}
-			current.NextWithSamePriority = cell.NextWithSamePriority;
+			grid.SearchData[current].nextWithSamePriority =
+				grid.SearchData[cellIndex].nextWithSamePriority;
 		}
-		Enqueue(cell);
-		count -= 1;
+		Enqueue(cellIndex);
 	}
 
 	/// <summary>
@@ -86,7 +84,6 @@ public class HexCellPriorityQueue
 	public void Clear()
 	{
 		list.Clear();
-		count = 0;
 		minimum = int.MaxValue;
 	}
 }

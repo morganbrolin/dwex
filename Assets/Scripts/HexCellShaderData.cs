@@ -89,7 +89,8 @@ public class HexCellShaderData : MonoBehaviour
 		int index = cell.Index;
 		if (ImmediateMode)
 		{
-			cellTextureData[index].r = cell.IsVisible ? (byte)255 : (byte)0;
+			cellTextureData[index].r =
+				Grid.IsCellVisible(cell.Index) ? (byte)255 : (byte)0;
 			cellTextureData[index].g = cell.IsExplored ? (byte)255 : (byte)0;
 		}
 		else if (!visibilityTransitions[index])
@@ -156,7 +157,7 @@ public class HexCellShaderData : MonoBehaviour
 			data.g = t >= 255 ? (byte)255 : (byte)t;
 		}
 
-		if (cell.IsVisible)
+		if (Grid.IsCellVisible(cell.Index))
 		{
 			if (data.r < 255)
 			{

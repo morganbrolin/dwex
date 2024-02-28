@@ -272,11 +272,6 @@ public class HexCell
 	}
 
 	/// <summary>
-	/// Whether the cell counts as visible.
-	/// </summary>
-	public bool IsVisible => visibility > 0 && Explorable;
-
-	/// <summary>
 	/// Whether the cell counts as explored.
 	/// </summary>
 	public bool IsExplored =>
@@ -295,95 +290,19 @@ public class HexCell
 	}
 
 	/// <summary>
-	/// Distance data used by pathfiding algorithm.
-	/// </summary>
-	public int Distance
-	{
-		get => distance;
-		set => distance = value;
-	}
-
-	/// <summary>
 	/// Unit currently occupying the cell, if any.
 	/// </summary>
 	public HexUnit Unit
-	{ get; set; }
-
-	/// <summary>
-	/// Pathing data used by pathfinding algorithm.
-	/// </summary>
-	public int PathFromIndex
-	{ get; set; }
-
-	/// <summary>
-	/// Heuristic data used by pathfinding algorithm.
-	/// </summary>
-	public int SearchHeuristic
-	{ get; set; }
-
-	/// <summary>
-	/// Search priority used by pathfinding algorithm.
-	/// </summary>
-	public int SearchPriority => distance + SearchHeuristic;
-
-	/// <summary>
-	/// Search phases data used by pathfinding algorithm.
-	/// </summary>
-	public int SearchPhase
-	{ get; set; }
-
-	/// <summary>
-	/// Linked list reference used by <see cref="HexCellPriorityQueue"/>
-	/// for pathfinding.
-	/// </summary>
-	[field: System.NonSerialized]
-	public HexCell NextWithSamePriority
 	{ get; set; }
 
 	HexFlags flags;
 
 	HexValues values;
 
-	int distance;
-
-	int visibility;
-
 	/// <summary>
-	/// Increment visibility level.
+	/// Mark the cell as explored.
 	/// </summary>
-	public void IncreaseVisibility()
-	{
-		visibility += 1;
-		if (visibility == 1)
-		{
-			flags = flags.With(HexFlags.Explored);
-			Grid.ShaderData.RefreshVisibility(this);
-		}
-	}
-
-	/// <summary>
-	/// Decrement visiblility level.
-	/// </summary>
-	public void DecreaseVisibility()
-	{
-		visibility -= 1;
-		if (visibility == 0)
-		{
-			Grid.ShaderData.RefreshVisibility(this);
-		}
-	}
-
-	/// <summary>
-	/// Reset visibility level to zero.
-	/// </summary>
-	public void ResetVisibility()
-	{
-		if (visibility > 0)
-		{
-			visibility = 0;
-			Grid.ShaderData.RefreshVisibility(this);
-		}
-	}
+	public void MarkAsExplored() => flags = flags.With(HexFlags.Explored);
 
 	/// <summary>
 	/// Get one of the neighbor cells. Only valid if that neighbor exists.

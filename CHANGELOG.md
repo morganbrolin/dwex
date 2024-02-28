@@ -5,9 +5,23 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+
+- `HexCellSearchData` struct that bundles data used when searching cells.
+
+## Changed
+
+- Upgraded to Unity 2022.3.20f1, URP 14.0.10, and Burst 1.8.11.
+- Cell search data and visibility are stored in arrays in `HexGrid` instead of per `HexCell`.
+- `HexCellPriorityQueue` works with cell indices instead of `HexCell` references.
+- `HexCellPriorityQueue`, `HexCellShaderData`, and `HexMapGenerator` rely on `HexGrid` for cell search data and visibility.
+
 ## [3.1.0] - 2023-12-14
 
 ### Added
+
 - `HexValues` struct that packs seven values of `HexCell` in 32 bits.
 
 ### Changed
