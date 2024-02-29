@@ -17,12 +17,12 @@ public struct HexCellSearchData
 	/// <summary>
 	/// Index of cell from which the found path entered the cell.
 	/// </summary>
-	public int pathFromIndex;
+	public int pathFrom;
 
 	/// <summary>
 	/// Heuristic data used by pathfinding algorithm.
 	/// </summary>
-	public int searchHeuristic;
+	public int heuristic;
 
 	/// <summary>
 	/// Search phases data used by pathfinding algorithm.
@@ -32,5 +32,5 @@ public struct HexCellSearchData
 	/// <summary>
 	/// Search priority used by pathfinding algorithm.
 	/// </summary>
-	public readonly int SearchPriority => distance + searchHeuristic;
+	public readonly int SearchPriority => distance + heuristic;
 }

@@ -311,9 +311,7 @@ public class HexMapGenerator : MonoBehaviour
 		HexCell firstCell = GetRandomCell(region);
 		grid.SearchData[firstCell.Index] = new HexCellSearchData
 		{
-			searchPhase = searchFrontierPhase,
-			distance = 0,
-			searchHeuristic = 0
+			searchPhase = searchFrontierPhase
 		};
 		searchFrontier.Enqueue(firstCell.Index);
 		HexCoordinates center = firstCell.Coordinates;
@@ -348,8 +346,7 @@ public class HexMapGenerator : MonoBehaviour
 					{
 						searchPhase = searchFrontierPhase,
 						distance = neighbor.Coordinates.DistanceTo(center),
-						searchHeuristic =
-							Random.value < jitterProbability ? 1 : 0
+						heuristic = Random.value < jitterProbability ? 1 : 0
 					};
 					searchFrontier.Enqueue(neighbor.Index);
 				}
@@ -365,9 +362,7 @@ public class HexMapGenerator : MonoBehaviour
 		HexCell firstCell = GetRandomCell(region);
 		grid.SearchData[firstCell.Index] = new HexCellSearchData
 		{
-			searchPhase = searchFrontierPhase,
-			distance = 0,
-			searchHeuristic = 0
+			searchPhase = searchFrontierPhase
 		};
 		searchFrontier.Enqueue(firstCell.Index);
 		HexCoordinates center = firstCell.Coordinates;
@@ -402,8 +397,7 @@ public class HexMapGenerator : MonoBehaviour
 					{
 						searchPhase = searchFrontierPhase,
 						distance = neighbor.Coordinates.DistanceTo(center),
-						searchHeuristic =
-							Random.value < jitterProbability ? 1 : 0
+						heuristic = Random.value < jitterProbability ? 1 : 0
 					};
 					searchFrontier.Enqueue(neighbor.Index);
 				}
