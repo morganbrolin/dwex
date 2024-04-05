@@ -50,6 +50,18 @@ public class HexGrid : MonoBehaviour
 	HexGridChunk[] chunks;
 	HexCell[] cells;
 
+	/// <summary>
+	/// Bundled cell data.
+	/// </summary>
+	public HexCellData[] CellData
+	{ get; private set; }
+
+	/// <summary>
+	/// Separate cell positions.
+	/// </summary>
+	public Vector3[] CellPositions
+	{ get; private set; }
+
 	HexCellSearchData[] searchData;
 
 	/// <summary>
@@ -156,7 +168,7 @@ public class HexGrid : MonoBehaviour
 
 		CellCountX = x;
 		CellCountZ = z;
-		this.Wrapping = wrapping;
+		Wrapping = wrapping;
 		currentCenterColumnIndex = -1;
 		HexMetrics.wrapSize = wrapping ? CellCountX : 0;
 		chunkCountX = CellCountX / HexMetrics.chunkSizeX;
@@ -191,6 +203,8 @@ public class HexGrid : MonoBehaviour
 	void CreateCells()
 	{
 		cells = new HexCell[CellCountZ * CellCountX];
+		CellData = new HexCellData[cells.Length];
+		CellPositions = new Vector3[cells.Length];
 		searchData = new HexCellSearchData[cells.Length];
 		cellVisibility = new int[cells.Length];
 
@@ -288,13 +302,33 @@ public class HexGrid : MonoBehaviour
 	}
 
 	/// <summary>
-	/// Get the cell with specific offset coordinates.
+	/// Try to get the cell index for specific <see cref="HexCoordinates"/>.
+	/// </summary>
+	/// <param name="coordinates"><see cref="HexCoordinates"/>
+	/// of the cell.</param>
+	/// <param name="cell">The cell index, if it exists.</param>
+	/// <returns>Whether the cell index exists.</returns>
+	public bool TryGetCellIndex(HexCoordinates coordinates, out int cellIndex)
+	{
+		int z = coordinates.Z;
+		int x = coordinates.X + z / 2;
+		if (z < 0 || z >= CellCountZ || x < 0 || x >= CellCountX)
+		{
+			cellIndex = -1;
+			return false;
+		}
+		cellIndex = x + z * CellCountX;
+		return true;
+	}
+
+	/// <summary>
+	/// Get the cell index with specific offset coordinates.
 	/// </summary>
 	/// <param name="xOffset">X array offset coordinate.</param>
 	/// <param name="zOffset">Z array offset coordinate.</param>
-	/// <returns></returns>
-	public HexCell GetCell(int xOffset, int zOffset) =>
-		cells[xOffset + zOffset * CellCountX];
+	/// <returns>Cell index.</returns>
+	public int GetCellIndex(int xOffset, int zOffset) =>
+		xOffset + zOffset * CellCountX;
 
 	/// <summary>
 	/// Get the cell with a specific index.
@@ -331,11 +365,11 @@ public class HexGrid : MonoBehaviour
 
 		var cell = cells[i] = new HexCell();
 		cell.Grid = this;
-		cell.Position = position;
-		cell.Coordinates = HexCoordinates.FromOffsetCoordinates(x, z);
+		CellPositions[i] = position;
+		CellData[i].coordinates = HexCoordinates.FromOffsetCoordinates(x, z);
 		cell.Index = i;
 		cell.ColumnIndex = x / HexMetrics.chunkSizeX;
-
+		
 		if (Wrapping)
 		{
 			cell.Explorable = z > 0 && z < CellCountZ - 1;
@@ -346,7 +380,7 @@ public class HexGrid : MonoBehaviour
 				x > 0 && z > 0 && x < CellCountX - 1 && z < CellCountZ - 1;
 		}
 
-		Text label = Instantiate<Text>(cellLabelPrefab);
+		Text label = Instantiate(cellLabelPrefab);
 		label.rectTransform.anchoredPosition =
 			new Vector2(position.x, position.z);
 		cell.UIRect = label.rectTransform;
@@ -364,7 +398,9 @@ public class HexGrid : MonoBehaviour
 
 		int localX = x - chunkX * HexMetrics.chunkSizeX;
 		int localZ = z - chunkZ * HexMetrics.chunkSizeZ;
-		chunk.AddCell(localX + localZ * HexMetrics.chunkSizeX, cell);
+		cell.Chunk = chunk;
+		chunk.AddCell(
+			localX + localZ * HexMetrics.chunkSizeX, cell.Index, cell.UIRect);
 	}
 
 	/// <summary>
@@ -600,10 +636,11 @@ public class HexGrid : MonoBehaviour
 		List<HexCell> cells = GetVisibleCells(fromCell, range);
 		for (int i = 0; i < cells.Count; i++)
 		{
-			if (++cellVisibility[cells[i].Index] == 1)
+			int cellIndex = cells[i].Index;
+			if (++cellVisibility[cellIndex] == 1)
 			{
 				cells[i].MarkAsExplored();
-				cellShaderData.RefreshVisibility(cells[i]);
+				cellShaderData.RefreshVisibility(cellIndex);
 			}
 		}
 		ListPool<HexCell>.Add(cells);
@@ -619,9 +656,10 @@ public class HexGrid : MonoBehaviour
 		List<HexCell> cells = GetVisibleCells(fromCell, range);
 		for (int i = 0; i < cells.Count; i++)
 		{
-			if (--cellVisibility[cells[i].Index] == 0)
+			int cellIndex = cells[i].Index;
+			if (--cellVisibility[cellIndex] == 0)
 			{
-				cellShaderData.RefreshVisibility(cells[i]);
+				cellShaderData.RefreshVisibility(cellIndex);
 			}
 		}
 		ListPool<HexCell>.Add(cells);
@@ -637,7 +675,7 @@ public class HexGrid : MonoBehaviour
 			if (cellVisibility[i] > 0)
 			{
 				cellVisibility[i] = 0;
-				cellShaderData.RefreshVisibility(cells[i]);
+				cellShaderData.RefreshVisibility(i);
 			}
 		}
 		for (int i = 0; i < units.Count; i++)

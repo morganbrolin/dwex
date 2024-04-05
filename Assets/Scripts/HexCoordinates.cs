@@ -37,6 +37,8 @@ public struct HexCoordinates
 	/// </summary>
 	public readonly float HexZ => Z * HexMetrics.outerToInner;
 
+	public readonly int ColumnIndex => (x + z / 2) / HexMetrics.chunkSizeX;
+
 	/// <summary>
 	/// Create hex coordinates.
 	/// </summary>

@@ -87,7 +87,7 @@ public class HexFeatureManager : MonoBehaviour
 	/// </summary>
 	/// <param name="cell">Cell with one or more features.</param>
 	/// <param name="position">Feature position.</param>
-	public void AddFeature(HexCell cell, Vector3 position)
+	public void AddFeature(HexCellData cell, Vector3 position)
 	{
 		if (cell.IsSpecial)
 		{
@@ -96,9 +96,9 @@ public class HexFeatureManager : MonoBehaviour
 
 		HexHash hash = HexMetrics.SampleHashGrid(position);
 		Transform prefab = PickPrefab(
-			urbanCollections, cell.UrbanLevel, hash.a, hash.d);
+			urbanCollections, cell.values.UrbanLevel, hash.a, hash.d);
 		Transform otherPrefab = PickPrefab(
-			farmCollections, cell.FarmLevel, hash.b, hash.d);
+			farmCollections, cell.values.FarmLevel, hash.b, hash.d);
 		float usedHash = hash.a;
 		if (prefab)
 		{
@@ -114,7 +114,7 @@ public class HexFeatureManager : MonoBehaviour
 			usedHash = hash.b;
 		}
 		otherPrefab = PickPrefab(
-			plantCollections, cell.PlantLevel, hash.c, hash.d);
+			plantCollections, cell.values.PlantLevel, hash.c, hash.d);
 		if (prefab)
 		{
 			if (otherPrefab && hash.c < usedHash)
@@ -144,10 +144,10 @@ public class HexFeatureManager : MonoBehaviour
 	/// </summary>
 	/// <param name="cell">Cell with special feature.</param>
 	/// <param name="position">Feature position.</param>
-	public void AddSpecialFeature(HexCell cell, Vector3 position)
+	public void AddSpecialFeature(HexCellData data, Vector3 position)
 	{
 		HexHash hash = HexMetrics.SampleHashGrid(position);
-		Transform instance = Instantiate(special[cell.SpecialIndex - 1]);
+		Transform instance = Instantiate(special[data.values.SpecialIndex - 1]);
 		instance.SetLocalPositionAndRotation(
 			HexMetrics.Perturb(position),
 			Quaternion.Euler(0f, 360f * hash.e, 0f));
@@ -164,8 +164,8 @@ public class HexFeatureManager : MonoBehaviour
 	/// <param name="hasRiver">Whether a river crosses the edge.</param>
 	/// <param name="hasRoad">Whether a road crosses the edge.</param>
 	public void AddWall(
-		EdgeVertices near, HexCell nearCell,
-		EdgeVertices far, HexCell farCell,
+		EdgeVertices near, HexCellData nearCell,
+		EdgeVertices far, HexCellData farCell,
 		bool hasRiver, bool hasRoad)
 	{
 		if (nearCell.Walled != farCell.Walled &&
@@ -197,9 +197,9 @@ public class HexFeatureManager : MonoBehaviour
 	/// <param name="c3">Third corner position.</param>
 	/// <param name="cell3">Third corner cell.</param>
 	public void AddWall(
-		Vector3 c1, HexCell cell1,
-		Vector3 c2, HexCell cell2,
-		Vector3 c3, HexCell cell3)
+		Vector3 c1, HexCellData cell1,
+		Vector3 c2, HexCellData cell2,
+		Vector3 c3, HexCellData cell3)
 	{
 		if (cell1.Walled)
 		{
@@ -285,9 +285,9 @@ public class HexFeatureManager : MonoBehaviour
 	}
 
 	void AddWallSegment(
-		Vector3 pivot, HexCell pivotCell,
-		Vector3 left, HexCell leftCell,
-		Vector3 right, HexCell rightCell)
+		Vector3 pivot, HexCellData pivotCell,
+		Vector3 left, HexCellData leftCell,
+		Vector3 right, HexCellData rightCell)
 	{
 		if (pivotCell.IsUnderwater)
 		{
