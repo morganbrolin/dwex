@@ -5,9 +5,9 @@
 /// </summary>
 public class HexGridChunk : MonoBehaviour
 {
-	static Color weights1 = new(1f, 0f, 0f);
-	static Color weights2 = new(0f, 1f, 0f);
-	static Color weights3 = new(0f, 0f, 1f);
+	readonly static Color weights1 = new(1f, 0f, 0f);
+	readonly static Color weights2 = new(0f, 1f, 0f);
+	readonly static Color weights3 = new(0f, 0f, 1f);
 
 	public HexGrid Grid
 	{ get; set; }
@@ -163,19 +163,18 @@ public class HexGridChunk : MonoBehaviour
 	{
 		center.y = cell.WaterSurfaceY;
 		HexCoordinates neighborCoordinates = cell.coordinates.Step(direction);
-		if (Grid.TryGetCellIndex(neighborCoordinates, out int neighborIndex))
+		if (Grid.TryGetCellIndex(neighborCoordinates, out int neighborIndex) &&
+			!Grid.CellData[neighborIndex].IsUnderwater)
 		{
-			HexCellData neighbor = Grid.CellData[neighborIndex];
-			if (!neighbor.IsUnderwater)
-			{
-				TriangulateWaterShore(
-					direction, cell, cellIndex, neighborIndex,
-					neighborCoordinates.ColumnIndex, center);	
-				return;
-			}
+			TriangulateWaterShore(
+				direction, cell, cellIndex, neighborIndex,
+				neighborCoordinates.ColumnIndex, center);
 		}
-		TriangulateOpenWater(
-			cell.coordinates, direction, cellIndex, neighborIndex, center);
+		else
+		{
+			TriangulateOpenWater(
+				cell.coordinates, direction, cellIndex, neighborIndex, center);
+		}
 	}
 
 	void TriangulateOpenWater(
@@ -286,7 +285,8 @@ public class HexGridChunk : MonoBehaviour
 			nextNeighborCoordinates, out int nextNeighborIndex))
 		{
 			Vector3 center3 = Grid.CellPositions[nextNeighborIndex];
-			HexCellData nextNeighbor = Grid.CellData[nextNeighborIndex];
+			bool nextNeighborIsUnderwater =
+				Grid.CellData[nextNeighborIndex].IsUnderwater;
 			int nextNeighborColumnIndex = nextNeighborCoordinates.ColumnIndex;
 			if (nextNeighborColumnIndex < cellColumnIndex - 1)
 			{
@@ -296,7 +296,7 @@ public class HexGridChunk : MonoBehaviour
 			{
 				center3.x -= HexMetrics.wrapSize * HexMetrics.innerDiameter;
 			}
-			Vector3 v3 = center3 + (nextNeighbor.IsUnderwater ?
+			Vector3 v3 = center3 + (nextNeighborIsUnderwater ?
 				HexMetrics.GetFirstWaterCorner(direction.Previous()) :
 				HexMetrics.GetFirstSolidCorner(direction.Previous()));
 			v3.y = center.y;
@@ -304,7 +304,7 @@ public class HexGridChunk : MonoBehaviour
 			waterShore.AddTriangleUV(
 				new Vector2(0f, 0f),
 				new Vector2(0f, 1f),
-				new Vector2(0f, nextNeighbor.IsUnderwater ? 0f : 1f));
+				new Vector2(0f, nextNeighborIsUnderwater ? 0f : 1f));
 			indices.z = nextNeighborIndex;
 			waterShore.AddTriangleCellData(
 				indices, weights1, weights2, weights3);
@@ -751,7 +751,8 @@ public class HexGridChunk : MonoBehaviour
 
 		if (direction <= HexDirection.E &&
 			Grid.TryGetCellIndex(
-				cell.coordinates.Step(direction.Next()), out int nextNeighborIndex))
+				cell.coordinates.Step(direction.Next()),
+				out int nextNeighborIndex))
 		{
 			HexCellData nextNeighbor = Grid.CellData[nextNeighborIndex];
 			Vector3 v5 = e1.v5 + HexMetrics.GetBridge(direction.Next());

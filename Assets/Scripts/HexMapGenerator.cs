@@ -670,7 +670,8 @@ public class HexMapGenerator : MonoBehaviour
 				{
 					if (grid.TryGetCellIndex(
 						origin.coordinates.Step(d), out int neighborIndex) &&
-						(grid.CellData[neighborIndex].HasRiver || grid.CellData[neighborIndex].IsUnderwater))
+						(grid.CellData[neighborIndex].HasRiver ||
+							grid.CellData[neighborIndex].IsUnderwater))
 					{
 						isValidOrigin = false;
 						break;
@@ -772,7 +773,8 @@ public class HexMapGenerator : MonoBehaviour
 			direction = flowDirections[Random.Range(0, flowDirections.Count)];
 
 			cell.flags = cell.flags.WithRiverOut(direction);
-			grid.TryGetCellIndex(cell.coordinates.Step(direction), out int outIndex);
+			grid.TryGetCellIndex(
+				cell.coordinates.Step(direction), out int outIndex);
 			grid.CellData[outIndex].flags =
 				grid.CellData[outIndex].flags.WithRiverIn(direction.Opposite());
 

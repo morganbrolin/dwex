@@ -120,16 +120,6 @@ public class HexCell
 	public bool HasRiver => Flags.HasAny(HexFlags.River);
 
 	/// <summary>
-	/// Whether a river begins or ends in the cell.
-	/// </summary>
-	public bool HasRiverBeginOrEnd => HasIncomingRiver != HasOutgoingRiver;
-
-	/// <summary>
-	/// Whether the cell contains roads.
-	/// </summary>
-	public bool HasRoads => Flags.HasAny(HexFlags.Roads);
-
-	/// <summary>
 	/// Incoming river direction, if applicable.
 	/// </summary>
 	public HexDirection IncomingRiver => Flags.RiverInDirection();
@@ -143,27 +133,6 @@ public class HexCell
 	/// Local position of this cell.
 	/// </summary>
 	public Vector3 Position => Grid.CellPositions[Index];
-
-	/// <summary>
-	/// Vertical positions the the stream bed, if applicable.
-	/// </summary>
-	public float StreamBedY =>
-		(Elevation + HexMetrics.streamBedElevationOffset) *
-		HexMetrics.elevationStep;
-
-	/// <summary>
-	/// Vertical position of the river's surface, if applicable.
-	/// </summary>
-	public float RiverSurfaceY =>
-		(Elevation + HexMetrics.waterElevationOffset) *
-		HexMetrics.elevationStep;
-
-	/// <summary>
-	/// Vertical position of the water surface, if applicable.
-	/// </summary>
-	public float WaterSurfaceY =>
-		(WaterLevel + HexMetrics.waterElevationOffset) *
-		HexMetrics.elevationStep;
 
 	/// <summary>
 	/// Urban feature level.
@@ -342,14 +311,6 @@ public class HexCell
 	/// <returns>Whether a river goes through the edge.</returns>
 	public bool HasRiverThroughEdge(HexDirection direction) =>
 		Flags.HasRiverIn(direction) || Flags.HasRiverOut(direction);
-
-	/// <summary>
-	/// Whether an incoming river goes through a specific cell edge.
-	/// </summary>
-	/// <param name="direction">Edge direction relative to the cell.</param>
-	/// <returns>Whether an incoming river goes through the edge.</returns>
-	public bool HasIncomingRiverThroughEdge(HexDirection direction) =>
-		Flags.HasRiverIn(direction);
 
 	void RemoveIncomingRiver()
 	{
