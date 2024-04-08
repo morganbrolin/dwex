@@ -655,7 +655,9 @@ public class HexGridChunk : MonoBehaviour
 			1f / 6f);
 		m.v3.y = center.y = e.v3.y;
 
-		TriangulateEdgeStrip(m, weights1, cellIndex, e, weights1, cellIndex);
+		TriangulateEdgeStrip(
+			m, weights1, cellIndex,
+			e, weights1, cellIndex);
 
 		terrain.AddTriangle(centerL, m.v1, m.v2);
 		terrain.AddQuad(centerL, center, m.v2, m.v3);

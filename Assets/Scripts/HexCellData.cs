@@ -35,6 +35,26 @@ public struct HexCellData
 	public readonly int TerrainTypeIndex => values.TerrainTypeIndex;
 
 	/// <summary>
+	/// Urban feature level.
+	/// </summary>
+	public readonly int UrbanLevel => values.UrbanLevel;
+
+	/// <summary>
+	/// Farm feature level.
+	/// </summary>
+	public readonly int FarmLevel => values.FarmLevel;
+
+	/// <summary>
+	/// Plant feature level.
+	/// </summary>
+	public readonly int PlantLevel => values.PlantLevel;
+
+	/// <summary>
+	/// Special feature index.
+	/// </summary>
+	public readonly int SpecialIndex => values.SpecialIndex;
+
+	/// <summary>
 	/// Whether the cell is considered inside a walled region.
 	/// </summary>
 	public readonly bool Walled => flags.HasAny(HexFlags.Walled);

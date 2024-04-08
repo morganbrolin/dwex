@@ -436,13 +436,12 @@ public class HexMapGenerator : MonoBehaviour
 			HexCellData cell = grid.CellData[cellIndex];
 			int targetCellIndex = GetErosionTarget(cellIndex, cell.Elevation);
 
-			cell.values = cell.values.WithElevation(cell.Elevation - 1);
-			grid.CellData[cellIndex] = cell;
+			grid.CellData[cellIndex].values = cell.values =
+				cell.values.WithElevation(cell.Elevation - 1);
 
 			HexCellData targetCell = grid.CellData[targetCellIndex];
-			targetCell.values = targetCell.values.WithElevation(
-				targetCell.Elevation + 1);
-			grid.CellData[targetCellIndex] = targetCell;
+			grid.CellData[targetCellIndex].values = targetCell.values =
+				targetCell.values.WithElevation(targetCell.Elevation + 1);
 
 			if (!IsErodible(cellIndex, cell.Elevation))
 			{
@@ -771,7 +770,6 @@ public class HexMapGenerator : MonoBehaviour
 			}
 
 			direction = flowDirections[Random.Range(0, flowDirections.Count)];
-
 			cell.flags = cell.flags.WithRiverOut(direction);
 			grid.TryGetCellIndex(
 				cell.coordinates.Step(direction), out int outIndex);
@@ -844,10 +842,9 @@ public class HexMapGenerator : MonoBehaviour
 				{
 					cellBiome.plant += 1;
 				}
-				cell.values = cell.values.WithTerrainTypeIndex(
-					cellBiome.terrain);
-				cell.values = cell.values.WithPlantLevel(cellBiome.plant);
-				grid.CellData[i].values = cell.values;
+				grid.CellData[i].values = cell.values.
+					WithTerrainTypeIndex(cellBiome.terrain).
+					WithPlantLevel(cellBiome.plant);
 			}
 			else
 			{
@@ -909,8 +906,8 @@ public class HexMapGenerator : MonoBehaviour
 				{
 					terrain = 2;
 				}
-				cell.values = cell.values.WithTerrainTypeIndex(terrain);
-				grid.CellData[i].values = cell.values;
+				grid.CellData[i].values =
+					cell.values.WithTerrainTypeIndex(terrain);
 			}
 		}
 	}

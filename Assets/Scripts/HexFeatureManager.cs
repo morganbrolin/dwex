@@ -96,9 +96,9 @@ public class HexFeatureManager : MonoBehaviour
 
 		HexHash hash = HexMetrics.SampleHashGrid(position);
 		Transform prefab = PickPrefab(
-			urbanCollections, cell.values.UrbanLevel, hash.a, hash.d);
+			urbanCollections, cell.UrbanLevel, hash.a, hash.d);
 		Transform otherPrefab = PickPrefab(
-			farmCollections, cell.values.FarmLevel, hash.b, hash.d);
+			farmCollections, cell.FarmLevel, hash.b, hash.d);
 		float usedHash = hash.a;
 		if (prefab)
 		{
@@ -114,7 +114,7 @@ public class HexFeatureManager : MonoBehaviour
 			usedHash = hash.b;
 		}
 		otherPrefab = PickPrefab(
-			plantCollections, cell.values.PlantLevel, hash.c, hash.d);
+			plantCollections, cell.PlantLevel, hash.c, hash.d);
 		if (prefab)
 		{
 			if (otherPrefab && hash.c < usedHash)
@@ -144,10 +144,10 @@ public class HexFeatureManager : MonoBehaviour
 	/// </summary>
 	/// <param name="cell">Cell with special feature.</param>
 	/// <param name="position">Feature position.</param>
-	public void AddSpecialFeature(HexCellData data, Vector3 position)
+	public void AddSpecialFeature(HexCellData cell, Vector3 position)
 	{
 		HexHash hash = HexMetrics.SampleHashGrid(position);
-		Transform instance = Instantiate(special[data.values.SpecialIndex - 1]);
+		Transform instance = Instantiate(special[cell.SpecialIndex - 1]);
 		instance.SetLocalPositionAndRotation(
 			HexMetrics.Perturb(position),
 			Quaternion.Euler(0f, 360f * hash.e, 0f));
