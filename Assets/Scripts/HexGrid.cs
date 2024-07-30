@@ -403,9 +403,17 @@ public class HexGrid : MonoBehaviour
 		chunk.AddCell(localX + localZ * HexMetrics.chunkSizeX, i, rect);
 	}
 
+	/// <summary>
+	/// Refresh the chunk the cell is part of.
+	/// </summary>
+	/// <param name="cellIndex">Cell index.</param>
 	public void RefreshCell(int cellIndex) =>
 		cellGridChunks[cellIndex].Refresh();
 
+	/// <summary>
+	/// Refresh the cell, all its neighbors, and its unit.
+	/// </summary>
+	/// <param name="cellIndex">Cell index.</param>
 	public void RefreshCellWithDependents (int cellIndex)
 	{
 		HexGridChunk chunk = cellGridChunks[cellIndex];
@@ -429,6 +437,10 @@ public class HexGrid : MonoBehaviour
 		}
 	}
 
+	/// <summary>
+	/// Refresh the world position of a cell.
+	/// </summary>
+	/// <param name="cellIndex">Cell index.</param>
 	public void RefreshCellPosition (int cellIndex)
 	{
 		Vector3 position = CellPositions[cellIndex];

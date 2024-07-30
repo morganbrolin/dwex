@@ -341,9 +341,11 @@ public struct HexCell
 
 	readonly void Refresh() => grid.RefreshCell(index);
 
+	/// <inheritdoc/>
 	public readonly override bool Equals(object obj) =>
 		obj is HexCell cell && this == cell;
 
+	/// <inheritdoc/>
 	public readonly override int GetHashCode() =>
 		grid != null ? index.GetHashCode() ^ grid.GetHashCode() : 0;
 	
