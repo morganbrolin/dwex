@@ -8,6 +8,7 @@ Temp
 obj
 *.log
 ApiUpdaterCheck.txt
+.vscode
 .vsconfig
 *.dwlt
 
