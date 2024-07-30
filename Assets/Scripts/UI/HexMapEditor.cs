@@ -182,7 +182,7 @@ public class HexMapEditor : MonoBehaviour
 
 	void UpdateCellHighlightData(HexCell cell)
 	{
-		if (cell == null)
+		if (!cell)
 		{
 			ClearCellHighlightData();
 			return;
@@ -246,31 +246,31 @@ public class HexMapEditor : MonoBehaviour
 		{
 			if (activeTerrainTypeIndex >= 0)
 			{
-				cell.TerrainTypeIndex = activeTerrainTypeIndex;
+				cell.SetTerrainTypeIndex(activeTerrainTypeIndex);
 			}
 			if (applyElevation)
 			{
-				cell.Elevation = activeElevation;
+				cell.SetElevation(activeElevation);
 			}
 			if (applyWaterLevel)
 			{
-				cell.WaterLevel = activeWaterLevel;
+				cell.SetWaterLevel(activeWaterLevel);
 			}
 			if (applySpecialIndex)
 			{
-				cell.SpecialIndex = activeSpecialIndex;
+				cell.SetSpecialIndex(activeSpecialIndex);
 			}
 			if (applyUrbanLevel)
 			{
-				cell.UrbanLevel = activeUrbanLevel;
+				cell.SetUrbanLevel(activeUrbanLevel);
 			}
 			if (applyFarmLevel)
 			{
-				cell.FarmLevel = activeFarmLevel;
+				cell.SetFarmLevel(activeFarmLevel);
 			}
 			if (applyPlantLevel)
 			{
-				cell.PlantLevel = activePlantLevel;
+				cell.SetPlantLevel(activePlantLevel);
 			}
 			if (riverMode == OptionalToggle.No)
 			{
@@ -282,11 +282,10 @@ public class HexMapEditor : MonoBehaviour
 			}
 			if (walledMode != OptionalToggle.Ignore)
 			{
-				cell.Walled = walledMode == OptionalToggle.Yes;
+				cell.SetWalled(walledMode == OptionalToggle.Yes);
 			}
 			if (isDrag && cell.TryGetNeighbor(
-				dragDirection.Opposite(), out HexCell otherCell)
-			)
+				dragDirection.Opposite(), out HexCell otherCell))
 			{
 				if (riverMode == OptionalToggle.Yes)
 				{

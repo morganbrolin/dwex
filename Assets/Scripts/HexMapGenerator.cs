@@ -179,11 +179,7 @@ public class HexMapGenerator : MonoBehaviour
 		CreateClimate();
 		CreateRivers();
 		SetTerrainType();
-		for (int i = 0; i < cellCount; i++)
-		{
-			grid.SearchData[i].searchPhase = 0;
-			grid.GetCell(i).RefreshAll();
-		}
+		grid.RefreshAllCells();
 
 		Random.state = originalRandomState;
 	}

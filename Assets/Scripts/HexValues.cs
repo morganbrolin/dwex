@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using UnityEngine;
 
 /// <summary>
 /// Values that describe the contents of a cell.
@@ -29,6 +30,10 @@ public struct HexValues
 		With(value + 15, 31, 0);
 
 	public readonly int WaterLevel => Get(31, 5);
+
+	public readonly int ViewElevation => Mathf.Max(Elevation, WaterLevel);
+
+	public readonly bool IsUnderwater => WaterLevel > Elevation;
 
 	public readonly HexValues WithWaterLevel(int value) => With(value, 31, 5);
 	

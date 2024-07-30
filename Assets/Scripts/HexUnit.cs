@@ -33,7 +33,7 @@ public class HexUnit : MonoBehaviour
 			value.Unit = this;
 			Grid.IncreaseVisibility(value, VisionRange);
 			transform.localPosition = value.Position;
-			Grid.MakeChildOfColumn(transform, value.ColumnIndex);
+			Grid.MakeChildOfColumn(transform, value.Coordinates.ColumnIndex);
 		}
 	}
 
@@ -78,7 +78,8 @@ public class HexUnit : MonoBehaviour
 	/// <param name="cell">Cell to check.</param>
 	/// <returns>Whether the unit could occupy the cell.</returns>
 	public bool IsValidDestination(HexCell cell) =>
-		cell.IsExplored && !cell.IsUnderwater && !cell.Unit;
+		cell.Flags.HasAll(HexFlags.Explored | HexFlags.Explorable) &&
+		!cell.Values.IsUnderwater && !cell.Unit;
 
 	/// <summary>
 	/// Travel along a path.
@@ -108,7 +109,7 @@ public class HexUnit : MonoBehaviour
 		HexCell currentTravelLocation = Grid.GetCell(
 			currentTravelLocationCellIndex);
 		Grid.DecreaseVisibility(currentTravelLocation, VisionRange);
-		int currentColumn = currentTravelLocation.ColumnIndex;
+		int currentColumn = currentTravelLocation.Coordinates.ColumnIndex;
 
 		float t = Time.deltaTime * travelSpeed;
 		for (int i = 1; i < pathToTravel.Count; i++)
@@ -118,7 +119,7 @@ public class HexUnit : MonoBehaviour
 			a = c;
 			b = Grid.GetCell(pathToTravel[i - 1]).Position;
 
-			int nextColumn = currentTravelLocation.ColumnIndex;
+			int nextColumn = currentTravelLocation.Coordinates.ColumnIndex;
 			if (currentColumn != nextColumn)
 			{
 				if (nextColumn < currentColumn - 1)
@@ -222,25 +223,27 @@ public class HexUnit : MonoBehaviour
 		{
 			return -1;
 		}
-		HexEdgeType edgeType = fromCell.GetEdgeType(toCell);
+		HexEdgeType edgeType = HexMetrics.GetEdgeType(
+			fromCell.Values.Elevation, toCell.Values.Elevation);
 		if (edgeType == HexEdgeType.Cliff)
 		{
 			return -1;
 		}
 		int moveCost;
-		if (fromCell.HasRoadThroughEdge(direction))
+		if (fromCell.Flags.HasRoad(direction))
 		{
 			moveCost = 1;
 		}
-		else if (fromCell.Walled != toCell.Walled)
+		else if (fromCell.Flags.HasAny(HexFlags.Walled) !=
+			toCell.Flags.HasAny(HexFlags.Walled))
 		{
 			return -1;
 		}
 		else
 		{
 			moveCost = edgeType == HexEdgeType.Flat ? 5 : 10;
-			moveCost +=
-				toCell.UrbanLevel + toCell.FarmLevel + toCell.PlantLevel;
+			HexValues v = toCell.Values;
+			moveCost += v.UrbanLevel + v.FarmLevel + v.PlantLevel;
 		}
 		return moveCost;
 	}
