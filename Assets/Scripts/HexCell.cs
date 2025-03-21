@@ -101,7 +101,7 @@ public struct HexCell
 	/// <param name="farmLevel">Farm level.</param>
 	public readonly void SetFarmLevel (int farmLevel)
 	{
-		if (Values.UrbanLevel != farmLevel)
+		if (Values.FarmLevel != farmLevel)
 		{
 			Values = Values.WithFarmLevel(farmLevel);
 			Refresh();
@@ -114,7 +114,7 @@ public struct HexCell
 	/// <param name="plantLevel">Plant level.</param>
 	public readonly void SetPlantLevel(int plantLevel)
 	{
-		if (Values.UrbanLevel != plantLevel)
+		if (Values.PlantLevel != plantLevel)
 		{
 			Values = Values.WithPlantLevel(plantLevel);
 			Refresh();
