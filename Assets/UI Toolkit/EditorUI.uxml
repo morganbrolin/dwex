@@ -1,0 +1,32 @@
+<engine:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:engine="UnityEngine.UIElements" xmlns:editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <Style src="project://database/Assets/UI%20Toolkit/MyStyle.uss?fileID=7433441132597879392&amp;guid=1221f3cb1941d4cd29201de5b3dc80bb&amp;type=3#MyStyle" />
+    <engine:VisualElement name="LeftPanel" class="mainPanel" style="position: absolute; left: 140px;">
+        <engine:RadioButtonGroup label="Terrain" choices="---,Snd,Grs,Md,Stn,Sw" value="1" name="Terrain" />
+        <engine:Toggle label="Elevation" value="true" name="ApplyElevation" />
+        <engine:SliderInt value="0" high-value="6" name="Elevation" />
+        <engine:Toggle label="Water" value="true" name="ApplyWaterLevel" />
+        <engine:SliderInt value="0" high-value="6" name="WaterLevel" />
+        <engine:RadioButtonGroup label="River" choices="---,Yes,No" value="0" name="River" />
+        <engine:RadioButtonGroup label="Roads" name="Roads" choices="---,Yes,No" value="0" />
+        <engine:Label text="Brush Size" style="align-self: center;" />
+        <engine:SliderInt value="0" high-value="4" name="BrushSize" />
+    </engine:VisualElement>
+    <engine:VisualElement name="RightPanel" class="mainPanel" style="position: absolute; right: 140px;">
+        <engine:Toggle label="Urban" name="ApplyUrbanLevel" />
+        <engine:SliderInt value="0" high-value="3" name="UrbanLevel" />
+        <engine:Toggle label="Farm" name="ApplyFarmLevel" />
+        <engine:SliderInt value="0" high-value="3" name="FarmLevel" />
+        <engine:Toggle label="Plant" name="ApplyPlantLevel" />
+        <engine:SliderInt value="0" high-value="3" name="PlantLevel" />
+        <engine:Toggle label="Special" name="ApplySpecialIndex" />
+        <engine:SliderInt value="0" high-value="3" name="SpecialIndex" />
+        <engine:RadioButtonGroup label="Walled" name="Walled" choices="---,Yes,No" value="0" />
+        <engine:VisualElement style="flex-direction: row;">
+            <engine:Button text="Save" name="SaveButton" />
+            <engine:Button text="Load" name="LoadButton" />
+        </engine:VisualElement>
+        <engine:Button text="New Map" name="NewMapButton" />
+        <engine:Toggle label="Grid" name="Grid" />
+        <engine:Toggle label="Edit Mode" value="true" name="EditMode" />
+    </engine:VisualElement>
+</engine:UXML>

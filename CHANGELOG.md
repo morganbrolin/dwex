@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - Upgraded to Unity 6000.0.43f1, Burst 1.8.19, and URP 17.0.4.
+- Migrated editor UI panels from uGUI to UI Toolkit.
 
 ### Fixed
 - Check correct levels when editing farm or plant levels.

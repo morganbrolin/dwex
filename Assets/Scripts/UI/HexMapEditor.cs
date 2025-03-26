@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.UIElements;
 
 /// <summary>
 /// Component that applies UI commands to the hex map.
@@ -14,7 +15,19 @@ public class HexMapEditor : MonoBehaviour
 	HexGrid hexGrid;
 
 	[SerializeField]
+	HexGameUI gameUI;
+
+	[SerializeField]
+	NewMapMenu newMapMenu;
+
+	[SerializeField]
+	SaveLoadMenu saveLoadMenu;
+
+	[SerializeField]
 	Material terrainMaterial;
+
+	[SerializeField]
+	UIDocument document;
 
 	int activeElevation;
 	int activeWaterLevel;
@@ -96,9 +109,77 @@ public class HexMapEditor : MonoBehaviour
 		terrainMaterial.DisableKeyword("_SHOW_GRID");
 		Shader.EnableKeyword("_HEX_MAP_EDIT_MODE");
 		SetEditMode(true);
-	}
 
-	void Update()
+		VisualElement root = document.rootVisualElement;
+
+		root.Q<RadioButtonGroup>("Terrain").RegisterValueChangedCallback(
+			change => activeTerrainTypeIndex = change.newValue - 1);
+
+		root.Q<Toggle>("ApplyElevation").RegisterValueChangedCallback(
+			change => applyElevation = change.newValue);
+		root.Q<SliderInt>("Elevation").RegisterValueChangedCallback(
+			change => activeElevation = change.newValue);
+
+		root.Q<Toggle>("ApplyWaterLevel").RegisterValueChangedCallback(
+			change => applyWaterLevel = change.newValue);
+		root.Q<SliderInt>("WaterLevel").RegisterValueChangedCallback(
+			change => activeWaterLevel = change.newValue);
+		
+		root.Q<RadioButtonGroup>("River").RegisterValueChangedCallback(
+			change => riverMode = (OptionalToggle)change.newValue);
+		
+		root.Q<RadioButtonGroup>("Roads").RegisterValueChangedCallback(
+			change => roadMode = (OptionalToggle)change.newValue);
+
+		root.Q<SliderInt>("BrushSize").RegisterValueChangedCallback(
+			change => brushSize = change.newValue);
+
+		root.Q<Toggle>("ApplyUrbanLevel").RegisterValueChangedCallback(
+			change => applyUrbanLevel = change.newValue);
+		root.Q<SliderInt>("UrbanLevel").RegisterValueChangedCallback(
+			change => activeUrbanLevel = change.newValue);
+		
+		root.Q<Toggle>("ApplyFarmLevel").RegisterValueChangedCallback(
+			change => applyFarmLevel = change.newValue);
+		root.Q<SliderInt>("FarmLevel").RegisterValueChangedCallback(
+			change => activeFarmLevel = change.newValue);
+		
+		root.Q<Toggle>("ApplyPlantLevel").RegisterValueChangedCallback(
+			change => applyPlantLevel = change.newValue);
+		root.Q<SliderInt>("PlantLevel").RegisterValueChangedCallback(
+			change => activePlantLevel = change.newValue);
+
+		root.Q<Toggle>("ApplySpecialIndex").RegisterValueChangedCallback(
+			change => applySpecialIndex = change.newValue);
+		root.Q<SliderInt>("SpecialIndex").RegisterValueChangedCallback(
+			change => activeSpecialIndex = change.newValue);
+
+		root.Q<RadioButtonGroup>("Walled").RegisterValueChangedCallback(
+			change => walledMode = (OptionalToggle)change.newValue);
+		
+		root.Q<Button>("SaveButton").clicked += () => saveLoadMenu.Open(true);
+		root.Q<Button>("LoadButton").clicked += () => saveLoadMenu.Open(false);
+
+		root.Q<Button>("NewMapButton").clicked += newMapMenu.Open;
+
+		root.Q<Toggle>("Grid").RegisterValueChangedCallback(change => {
+			if (change.newValue)
+			{
+				terrainMaterial.EnableKeyword("_SHOW_GRID");
+			}
+			else
+			{
+				terrainMaterial.DisableKeyword("_SHOW_GRID");
+			}
+		});
+
+		root.Q<Toggle>("EditMode").RegisterValueChangedCallback(change => {
+			enabled = change.newValue;
+			gameUI.SetEditMode(change.newValue);
+		});
+    }
+
+    void Update()
 	{
 		if (!EventSystem.current.IsPointerOverGameObject())
 		{

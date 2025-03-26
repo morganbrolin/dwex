@@ -1,0 +1,59 @@
+#choicesContentContainer {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-evenly;
+}
+
+.unity-radio-button__input {
+    flex-direction: column;
+    width: 30px;
+}
+
+.unity-radio-button__text {
+    align-content: auto;
+    -unity-font-style: bold;
+    -unity-text-align: upper-center;
+    flex-grow: 1;
+    margin: 0;
+    padding: 0;
+}
+
+.unity-radio-button-group > Label {
+    margin: 0;
+    padding: 0;
+    -unity-text-align: upper-center;
+}
+
+.unity-radio-button-group {
+    background-color: rgba(255, 255, 255, 0.39);
+    flex-direction: column;
+}
+
+Label {
+    min-width: auto;
+    -unity-font-style: bold;
+}
+
+Button {
+    -unity-font-style: bold;
+    flex-grow: 1;
+    flex-shrink: 1;
+    background-color: rgb(255, 255, 255);
+    border-width: 1px;
+    border-color: rgb(0, 0, 0);
+}
+
+.mainPanel {
+    background-color: rgba(255, 255, 255, 0.39);
+    width: 130px;
+}
+
+:focus > * {
+    border-color: rgb(0, 0, 0);
+    color: rgb(0, 0, 0);
+}
+
+Toggle {
+    flex-direction: row-reverse;
+    align-self: flex-start;
+}
