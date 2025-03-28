@@ -27,7 +27,7 @@ public class HexMapEditor : MonoBehaviour
 	Material terrainMaterial;
 
 	[SerializeField]
-	UIDocument document;
+	UIDocument sidePanels;
 
 	int activeElevation;
 	int activeWaterLevel;
@@ -54,63 +54,12 @@ public class HexMapEditor : MonoBehaviour
 	HexDirection dragDirection;
 	int previousCellIndex = -1;
 
-	public void SetTerrainTypeIndex(int index) =>
-		activeTerrainTypeIndex = index;
-
-	public void SetApplyElevation(bool toggle) => applyElevation = toggle;
-
-	public void SetElevation(float elevation) =>
-		activeElevation = (int)elevation;
-
-	public void SetApplyWaterLevel(bool toggle) => applyWaterLevel = toggle;
-
-	public void SetWaterLevel(float level) => activeWaterLevel = (int)level;
-
-	public void SetApplyUrbanLevel(bool toggle) => applyUrbanLevel = toggle;
-
-	public void SetUrbanLevel(float level) => activeUrbanLevel = (int)level;
-
-	public void SetApplyFarmLevel(bool toggle) => applyFarmLevel = toggle;
-
-	public void SetFarmLevel(float level) => activeFarmLevel = (int)level;
-
-	public void SetApplyPlantLevel(bool toggle) => applyPlantLevel = toggle;
-
-	public void SetPlantLevel(float level) => activePlantLevel = (int)level;
-
-	public void SetApplySpecialIndex(bool toggle) => applySpecialIndex = toggle;
-
-	public void SetSpecialIndex(float index) => activeSpecialIndex = (int)index;
-
-	public void SetBrushSize(float size) => brushSize = (int)size;
-
-	public void SetRiverMode(int mode) => riverMode = (OptionalToggle)mode;
-
-	public void SetRoadMode(int mode) => roadMode = (OptionalToggle)mode;
-
-	public void SetWalledMode(int mode) => walledMode = (OptionalToggle)mode;
-
-	public void SetEditMode(bool toggle) => enabled = toggle;
-
-	public void ShowGrid(bool visible)
-	{
-		if (visible)
-		{
-			terrainMaterial.EnableKeyword("_SHOW_GRID");
-		}
-		else
-		{
-			terrainMaterial.DisableKeyword("_SHOW_GRID");
-		}
-	}
-
 	void Awake()
 	{
 		terrainMaterial.DisableKeyword("_SHOW_GRID");
 		Shader.EnableKeyword("_HEX_MAP_EDIT_MODE");
-		SetEditMode(true);
 
-		VisualElement root = document.rootVisualElement;
+		VisualElement root = sidePanels.rootVisualElement;
 
 		root.Q<RadioButtonGroup>("Terrain").RegisterValueChangedCallback(
 			change => activeTerrainTypeIndex = change.newValue - 1);
