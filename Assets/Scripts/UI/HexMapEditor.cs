@@ -52,7 +52,7 @@ public class HexMapEditor : MonoBehaviour
 
 	bool isDrag;
 	HexDirection dragDirection;
-	int previousCellIndex = -1;
+	HexCell previousCell;
 
 	void Awake()
 	{
@@ -160,7 +160,7 @@ public class HexMapEditor : MonoBehaviour
 		{
 			ClearCellHighlightData();
 		}
-		previousCellIndex = -1;
+		previousCell = default;
 	}
 
 	HexCell GetCellUnderCursor() =>
@@ -191,8 +191,7 @@ public class HexMapEditor : MonoBehaviour
 		HexCell currentCell = GetCellUnderCursor();
 		if (currentCell)
 		{
-			if (previousCellIndex >= 0 &&
-				previousCellIndex != currentCell.Index)
+			if (previousCell && previousCell != currentCell)
 			{
 				ValidateDrag(currentCell);
 			}
@@ -201,11 +200,11 @@ public class HexMapEditor : MonoBehaviour
 				isDrag = false;
 			}
 			EditCells(currentCell);
-			previousCellIndex = currentCell.Index;
+			previousCell = currentCell;
 		}
 		else
 		{
-			previousCellIndex = -1;
+			previousCell = default;
 		}
 		UpdateCellHighlightData(currentCell);
 	}
@@ -239,7 +238,7 @@ public class HexMapEditor : MonoBehaviour
 			dragDirection <= HexDirection.NW;
 			dragDirection++)
 		{
-			if (hexGrid.GetCell(previousCellIndex).GetNeighbor(dragDirection) ==
+			if (previousCell.GetNeighbor(dragDirection) ==
 				currentCell)
 			{
 				isDrag = true;
