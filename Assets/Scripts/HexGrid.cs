@@ -253,12 +253,13 @@ public class HexGrid : MonoBehaviour
 	/// Get a cell given a <see cref="Ray"/>.
 	/// </summary>
 	/// <param name="ray"><see cref="Ray"/> used to perform a raycast.</param>
+	/// <param name="stickyCell">Cell to stick to if close enough.</param>
 	/// <returns>The hit cell, if any.</returns>
-	public HexCell GetCell(Ray ray)
+	public HexCell GetCell(Ray ray, HexCell stickyCell = default)
 	{
 		if (Physics.Raycast(ray, out RaycastHit hit))
 		{
-			return GetCell(hit.point);
+			return GetCell(hit.point, stickyCell);
 		}
 		return default;
 	}
@@ -267,10 +268,21 @@ public class HexGrid : MonoBehaviour
 	/// Get the cell that contains a position.
 	/// </summary>
 	/// <param name="position">Position to check.</param>
+	/// <param name="stickyCell">Cell to stick to if close enough.</param>
 	/// <returns>The cell containing the position, if it exists.</returns>
-	public HexCell GetCell(Vector3 position)
+	public HexCell GetCell(Vector3 position, HexCell stickyCell = default)
 	{
 		position = transform.InverseTransformPoint(position);
+		if (stickyCell)
+		{
+			Vector3 v = position - stickyCell.Position;
+			if (
+				v.x * v.x + v.z * v.z <
+				HexMetrics.stickyRadius * HexMetrics.stickyRadius)
+			{
+				return stickyCell;
+			}
+		}
 		HexCoordinates coordinates = HexCoordinates.FromPosition(position);
 		return GetCell(coordinates);
 	}

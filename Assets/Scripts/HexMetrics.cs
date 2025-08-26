@@ -31,6 +31,16 @@ public static class HexMetrics
 	public const float innerDiameter = innerRadius * 2f;
 
 	/// <summary>
+	/// Sticky radius of a hex cell for dragging purposed.
+	/// </summary>
+	public const float stickyRadius = outerRadius * stickyFactor;
+
+	/// <summary>
+	/// Factor of the sticky radius of a hex cell for dragging purposes.
+	/// </summary>
+	public const float stickyFactor = 1.25f;
+
+	/// <summary>
 	/// Factor of the solid uniform region inside a hex cell.
 	/// </summary>
 	public const float solidFactor = 0.8f;

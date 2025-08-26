@@ -163,8 +163,8 @@ public class HexMapEditor : MonoBehaviour
 		previousCell = default;
 	}
 
-	HexCell GetCellUnderCursor() =>
-		hexGrid.GetCell(Camera.main.ScreenPointToRay(Input.mousePosition));
+	HexCell GetCellUnderCursor() => hexGrid.GetCell(
+		Camera.main.ScreenPointToRay(Input.mousePosition), previousCell);
 
 	void CreateUnit()
 	{

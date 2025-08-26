@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- Sticky cell radius for smoother dragging while editing the map.
+
 ### Changed
 - Upgraded to Unity 6000.0.56f1 and Burst 1.8.24.
 - `HexGameUI` and `HexMapEditor` keep track of selected cell via `HexCell` struct.
