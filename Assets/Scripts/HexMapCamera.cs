@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.InputSystem;
 
 /// <summary>
 /// Component that controls the singleton camera that navigates the hex map.
@@ -26,6 +27,8 @@ public class HexMapCamera : MonoBehaviour
 
 	float rotationAngle;
 
+	InputAction moveAction, rotateAction, zoomAction;
+
 	static HexMapCamera instance;
 
 	/// <summary>
@@ -45,6 +48,10 @@ public class HexMapCamera : MonoBehaviour
 	{
 		swivel = transform.GetChild(0);
 		stick = swivel.GetChild(0);
+		moveAction = InputSystem.actions.FindAction("Move");
+		moveAction.actionMap.Enable();
+		rotateAction = InputSystem.actions.FindAction("Rotate");
+		zoomAction = InputSystem.actions.FindAction("Zoom");
 	}
 
 	void OnEnable()
@@ -55,23 +62,22 @@ public class HexMapCamera : MonoBehaviour
 
 	void Update()
 	{
-		float zoomDelta = Input.GetAxis("Mouse ScrollWheel");
+		float zoomDelta = zoomAction.ReadValue<Vector2>().y;
 		if (zoomDelta != 0f)
 		{
 			AdjustZoom(zoomDelta);
 		}
 
-		float rotationDelta = Input.GetAxis("Rotation");
+		float rotationDelta = rotateAction.ReadValue<float>();
 		if (rotationDelta != 0f)
 		{
 			AdjustRotation(rotationDelta);
 		}
 
-		float xDelta = Input.GetAxis("Horizontal");
-		float zDelta = Input.GetAxis("Vertical");
-		if (xDelta != 0f || zDelta != 0f)
+		var moveDelta = moveAction.ReadValue<Vector2>();
+		if (moveDelta.x != 0f || moveDelta.y != 0f)
 		{
-			AdjustPosition(xDelta, zDelta);
+			AdjustPosition(moveDelta.x, moveDelta.y);
 		}
 	}
 
