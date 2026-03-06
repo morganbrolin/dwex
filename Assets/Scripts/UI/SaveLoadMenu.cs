@@ -1,49 +1,53 @@
 ﻿using UnityEngine;
-using UnityEngine.UI;
+using UnityEngine.UIElements;
 using System;
 using System.IO;
 
 /// <summary>
 /// Component that applies actions from the save-load menu UI to the hex map.
-/// Public methods are hooked up to the in-game UI.
 /// </summary>
+[RequireComponent(typeof(UIDocument))]
 public class SaveLoadMenu : MonoBehaviour
 {
 	const int mapFileVersion = 5;
-
-	[SerializeField]
-	Text menuLabel, actionButtonLabel;
-
-	[SerializeField]
-	InputField nameInput;
-
-	[SerializeField]
-	RectTransform listContent;
-
-	[SerializeField]
-	SaveLoadItem itemPrefab;
 
 	[SerializeField]
 	HexGrid hexGrid;
 
 	bool saveMode;
 
+	TextField nameField;
+
+	ListView mapList;
+
+	string[] mapNames;
+
 	public void Open(bool saveMode)
 	{
 		this.saveMode = saveMode;
-		if (saveMode)
-		{
-			menuLabel.text = "Save Map";
-			actionButtonLabel.text = "Save";
-		}
-		else
-		{
-			menuLabel.text = "Load Map";
-			actionButtonLabel.text = "Load";
-		}
-		FillList();
 		gameObject.SetActive(true);
 		HexMapCamera.Locked = true;
+
+		VisualElement root = GetComponent<UIDocument>().rootVisualElement;
+
+		root.Q<Label>("MenuLabel").text = saveMode ? "Save Map" : "Load Map";
+
+		var actionButton = root.Q<Button>("ActionButton");
+		actionButton.text = saveMode ? "Save" : "Load";
+		actionButton.clicked += Action;
+
+		root.Q<Button>("DeleteButton").clicked += Delete;
+		root.Q<Button>("CancelButton").clicked += Close;
+
+		nameField = root.Q<TextField>("NameField");
+
+		mapList = root.Q<ListView>("MapList");
+		mapList.makeItem = static () => new Label();
+		mapList.bindItem = (e, i) => ((Label)e).text = mapNames[i];
+		mapList.selectedIndicesChanged += (indices) =>
+			nameField.value = mapNames[mapList.selectedIndex];
+
+		FillList();
 	}
 
 	public void Close()
@@ -70,8 +74,6 @@ public class SaveLoadMenu : MonoBehaviour
 		Close();
 	}
 
-	public void SelectItem(string name) => nameInput.text = name;
-
 	public void Delete()
 	{
 		string path = GetSelectedPath();
@@ -83,31 +85,24 @@ public class SaveLoadMenu : MonoBehaviour
 		{
 			File.Delete(path);
 		}
-		nameInput.text = "";
+		nameField.value = "";
 		FillList();
 	}
 
 	void FillList()
 	{
-		for (int i = 0; i < listContent.childCount; i++)
+		mapNames = Directory.GetFiles(Application.persistentDataPath, "*.map");
+		for (int i = 0; i < mapNames.Length; i++)
 		{
-			Destroy(listContent.GetChild(i).gameObject);
+			mapNames[i] = Path.GetFileNameWithoutExtension(mapNames[i]);
 		}
-		string[] paths = Directory.GetFiles(
-			Application.persistentDataPath, "*.map");
-		Array.Sort(paths);
-		for (int i = 0; i < paths.Length; i++)
-		{
-			SaveLoadItem item = Instantiate(itemPrefab);
-			item.Menu = this;
-			item.MapName = Path.GetFileNameWithoutExtension(paths[i]);
-			item.transform.SetParent(listContent, false);
-		}
+		Array.Sort(mapNames);
+		mapList.itemsSource = mapNames;
 	}
 
 	string GetSelectedPath()
 	{
-		string mapName = nameInput.text;
+		string mapName = nameField.value;
 		if (mapName.Length == 0)
 		{
 			return null;

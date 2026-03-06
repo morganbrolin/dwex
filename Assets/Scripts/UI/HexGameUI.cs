@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.InputSystem;
 
 /// <summary>
 /// Component that manages the game UI.
@@ -12,6 +13,15 @@ public class HexGameUI : MonoBehaviour
 	HexCell currentCell;
 
 	HexUnit selectedUnit;
+
+	InputAction selectAction, commandAction, positionAction;
+
+	void Awake()
+	{
+		selectAction = InputSystem.actions.FindAction("Interact");
+		commandAction = InputSystem.actions.FindAction("Command");
+		positionAction = InputSystem.actions.FindAction("Position");
+	}
 
 	/// <summary>
 	/// Set whether map edit mode is active.
@@ -36,13 +46,13 @@ public class HexGameUI : MonoBehaviour
 	{
 		if (!EventSystem.current.IsPointerOverGameObject())
 		{
-			if (Input.GetMouseButtonDown(0))
+			if (selectAction.WasPerformedThisFrame())
 			{
 				DoSelection();
 			}
 			else if (selectedUnit)
 			{
-				if (Input.GetMouseButtonDown(1))
+				if (commandAction.WasPerformedThisFrame())
 				{
 					DoMove();
 				}
@@ -91,7 +101,7 @@ public class HexGameUI : MonoBehaviour
 	bool UpdateCurrentCell()
 	{
 		HexCell cell = grid.GetCell(
-			Camera.main.ScreenPointToRay(Input.mousePosition));
+			Camera.main.ScreenPointToRay(positionAction.ReadValue<Vector2>()));
 		if (cell)
 		{
 			currentCell = cell;
