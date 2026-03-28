@@ -51,9 +51,9 @@ float3 ApplyHighlight(float3 baseColor, HexGridData h)
 }
 
 // Apply a blue color filter based on surface submergence, up to 15 units deep.
-float3 ColorizeSubmergence(float3 baseColor, float surfaceY, float waterY)
+float3 ColorizeSubmergence(float3 baseColor, float surfaceY)
 {
-	float submergence = waterY - max(surfaceY, 0);
+	float submergence =  max(surfaceY, 0);
 	float3 colorFilter = float3(0.25, 0.25, 0.75);
 	float filterRange = 1.0 / 15.0;
 	return baseColor *
@@ -78,7 +78,7 @@ void GetFragmentData_float(
 		GetTerrainColor(
 			TerrainTextures, WorldPosition, Terrain, Weights, Visibility, 2);
 
-	BaseColor = ColorizeSubmergence(c.rgb, WorldPosition.y, Terrain.w);
+	BaseColor = ColorizeSubmergence(c.rgb, WorldPosition.y);
 
 	HexGridData hgd = GetHexGridData(WorldPosition.xz);
 
