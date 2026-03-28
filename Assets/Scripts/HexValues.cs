@@ -28,31 +28,22 @@ public struct HexValues
 
 	public readonly HexValues WithElevation(int value) =>
 		With(value + 15, 31, 0);
-
-	public readonly int WaterLevel => Get(31, 5);
-
-	public readonly int ViewElevation => Mathf.Max(Elevation, WaterLevel);
-
-	public readonly bool IsUnderwater => WaterLevel > Elevation;
-
-	public readonly HexValues WithWaterLevel(int value) => With(value, 31, 5);
 	
-	public readonly int UrbanLevel => Get(3, 10);
 
-	public readonly HexValues WithUrbanLevel(int value) => With(value, 3, 10);
+	public readonly int ViewElevation => Mathf.Max(Elevation);
+	
+	public readonly int EnemyQuantityLevel => Get(3, 10);
 
-	public readonly int FarmLevel => Get(3, 12);
+	public readonly HexValues WithEnemyQuantityLevel(int value) => With(value, 3, 10);
 
-	public readonly HexValues WithFarmLevel(int value) => With(value, 3, 12);
+	public readonly int GemQualityLevel => Get(3, 12);
 
-	public readonly int PlantLevel => Get(3, 14);
+	public readonly HexValues WithGemQualityLevel(int value) => With(value, 3, 12);
 
-	public readonly HexValues WithPlantLevel(int value) => With(value, 3, 14);
+	public readonly int EnemyQualityLevel => Get(3, 14);
 
-	public readonly int SpecialIndex => Get(255, 16);
-
-	public readonly HexValues WithSpecialIndex(int index) =>
-		With(index, 255, 16);
+	public readonly HexValues WithEnemyQualityLevel(int value) => With(value, 3, 14);
+	
 	
 	public readonly int TerrainTypeIndex => Get(255, 24);
 	
@@ -67,11 +58,9 @@ public struct HexValues
 	{
 		writer.Write((byte)TerrainTypeIndex);
 		writer.Write((byte)(Elevation + 127));
-		writer.Write((byte)WaterLevel);
-		writer.Write((byte)UrbanLevel);
-		writer.Write((byte)FarmLevel);
-		writer.Write((byte)PlantLevel);
-		writer.Write((byte)SpecialIndex);
+		writer.Write((byte)EnemyQuantityLevel);
+		writer.Write((byte)GemQualityLevel);
+		writer.Write((byte)EnemyQualityLevel);
 	}
 
 	/// <summary>
@@ -89,10 +78,8 @@ public struct HexValues
 			elevation -= 127;
 		}
 		values = values.WithElevation(elevation);
-		values = values.WithWaterLevel(reader.ReadByte());
-		values = values.WithUrbanLevel(reader.ReadByte());
-		values = values.WithFarmLevel(reader.ReadByte());
-		values = values.WithPlantLevel(reader.ReadByte());
-		return values.WithSpecialIndex(reader.ReadByte());
+		values = values.WithEnemyQuantityLevel(reader.ReadByte());
+		values = values.WithGemQualityLevel(reader.ReadByte());
+		return values.WithEnemyQualityLevel(reader.ReadByte());
 	}
 }

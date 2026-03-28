@@ -29,27 +29,22 @@ public class HexMapEditor : MonoBehaviour
 
 	[SerializeField]
 	UIDocument sidePanels;
+	
+	bool applyWall;
 
-	int activeElevation;
-	int activeWaterLevel;
-
-	int activeUrbanLevel, activeFarmLevel, activePlantLevel, activeSpecialIndex;
+	int activeEnemyQuantityLevel, activeGemQualityLevel, activeEnemyQualityLevel;
 
 	int activeTerrainTypeIndex;
 
 	int brushSize;
-
-	bool applyElevation = true;
-	bool applyWaterLevel = true;
-
-	bool applyUrbanLevel, applyFarmLevel, applyPlantLevel, applySpecialIndex;
+	
+	bool applyEnemyQuantityLevel, applyGemQualityLevel, applyEnemyQualityLevel;
 
 	enum OptionalToggle
 	{
 		Ignore, Yes, No
 	}
-
-	OptionalToggle riverMode, roadMode, walledMode;
+	
 
 	bool isDrag;
 	HexDirection dragDirection;
@@ -68,48 +63,28 @@ public class HexMapEditor : MonoBehaviour
 
 		root.Q<RadioButtonGroup>("Terrain").RegisterValueChangedCallback(
 			change => activeTerrainTypeIndex = change.newValue - 1);
-
-		root.Q<Toggle>("ApplyElevation").RegisterValueChangedCallback(
-			change => applyElevation = change.newValue);
-		root.Q<SliderInt>("Elevation").RegisterValueChangedCallback(
-			change => activeElevation = change.newValue);
-
-		root.Q<Toggle>("ApplyWaterLevel").RegisterValueChangedCallback(
-			change => applyWaterLevel = change.newValue);
-		root.Q<SliderInt>("WaterLevel").RegisterValueChangedCallback(
-			change => activeWaterLevel = change.newValue);
 		
-		root.Q<RadioButtonGroup>("River").RegisterValueChangedCallback(
-			change => riverMode = (OptionalToggle)change.newValue);
-		
-		root.Q<RadioButtonGroup>("Roads").RegisterValueChangedCallback(
-			change => roadMode = (OptionalToggle)change.newValue);
-
 		root.Q<SliderInt>("BrushSize").RegisterValueChangedCallback(
 			change => brushSize = change.newValue);
 
-		root.Q<Toggle>("ApplyUrbanLevel").RegisterValueChangedCallback(
-			change => applyUrbanLevel = change.newValue);
-		root.Q<SliderInt>("UrbanLevel").RegisterValueChangedCallback(
-			change => activeUrbanLevel = change.newValue);
+		root.Q<Toggle>("ApplyEnemyQuantityLevel").RegisterValueChangedCallback(
+			change => applyEnemyQuantityLevel = change.newValue);
+		root.Q<SliderInt>("EnemyQuantityLevel").RegisterValueChangedCallback(
+			change => activeEnemyQuantityLevel = change.newValue);
 		
-		root.Q<Toggle>("ApplyFarmLevel").RegisterValueChangedCallback(
-			change => applyFarmLevel = change.newValue);
-		root.Q<SliderInt>("FarmLevel").RegisterValueChangedCallback(
-			change => activeFarmLevel = change.newValue);
+		root.Q<Toggle>("ApplyGemQualityLevel").RegisterValueChangedCallback(
+			change => applyGemQualityLevel = change.newValue);
+		root.Q<SliderInt>("GemQualityLevel").RegisterValueChangedCallback(
+			change => activeGemQualityLevel = change.newValue);
 		
-		root.Q<Toggle>("ApplyPlantLevel").RegisterValueChangedCallback(
-			change => applyPlantLevel = change.newValue);
-		root.Q<SliderInt>("PlantLevel").RegisterValueChangedCallback(
-			change => activePlantLevel = change.newValue);
-
-		root.Q<Toggle>("ApplySpecialIndex").RegisterValueChangedCallback(
-			change => applySpecialIndex = change.newValue);
-		root.Q<SliderInt>("SpecialIndex").RegisterValueChangedCallback(
-			change => activeSpecialIndex = change.newValue);
-
-		root.Q<RadioButtonGroup>("Walled").RegisterValueChangedCallback(
-			change => walledMode = (OptionalToggle)change.newValue);
+		root.Q<Toggle>("ApplyEnemyQualityLevel").RegisterValueChangedCallback(
+			change => applyEnemyQualityLevel = change.newValue);
+		root.Q<SliderInt>("EnemyQualityLevel").RegisterValueChangedCallback(
+			change => activeEnemyQualityLevel = change.newValue);
+		
+		
+		root.Q<Toggle>("ApplyWall").RegisterValueChangedCallback(
+			change => applyWall = change.newValue);
 		
 		root.Q<Button>("SaveButton").clicked += () => saveLoadMenu.Open(true);
 		root.Q<Button>("LoadButton").clicked += () => saveLoadMenu.Open(false);
@@ -286,54 +261,30 @@ public class HexMapEditor : MonoBehaviour
 			{
 				cell.SetTerrainTypeIndex(activeTerrainTypeIndex);
 			}
-			if (applyElevation)
+			
+			//TODO magic number here maybe in future only have 2 elevation ground and wall
+			if(applyWall)
+			{cell.SetElevation(5);}
+			else
 			{
-				cell.SetElevation(activeElevation);
+				cell.SetElevation(0);
 			}
-			if (applyWaterLevel)
+
+			
+			
+			if (applyEnemyQuantityLevel)
 			{
-				cell.SetWaterLevel(activeWaterLevel);
+				cell.SetEnemyQuantityLevel(activeEnemyQuantityLevel);
 			}
-			if (applySpecialIndex)
+			if (applyGemQualityLevel)
 			{
-				cell.SetSpecialIndex(activeSpecialIndex);
+				cell.SetGemQualityLevel(activeGemQualityLevel);
 			}
-			if (applyUrbanLevel)
+			if (applyEnemyQualityLevel)
 			{
-				cell.SetUrbanLevel(activeUrbanLevel);
+				cell.SetEnemyQualityLevel(activeEnemyQualityLevel);
 			}
-			if (applyFarmLevel)
-			{
-				cell.SetFarmLevel(activeFarmLevel);
-			}
-			if (applyPlantLevel)
-			{
-				cell.SetPlantLevel(activePlantLevel);
-			}
-			if (riverMode == OptionalToggle.No)
-			{
-				cell.RemoveRiver();
-			}
-			if (roadMode == OptionalToggle.No)
-			{
-				cell.RemoveRoads();
-			}
-			if (walledMode != OptionalToggle.Ignore)
-			{
-				cell.SetWalled(walledMode == OptionalToggle.Yes);
-			}
-			if (isDrag && cell.TryGetNeighbor(
-				dragDirection.Opposite(), out HexCell otherCell))
-			{
-				if (riverMode == OptionalToggle.Yes)
-				{
-					otherCell.SetOutgoingRiver(dragDirection);
-				}
-				if (roadMode == OptionalToggle.Yes)
-				{
-					otherCell.AddRoad(dragDirection);
-				}
-			}
+			
 		}
 	}
 }

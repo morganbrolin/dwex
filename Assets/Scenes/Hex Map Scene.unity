@@ -500,7 +500,7 @@ MonoBehaviour:
   chunkPrefab: {fileID: 114000010052569294, guid: 7622d007cafd044a1b1189c0b93d2912, type: 3}
   unitPrefab: {fileID: 114701888605048992, guid: 5661a1efcb9464721b4db3f694ded559, type: 3}
   noiseSource: {fileID: 2800000, guid: 38701cdeb1fb9427cbb585f917aa59cb, type: 3}
-  seed: 1234
+  seed: 1223
 --- !u!4 &1571186512
 Transform:
   m_ObjectHideFlags: 0
@@ -889,7 +889,6 @@ MonoBehaviour:
   highRiseProbability: 0.25
   sinkProbability: 0.2
   landPercentage: 50
-  waterLevel: 3
   elevationMinimum: -2
   elevationMaximum: 8
   mapBorderX: 5
@@ -904,8 +903,6 @@ MonoBehaviour:
   seepageFactor: 0.25
   windDirection: 5
   windStrength: 4
-  riverPercentage: 10
-  extraLakeProbability: 0.25
   lowTemperature: 0
   highTemperature: 1
   hemisphere: 0

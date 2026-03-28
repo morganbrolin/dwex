@@ -78,8 +78,7 @@ public class HexUnit : MonoBehaviour
 	/// <param name="cell">Cell to check.</param>
 	/// <returns>Whether the unit could occupy the cell.</returns>
 	public bool IsValidDestination(HexCell cell) =>
-		cell.Flags.HasAll(HexFlags.Explored | HexFlags.Explorable) &&
-		!cell.Values.IsUnderwater && !cell.Unit;
+		cell.Flags.HasAll(HexFlags.Explored | HexFlags.Explorable);
 
 	/// <summary>
 	/// Travel along a path.
@@ -230,21 +229,9 @@ public class HexUnit : MonoBehaviour
 			return -1;
 		}
 		int moveCost;
-		if (fromCell.Flags.HasRoad(direction))
-		{
-			moveCost = 1;
-		}
-		else if (fromCell.Flags.HasAny(HexFlags.Walled) !=
-			toCell.Flags.HasAny(HexFlags.Walled))
-		{
-			return -1;
-		}
-		else
-		{
-			moveCost = edgeType == HexEdgeType.Flat ? 5 : 10;
-			HexValues v = toCell.Values;
-			moveCost += v.UrbanLevel + v.FarmLevel + v.PlantLevel;
-		}
+		moveCost = edgeType == HexEdgeType.Flat ? 5 : 10;
+		HexValues v = toCell.Values;
+		moveCost += v.EnemyQuantityLevel + v.GemQualityLevel + v.EnemyQualityLevel;
 		return moveCost;
 	}
 

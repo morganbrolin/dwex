@@ -50,107 +50,51 @@ public struct HexCell
 			Values = Values.WithElevation(elevation);
 			grid.ShaderData.ViewElevationChanged(index);
 			grid.RefreshCellPosition(index);
-			ValidateRivers();
-			HexFlags flags = Flags;
-			for (HexDirection d = HexDirection.NE; d <= HexDirection.NW; d++)
-			{
-				if (flags.HasRoad(d))
-				{
-					HexCell neighbor = GetNeighbor(d);
-					if (Mathf.Abs(elevation - neighbor.Values.Elevation) > 1)
-					{
-						RemoveRoad(d);
-					}
-				}
-			}
 			grid.RefreshCellWithDependents(index);
 		}
 	}
 
-	/// <summary>
-	/// Set the water level.
-	/// </summary>
-	/// <param name="waterLevel">Water level.</param>
-	public readonly void SetWaterLevel (int waterLevel)
-	{
-		if (Values.WaterLevel != waterLevel)
-		{
-			Values = Values.WithWaterLevel(waterLevel);
-			grid.ShaderData.ViewElevationChanged(index);
-			ValidateRivers();
-			grid.RefreshCellWithDependents(index);
-		}
-	}
+
 
 	/// <summary>
-	/// Set the urban level.
+	/// Set the EnemyQuantity level.
 	/// </summary>
-	/// <param name="urbanLevel">Urban level.</param>
-	public readonly void SetUrbanLevel (int urbanLevel)
+	/// <param name="enemyQuantityLevel">enemyQuantity level.</param>
+	public readonly void SetEnemyQuantityLevel (int enemyQuantity)
 	{
-		if (Values.UrbanLevel != urbanLevel)
+		if (Values.EnemyQuantityLevel != enemyQuantity)
 		{
-			Values = Values.WithUrbanLevel(urbanLevel);
+			Values = Values.WithEnemyQuantityLevel(enemyQuantity);
 			Refresh();
 		}
 	}
 
 	/// <summary>
-	/// Set the farm level.
+	/// Set the gemQuality level.
 	/// </summary>
-	/// <param name="farmLevel">Farm level.</param>
-	public readonly void SetFarmLevel (int farmLevel)
+	/// <param name="gemQualityevel">GemQuality level.</param>
+	public readonly void SetGemQualityLevel (int gemQualityLevel)
 	{
-		if (Values.FarmLevel != farmLevel)
+		if (Values.GemQualityLevel != gemQualityLevel)
 		{
-			Values = Values.WithFarmLevel(farmLevel);
+			Values = Values.WithGemQualityLevel(gemQualityLevel);
 			Refresh();
 		}
 	}
 
 	/// <summary>
-	/// Set the plant level.
+	/// Set the enemyQuality level.
 	/// </summary>
-	/// <param name="plantLevel">Plant level.</param>
-	public readonly void SetPlantLevel(int plantLevel)
+	/// <param name="enemyQualityLevel">EnemyQuality level.</param>
+	public readonly void SetEnemyQualityLevel(int enemyQualityLevel)
 	{
-		if (Values.PlantLevel != plantLevel)
+		if (Values.EnemyQualityLevel != enemyQualityLevel)
 		{
-			Values = Values.WithPlantLevel(plantLevel);
+			Values = Values.WithEnemyQualityLevel(enemyQualityLevel);
 			Refresh();
 		}
 	}
-
-	/// <summary>
-	/// Set the special index.
-	/// </summary>
-	/// <param name="specialIndex">Special index.</param>
-	public readonly void SetSpecialIndex (int specialIndex)
-	{
-		if (Values.SpecialIndex != specialIndex &&
-			Flags.HasNone(HexFlags.River))
-		{
-			Values = Values.WithSpecialIndex(specialIndex);
-			RemoveRoads();
-			Refresh();
-		}
-	}
-
-	/// <summary>
-	/// Set whether the cell is walled.
-	/// </summary>
-	/// <param name="walled">Whether the cell is walled.</param>
-	public readonly void SetWalled (bool walled)
-	{
-		HexFlags flags = Flags;
-		HexFlags newFlags = walled ?
-			flags.With(HexFlags.Walled) : flags.Without(HexFlags.Walled);
-		if (flags != newFlags)
-		{
-			Flags = newFlags;
-			grid.RefreshCellWithDependents(index);
-		}
-	}
+	
 
 	/// <summary>
 	/// Set the terrain type index.
@@ -210,134 +154,6 @@ public struct HexCell
 		HexDirection direction, out HexCell cell) =>
 		grid.TryGetCell(Coordinates.Step(direction), out cell);
 	
-	readonly void RemoveIncomingRiver()
-	{
-		if (Flags.HasAny(HexFlags.RiverIn))
-		{
-			HexCell neighbor = GetNeighbor(Flags.RiverInDirection());
-			Flags = Flags.Without(HexFlags.RiverIn);
-			neighbor.Flags = neighbor.Flags.Without(HexFlags.RiverOut);
-			neighbor.Refresh();
-			Refresh();
-		}
-	}
-
-	readonly void RemoveOutgoingRiver()
-	{
-		if (Flags.HasAny(HexFlags.RiverOut))
-		{
-			HexCell neighbor = GetNeighbor(Flags.RiverOutDirection());
-			Flags = Flags.Without(HexFlags.RiverOut);
-			neighbor.Flags = neighbor.Flags.Without(HexFlags.RiverIn);
-			neighbor.Refresh();
-			Refresh();
-		}
-	}
-
-	/// <summary>
-	/// Clear the cell of rivers.
-	/// </summary>
-	public readonly void RemoveRiver()
-	{
-		RemoveIncomingRiver();
-		RemoveOutgoingRiver();
-	}
-
-	static bool CanRiverFlow (HexValues from, HexValues to) =>
-		from.Elevation >= to.Elevation || from.WaterLevel == to.Elevation;
-
-	/// <summary>
-	/// Set the outgoing river.
-	/// </summary>
-	/// <param name="direction">River direction.</param>
-	public readonly void SetOutgoingRiver (HexDirection direction)
-	{
-		if (Flags.HasRiverOut(direction))
-		{
-			return;
-		}
-
-		HexCell neighbor = GetNeighbor(direction);
-		if (!CanRiverFlow(Values, neighbor.Values))
-		{
-			return;
-		}
-
-		RemoveOutgoingRiver();
-		if (Flags.HasRiverIn(direction))
-		{
-			RemoveIncomingRiver();
-		}
-
-		Flags = Flags.WithRiverOut(direction);
-		Values = Values.WithSpecialIndex(0);
-		neighbor.RemoveIncomingRiver();
-		neighbor.Flags = neighbor.Flags.WithRiverIn(direction.Opposite());
-		neighbor.Values = neighbor.Values.WithSpecialIndex(0);
-
-		RemoveRoad(direction);
-	}
-
-	/// <summary>
-	/// Add a road in the given direction.
-	/// </summary>
-	/// <param name="direction">Road direction.</param>
-	public readonly void AddRoad(HexDirection direction)
-	{
-		HexFlags flags = Flags;
-		HexCell neighbor = GetNeighbor(direction);
-		if (
-			!flags.HasRoad(direction) && !flags.HasRiver(direction) &&
-			Values.SpecialIndex == 0 && neighbor.Values.SpecialIndex == 0 &&
-			Mathf.Abs(Values.Elevation - neighbor.Values.Elevation) <= 1
-		)
-		{
-			Flags = flags.WithRoad(direction);
-			neighbor.Flags = neighbor.Flags.WithRoad(direction.Opposite());
-			neighbor.Refresh();
-			Refresh();
-		}
-	}
-
-	/// <summary>
-	/// Clear the cell of roads.
-	/// </summary>
-	public readonly void RemoveRoads()
-	{
-		HexFlags flags = Flags;
-		for (HexDirection d = HexDirection.NE; d <= HexDirection.NW; d++)
-		{
-			if (flags.HasRoad(d))
-			{
-				RemoveRoad(d);
-			}
-		}
-	}
-
-	readonly void ValidateRivers()
-	{
-		HexFlags flags = Flags;
-		if (flags.HasAny(HexFlags.RiverOut) &&
-			!CanRiverFlow(Values, GetNeighbor(flags.RiverOutDirection()).Values)
-		)
-		{
-			RemoveOutgoingRiver();
-		}
-		if (flags.HasAny(HexFlags.RiverIn) &&
-			!CanRiverFlow(GetNeighbor(flags.RiverInDirection()).Values, Values))
-		{
-			RemoveIncomingRiver();
-		}
-	}
-
-	readonly void RemoveRoad(HexDirection direction)
-	{
-		Flags = Flags.WithoutRoad(direction);
-		HexCell neighbor = GetNeighbor(direction);
-		neighbor.Flags = neighbor.Flags.WithoutRoad(direction.Opposite());
-		neighbor.Refresh();
-		Refresh();
-	}
 
 	readonly void Refresh() => grid.RefreshCell(index);
 

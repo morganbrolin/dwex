@@ -44,7 +44,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7980a4cbe74644514bcd19be773f45c1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  urbanCollections:
+  enemyQuantityCollections:
   - prefabs:
     - {fileID: 4000011812086372, guid: 21b1020286582424ab6d62085ed5ee87, type: 3}
     - {fileID: 4000011812086372, guid: 5d26578fd32c84d1ab4d755ab7f23577, type: 3}
@@ -54,7 +54,7 @@ MonoBehaviour:
   - prefabs:
     - {fileID: 4000013997932258, guid: bca46d0c670c447a0a5c7208498000ab, type: 3}
     - {fileID: 4000013997932258, guid: 4c4b904516a814dc7b4433a49713c96f, type: 3}
-  farmCollections:
+  gemQualityCollections:
   - prefabs:
     - {fileID: 4000011812086372, guid: 694c4113acb734a299b240d50494600c, type: 3}
     - {fileID: 4000011812086372, guid: 93fc8e728d60b44a28eac5ac0d4a0852, type: 3}
@@ -64,7 +64,7 @@ MonoBehaviour:
   - prefabs:
     - {fileID: 4000013997932258, guid: 15bb05f82a5564326ae50111c46b898b, type: 3}
     - {fileID: 4000013997932258, guid: 5c6c17863f6cc4021bdced61fe712fb1, type: 3}
-  plantCollections:
+  enemyQualityCollections:
   - prefabs:
     - {fileID: 4000011812086372, guid: e64480d9f2c5c42439cac262a22f542f, type: 3}
     - {fileID: 4000011812086372, guid: 3b3f395112d654a6a85e97ebefaf4d91, type: 3}
@@ -77,10 +77,6 @@ MonoBehaviour:
   walls: {fileID: 114000013599494320}
   wallTower: {fileID: 4000011665626236, guid: 1589993158ba34786b54f448bdeb6085, type: 3}
   bridge: {fileID: 4000012598710820, guid: 234387bb7219042168570e127fbd5b58, type: 3}
-  special:
-  - {fileID: 4000013750885840, guid: f2967fed6444e43559e32916c2465d27, type: 3}
-  - {fileID: 4000011263270592, guid: cb7be9a74fd6e4cbdb5be2ac7319e699, type: 3}
-  - {fileID: 4000012893891830, guid: cc90e6fbc542a40c080d2c64da7d26ed, type: 3}
 --- !u!1 &1000010636493760
 GameObject:
   m_ObjectHideFlags: 0
@@ -223,6 +219,11 @@ MeshRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
   m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
+  m_ForceMeshLod: -1
+  m_MeshLodSelectionBias: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -244,9 +245,11 @@ MeshRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
+  m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
 --- !u!114 &114000013599494320
 MonoBehaviour:
@@ -323,6 +326,11 @@ MeshRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
   m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
+  m_ForceMeshLod: -1
+  m_MeshLodSelectionBias: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -344,9 +352,11 @@ MeshRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
+  m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
 --- !u!114 &114000013445900128
 MonoBehaviour:
@@ -423,6 +433,11 @@ MeshRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
   m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
+  m_ForceMeshLod: -1
+  m_MeshLodSelectionBias: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -444,9 +459,11 @@ MeshRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
+  m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
 --- !u!114 &114000012954278246
 MonoBehaviour:
@@ -523,6 +540,11 @@ MeshRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
   m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
+  m_ForceMeshLod: -1
+  m_MeshLodSelectionBias: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -544,9 +566,11 @@ MeshRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
+  m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
 --- !u!114 &114000013036081130
 MonoBehaviour:
@@ -623,6 +647,11 @@ MeshRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
   m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
+  m_ForceMeshLod: -1
+  m_MeshLodSelectionBias: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -644,9 +673,11 @@ MeshRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
+  m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
 --- !u!114 &114000010976435170
 MonoBehaviour:
@@ -723,6 +754,11 @@ MeshRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
   m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
+  m_ForceMeshLod: -1
+  m_MeshLodSelectionBias: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -744,9 +780,11 @@ MeshRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
+  m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
 --- !u!114 &114000011082573560
 MonoBehaviour:
@@ -823,6 +861,11 @@ MeshRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
   m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
+  m_ForceMeshLod: -1
+  m_MeshLodSelectionBias: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -844,9 +887,11 @@ MeshRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
+  m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
 --- !u!114 &114000011881523884
 MonoBehaviour:
@@ -918,9 +963,5 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   terrain: {fileID: 114000011082573560}
-  rivers: {fileID: 114000012954278246}
-  roads: {fileID: 114000011881523884}
-  water: {fileID: 114000013445900128}
-  waterShore: {fileID: 114000010976435170}
   estuaries: {fileID: 114000013036081130}
   features: {fileID: 114000013279209982}

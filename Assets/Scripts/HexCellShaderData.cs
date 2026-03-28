@@ -67,15 +67,13 @@ public class HexCellShaderData : MonoBehaviour
 
 	/// <summary>
 	/// Refresh the terrain data of a cell.
-	/// Supports water surfaces up to 30 units high.
 	/// </summary>
 	/// <param name="cell">Cell with changed terrain type.</param>
 	public void RefreshTerrain(int cellIndex)
 	{
 		HexCellData cell = Grid.CellData[cellIndex];
 		Color32 data = cellTextureData[cellIndex];
-		data.b = cell.IsUnderwater ?
-			(byte)(cell.WaterSurfaceY * (255f / 30f)) : (byte)0;
+		data.b = (byte)0;
 		data.a = (byte)cell.TerrainTypeIndex;
 		cellTextureData[cellIndex] = data;
 		enabled = true;
@@ -105,14 +103,12 @@ public class HexCellShaderData : MonoBehaviour
 	/// <summary>
 	/// Indicate that view elevation data has changed,
 	/// requiring a visibility reset.
-	/// Supports water surfaces up to 30 units high.
 	/// </summary>
 	/// <param name="cell">Changed cell.</param>
 	public void ViewElevationChanged(int cellIndex)
 	{
 		HexCellData cell = Grid.CellData[cellIndex];
-		cellTextureData[cellIndex].b = cell.IsUnderwater ?
-			(byte)(cell.WaterSurfaceY * (255f / 30f)) : (byte)0;
+		cellTextureData[cellIndex].b =  (byte)0;
 		needsVisibilityReset = true;
 		enabled = true;
 	}

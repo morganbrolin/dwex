@@ -11,5 +11,6 @@ ApiUpdaterCheck.txt
 .vscode
 .vsconfig
 *.dwlt
+.idea
 
 UserSettings/

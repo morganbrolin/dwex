@@ -50,15 +50,6 @@ public static class HexMetrics
 	/// </summary>
 	public const float blendFactor = 1f - solidFactor;
 
-	/// <summary>
-	/// Factor of the solid uniform water region inside a hex cell.
-	/// </summary>
-	public const float waterFactor = 0.6f;
-
-	/// <summary>
-	/// Factor of the water blending region inside a hex cell.
-	/// </summary>
-	public const float waterBlendFactor = 1f - waterFactor;
 
 	/// <summary>
 	/// Height of a single elevation step.
@@ -100,37 +91,13 @@ public static class HexMetrics
 	/// Offset for stream bed elevation.
 	/// </summary>
 	public const float streamBedElevationOffset = -1.75f;
-
-	/// <summary>
-	/// Offset for water elevation.
-	/// </summary>
-	public const float waterElevationOffset = -0.5f;
-
-	/// <summary>
-	/// Height of walls.
-	/// </summary>
-	public const float wallHeight = 4f;
-
-	/// <summary>
-	/// Vertical wall offset,
-	/// negative to prevent them from floating above the surface.
-	/// </summary>
-	public const float wallYOffset = -1f;
-
-	/// <summary>
-	/// Wall thickness.
-	/// </summary>
-	public const float wallThickness = 0.75f;
+	
 
 	/// <summary>
 	/// Wall elevation offset, matching <see cref="verticalTerraceStepSize"/>.
 	/// </summary>
 	public const float wallElevationOffset = verticalTerraceStepSize;
-
-	/// <summary>
-	/// Probability threshold for wall towers.
-	/// </summary>
-	public const float wallTowerThreshold = 0.5f;
+	
 
 	/// <summary>
 	/// Length at which the bridge model is designed.
@@ -305,21 +272,6 @@ public static class HexMetrics
 		(corners[(int)direction] + corners[(int)direction + 1]) *
 		(0.5f * solidFactor);
 
-	/// <summary>
-	/// Get the first inner water cell corner for a direction.
-	/// </summary>
-	/// <param name="direction">The desired direction.</param>
-	/// <returns>The corner on the counter-clockwise side.</returns>
-	public static Vector3 GetFirstWaterCorner(HexDirection direction) =>
-		corners[(int)direction] * waterFactor;
-
-	/// <summary>
-	/// Get the second inner water cell corner for a direction.
-	/// </summary>
-	/// <param name="direction">The desired direction.</param>
-	/// <returns>The corner on the clockwise side.</returns>
-	public static Vector3 GetSecondWaterCorner(HexDirection direction) =>
-		corners[(int)direction + 1] * waterFactor;
 
 	/// <summary>
 	/// Get the vector needed to bridge to the next cell for a given direction.
@@ -329,15 +281,6 @@ public static class HexMetrics
 	public static Vector3 GetBridge(HexDirection direction) =>
 		(corners[(int)direction] + corners[(int)direction + 1]) * blendFactor;
 
-	/// <summary>
-	/// Get the vector needed to bridge to the next water cell
-	/// for a given direction.
-	/// </summary>
-	/// <param name="direction">The desired direction.</param>
-	/// <returns>The bridge vector.</returns>
-	public static Vector3 GetWaterBridge(HexDirection direction) =>
-		(corners[(int)direction] + corners[(int)direction + 1]) *
-		waterBlendFactor;
 
 	/// <summary>
 	/// Interpolate a position along a terraced edge.
@@ -369,36 +312,7 @@ public static class HexMetrics
 		return Color.Lerp(a, b, h);
 	}
 
-	/// <summary>
-	/// Interpolate a position along a wall.
-	/// </summary>
-	/// <param name="near">Near position.</param>
-	/// <param name="far">Far position.</param>
-	/// <returns>The middle position with appropriate Y coordinate.</returns>
-	public static Vector3 WallLerp(Vector3 near, Vector3 far)
-	{
-		near.x += (far.x - near.x) * 0.5f;
-		near.z += (far.z - near.z) * 0.5f;
-		float v = near.y < far.y ?
-			wallElevationOffset : (1f - wallElevationOffset);
-		near.y += (far.y - near.y) * v + wallYOffset;
-		return near;
-	}
 
-	/// <summary>
-	/// Apply wall thickness.
-	/// </summary>
-	/// <param name="near">Near position.</param>
-	/// <param name="far">Far position.</param>
-	/// <returns>Position taking wall thickness into account.</returns>
-	public static Vector3 WallThicknessOffset(Vector3 near, Vector3 far)
-	{
-		Vector3 offset;
-		offset.x = far.x - near.x;
-		offset.y = 0f;
-		offset.z = far.z - near.z;
-		return offset.normalized * (wallThickness * 0.5f);
-	}
 
 	/// <summary>
 	/// Determine the <see cref="HexEdgeType"/> based on two elevations.

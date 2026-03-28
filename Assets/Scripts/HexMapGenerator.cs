@@ -32,10 +32,7 @@ public class HexMapGenerator : MonoBehaviour
 
 	[SerializeField, Range(5, 95)]
 	int landPercentage = 50;
-
-	[SerializeField, Range(1, 5)]
-	int waterLevel = 3;
-
+	
 	[SerializeField, Range(-4, 0)]
 	int elevationMinimum = -2;
 
@@ -77,13 +74,7 @@ public class HexMapGenerator : MonoBehaviour
 
 	[SerializeField, Range(1f, 10f)]
 	float windStrength = 4f;
-
-	[SerializeField, Range(0, 20)]
-	int riverPercentage = 10;
-
-	[SerializeField, Range(0f, 1f)]
-	float extraLakeProbability = 0.25f;
-
+	
 	[SerializeField, Range(0f, 1f)]
 	float lowTemperature = 0f;
 
@@ -127,12 +118,12 @@ public class HexMapGenerator : MonoBehaviour
 
 	struct Biome
 	{
-		public int terrain, plant;
+		public int terrain, enemyQuality;
 
-		public Biome(int terrain, int plant)
+		public Biome(int terrain, int enemyQuality)
 		{
 			this.terrain = terrain;
-			this.plant = plant;
+			this.enemyQuality = enemyQuality;
 		}
 	}
 
@@ -168,16 +159,11 @@ public class HexMapGenerator : MonoBehaviour
 		cellCount = x * z;
 		grid.CreateMap(x, z, wrapping);
 		searchFrontier ??= new HexCellPriorityQueue(grid);
-		for (int i = 0; i < cellCount; i++)
-		{
-			grid.CellData[i].values = grid.CellData[i].values.WithWaterLevel(
-				waterLevel);
-		}
+
 		CreateRegions();
 		CreateLand();
 		ErodeLand();
 		CreateClimate();
-		CreateRivers();
 		SetTerrainType();
 		grid.RefreshAllCells();
 
@@ -327,12 +313,7 @@ public class HexMapGenerator : MonoBehaviour
 			}
 			grid.CellData[index].values =
 				current.values.WithElevation(newElevation);
-			if (originalElevation < waterLevel &&
-				newElevation >= waterLevel && --budget == 0
-			)
-			{
-				break;
-			}
+
 			size += 1;
 
 			for (HexDirection d = HexDirection.NE; d <= HexDirection.NW; d++)
@@ -381,12 +362,6 @@ public class HexMapGenerator : MonoBehaviour
 			}
 			grid.CellData[index].values =
 				current.values.WithElevation(newElevation);
-			if (originalElevation >= waterLevel &&
-				newElevation < waterLevel
-			)
-			{
-				budget += 1;
-			}
 			size += 1;
 
 			for (HexDirection d = HexDirection.NE; d <= HexDirection.NW; d++)
@@ -547,18 +522,11 @@ public class HexMapGenerator : MonoBehaviour
 	{
 		HexCellData cell = grid.CellData[cellIndex];
 		ClimateData cellClimate = climate[cellIndex];
-
-		if (cell.IsUnderwater)
-		{
-			cellClimate.moisture = 1f;
-			cellClimate.clouds += evaporationFactor;
-		}
-		else
-		{
-			float evaporation = cellClimate.moisture * evaporationFactor;
-			cellClimate.moisture -= evaporation;
-			cellClimate.clouds += evaporation;
-		}
+		
+		float evaporation = cellClimate.moisture * evaporationFactor;
+		cellClimate.moisture -= evaporation;
+		cellClimate.clouds += evaporation;
+		
 
 		float precipitation = cellClimate.clouds * precipitationFactor;
 		cellClimate.clouds -= precipitation;
@@ -617,294 +585,35 @@ public class HexMapGenerator : MonoBehaviour
 		nextClimate[cellIndex] = nextCellClimate;
 		climate[cellIndex] = new ClimateData();
 	}
-
-	void CreateRivers()
-	{
-		List<int> riverOrigins = ListPool<int>.Get();
-		for (int i = 0; i < cellCount; i++)
-		{
-			HexCellData cell = grid.CellData[i];
-			if (cell.IsUnderwater)
-			{
-				continue;
-			}
-			ClimateData data = climate[i];
-			float weight =
-				data.moisture * (cell.Elevation - waterLevel) /
-				(elevationMaximum - waterLevel);
-			if (weight > 0.75f)
-			{
-				riverOrigins.Add(i);
-				riverOrigins.Add(i);
-			}
-			if (weight > 0.5f)
-			{
-				riverOrigins.Add(i);
-			}
-			if (weight > 0.25f)
-			{
-				riverOrigins.Add(i);
-			}
-		}
-
-		int riverBudget = Mathf.RoundToInt(landCells * riverPercentage * 0.01f);
-		while (riverBudget > 0 && riverOrigins.Count > 0)
-		{
-			int index = Random.Range(0, riverOrigins.Count);
-			int lastIndex = riverOrigins.Count - 1;
-			int originIndex = riverOrigins[index];
-			HexCellData origin = grid.CellData[originIndex];
-			riverOrigins[index] = riverOrigins[lastIndex];
-			riverOrigins.RemoveAt(lastIndex);
-
-			if (!origin.HasRiver)
-			{
-				bool isValidOrigin = true;
-				for (HexDirection d = HexDirection.NE;
-					d <= HexDirection.NW; d++)
-				{
-					if (grid.TryGetCellIndex(
-						origin.coordinates.Step(d), out int neighborIndex) &&
-						(grid.CellData[neighborIndex].HasRiver ||
-							grid.CellData[neighborIndex].IsUnderwater))
-					{
-						isValidOrigin = false;
-						break;
-					}
-				}
-				if (isValidOrigin)
-				{
-					riverBudget -= CreateRiver(originIndex);
-				}
-			}
-		}
-
-		if (riverBudget > 0)
-		{
-			Debug.LogWarning("Failed to use up river budget.");
-		}
-
-		ListPool<int>.Add(riverOrigins);
-	}
-
-	int CreateRiver(int originIndex)
-	{
-		int length = 1;
-		int cellIndex = originIndex;
-		HexCellData cell = grid.CellData[cellIndex];
-		HexDirection direction = HexDirection.NE;
-		while (!cell.IsUnderwater)
-		{
-			int minNeighborElevation = int.MaxValue;
-			flowDirections.Clear();
-			for (HexDirection d = HexDirection.NE; d <= HexDirection.NW; d++)
-			{
-				if (!grid.TryGetCellIndex(
-					cell.coordinates.Step(d), out int neighborIndex))
-				{
-					continue;
-				}
-				HexCellData neighbor = grid.CellData[neighborIndex];
-
-				if (neighbor.Elevation < minNeighborElevation)
-				{
-					minNeighborElevation = neighbor.Elevation;
-				}
-
-				if (neighborIndex == originIndex || neighbor.HasIncomingRiver)
-				{
-					continue;
-				}
-
-				int delta = neighbor.Elevation - cell.Elevation;
-				if (delta > 0)
-				{
-					continue;
-				}
-
-				if (neighbor.HasOutgoingRiver)
-				{
-					grid.CellData[cellIndex].flags = cell.flags.WithRiverOut(d);
-					grid.CellData[neighborIndex].flags =
-						neighbor.flags.WithRiverIn(d.Opposite());
-					return length;
-				}
-
-				if (delta < 0)
-				{
-					flowDirections.Add(d);
-					flowDirections.Add(d);
-					flowDirections.Add(d);
-				}
-				if (length == 1 ||
-					(d != direction.Next2() && d != direction.Previous2()))
-				{
-					flowDirections.Add(d);
-				}
-				flowDirections.Add(d);
-			}
-
-			if (flowDirections.Count == 0)
-			{
-				if (length == 1)
-				{
-					return 0;
-				}
-
-				if (minNeighborElevation >= cell.Elevation)
-				{
-					cell.values = cell.values.WithWaterLevel(
-						minNeighborElevation);
-					if (minNeighborElevation == cell.Elevation)
-					{
-						cell.values = cell.values.WithElevation(
-							minNeighborElevation - 1);
-					}
-					grid.CellData[cellIndex].values = cell.values;
-				}
-				break;
-			}
-
-			direction = flowDirections[Random.Range(0, flowDirections.Count)];
-			cell.flags = cell.flags.WithRiverOut(direction);
-			grid.TryGetCellIndex(
-				cell.coordinates.Step(direction), out int outIndex);
-			grid.CellData[outIndex].flags =
-				grid.CellData[outIndex].flags.WithRiverIn(direction.Opposite());
-
-			length += 1;
-
-			if (minNeighborElevation >= cell.Elevation &&
-				Random.value < extraLakeProbability)
-			{
-				cell.values = cell.values.WithWaterLevel(cell.Elevation);
-				cell.values = cell.values.WithElevation(cell.Elevation - 1);
-			}
-			grid.CellData[cellIndex] = cell;
-			cellIndex = outIndex;
-			cell = grid.CellData[cellIndex];
-		}
-		return length;
-	}
+	
 
 	void SetTerrainType()
 	{
 		temperatureJitterChannel = Random.Range(0, 4);
 		int rockDesertElevation =
-			elevationMaximum - (elevationMaximum - waterLevel) / 2;
+			elevationMaximum;
 		
 		for (int i = 0; i < cellCount; i++)
 		{
 			HexCellData cell = grid.CellData[i];
 			float temperature = DetermineTemperature(i, cell);
-			float moisture = climate[i].moisture;
-			if (!cell.IsUnderwater)
+			int terrain;
+			if (cell.Elevation < 0)
 			{
-				int t = 0;
-				for (; t < temperatureBands.Length; t++)
-				{
-					if (temperature < temperatureBands[t])
-					{
-						break;
-					}
-				}
-				int m = 0;
-				for (; m < moistureBands.Length; m++)
-				{
-					if (moisture < moistureBands[m])
-					{
-						break;
-					}
-				}
-				Biome cellBiome = biomes[t * 4 + m];
-
-				if (cellBiome.terrain == 0)
-				{
-					if (cell.Elevation >= rockDesertElevation)
-					{
-						cellBiome.terrain = 3;
-					}
-				}
-				else if (cell.Elevation == elevationMaximum)
-				{
-					cellBiome.terrain = 4;
-				}
-
-				if (cellBiome.terrain == 4)
-				{
-					cellBiome.plant = 0;
-				}
-				else if (cellBiome.plant < 3 && cell.HasRiver)
-				{
-					cellBiome.plant += 1;
-				}
-				grid.CellData[i].values = cell.values.
-					WithTerrainTypeIndex(cellBiome.terrain).
-					WithPlantLevel(cellBiome.plant);
+				terrain = 3;
 			}
 			else
 			{
-				int terrain;
-				if (cell.Elevation == waterLevel - 1)
-				{
-					int cliffs = 0, slopes = 0;
-					for (HexDirection d = HexDirection.NE;
-						d <= HexDirection.NW; d++)
-					{
-						if (!grid.TryGetCellIndex(
-							cell.coordinates.Step(d), out int neighborIndex))
-						{
-							continue;
-						}
-						int delta = grid.CellData[neighborIndex].Elevation -
-							cell.WaterLevel;
-						if (delta == 0)
-						{
-							slopes += 1;
-						}
-						else if (delta > 0)
-						{
-							cliffs += 1;
-						}
-					}
-
-					if (cliffs + slopes > 3)
-					{
-						terrain = 1;
-					}
-					else if (cliffs > 0)
-					{
-						terrain = 3;
-					}
-					else if (slopes > 0)
-					{
-						terrain = 0;
-					}
-					else
-					{
-						terrain = 1;
-					}
-				}
-				else if (cell.Elevation >= waterLevel)
-				{
-					terrain = 1;
-				}
-				else if (cell.Elevation < 0)
-				{
-					terrain = 3;
-				}
-				else
-				{
-					terrain = 2;
-				}
-
-				if (terrain == 1 && temperature < temperatureBands[0])
-				{
-					terrain = 2;
-				}
-				grid.CellData[i].values =
-					cell.values.WithTerrainTypeIndex(terrain);
+				terrain = 2;
 			}
+
+			if (terrain == 1 && temperature < temperatureBands[0])
+			{
+				terrain = 2;
+			}
+			grid.CellData[i].values =
+				cell.values.WithTerrainTypeIndex(terrain);
+		
 		}
 	}
 
@@ -927,10 +636,6 @@ public class HexMapGenerator : MonoBehaviour
 
 		float temperature =
 			Mathf.LerpUnclamped(lowTemperature, highTemperature, latitude);
-
-		temperature *= 1f -
-			(cell.ViewElevation - waterLevel) /
-			(elevationMaximum - waterLevel + 1f);
 
 		float jitter = HexMetrics.SampleNoise(
 			grid.CellPositions[cellIndex] * 0.1f)[temperatureJitterChannel];
