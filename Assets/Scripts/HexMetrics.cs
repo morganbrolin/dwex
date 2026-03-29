@@ -163,29 +163,10 @@ public static class HexMetrics
 			position.x * noiseScale,
 			position.z * noiseScale);
 
-		if (Wrapping && position.x < innerDiameter * 1.5f)
-		{
-			Vector4 sample2 = noiseSource.GetPixelBilinear(
-				(position.x + wrapSize * innerDiameter) * noiseScale,
-				position.z * noiseScale);
-			sample = Vector4.Lerp(
-				sample2, sample, position.x * (1f / innerDiameter) - 0.5f);
-		}
-
 		return sample;
 	}
-
-	/// <summary>
-	/// Wrap size of the map,
-	/// matching its X size if east-west wrapping is enabled.
-	/// </summary>
-	public static int wrapSize;
-
-	/// <summary>
-	/// Whether east-west map wrapping is enabled.
-	/// </summary>
-	public static bool Wrapping => wrapSize > 0;
-
+	
+	
 	/// <summary>
 	/// Initialize the hash grid.
 	/// </summary>

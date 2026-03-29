@@ -207,8 +207,7 @@ public class HexMapEditor : MonoBehaviour
 			new Vector4(
 				cell.Coordinates.HexX,
 				cell.Coordinates.HexZ,
-				brushSize * brushSize + 0.5f,
-				HexMetrics.wrapSize
+				brushSize * brushSize + 0.5f
 			)
 		);
 	}

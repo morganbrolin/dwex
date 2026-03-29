@@ -143,8 +143,7 @@ public class HexMapGenerator : MonoBehaviour
 	/// </summary>
 	/// <param name="x">X size of the map.</param>
 	/// <param name="z">Z size of the map.</param>
-	/// <param name="wrapping">Whether east-west wrapping is enabled.</param>
-	public void GenerateMap(int x, int z, bool wrapping)
+	public void GenerateMap(int x, int z)
 	{
 		Random.State originalRandomState = Random.state;
 		if (!useFixedSeed)
@@ -157,7 +156,7 @@ public class HexMapGenerator : MonoBehaviour
 		Random.InitState(seed);
 
 		cellCount = x * z;
-		grid.CreateMap(x, z, wrapping);
+		grid.CreateMap(x, z);
 		searchFrontier ??= new HexCellPriorityQueue(grid);
 
 		CreateRegions();
@@ -181,15 +180,11 @@ public class HexMapGenerator : MonoBehaviour
 			regions.Clear();
 		}
 
-		int borderX = grid.Wrapping ? regionBorder : mapBorderX;
+		int borderX =  mapBorderX;
 		MapRegion region;
 		switch (regionCount)
 		{
 		default:
-			if (grid.Wrapping)
-			{
-				borderX = 0;
-			}
 			region.xMin = borderX;
 			region.xMax = grid.CellCountX - borderX;
 			region.zMin = mapBorderZ;
@@ -210,10 +205,6 @@ public class HexMapGenerator : MonoBehaviour
 			}
 			else
 			{
-				if (grid.Wrapping)
-				{
-					borderX = 0;
-				}
 				region.xMin = borderX;
 				region.xMax = grid.CellCountX - borderX;
 				region.zMin = mapBorderZ;
