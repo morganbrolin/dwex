@@ -10,8 +10,6 @@
 			<ui:Label text="Create New Map" style="align-self: center;"/>
 			<ui:Toggle
 				label="Generate" name="Generate" style="align-self: center;"/>
-			<ui:Toggle
-				label="Wrapping" name="Wrapping" style="align-self: center;"/>
 			<ui:Button text="Small" name="Small"/>
 			<ui:Button text="Medium" name="Medium"/>
 			<ui:Button text="Large" name="Large"/>

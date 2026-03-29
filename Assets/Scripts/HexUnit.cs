@@ -121,16 +121,6 @@ public class HexUnit : MonoBehaviour
 			int nextColumn = currentTravelLocation.Coordinates.ColumnIndex;
 			if (currentColumn != nextColumn)
 			{
-				if (nextColumn < currentColumn - 1)
-				{
-					a.x -= HexMetrics.innerDiameter * HexMetrics.wrapSize;
-					b.x -= HexMetrics.innerDiameter * HexMetrics.wrapSize;
-				}
-				else if (nextColumn > currentColumn + 1)
-				{
-					a.x += HexMetrics.innerDiameter * HexMetrics.wrapSize;
-					b.x += HexMetrics.innerDiameter * HexMetrics.wrapSize;
-				}
 				Grid.MakeChildOfColumn(transform, nextColumn);
 				currentColumn = nextColumn;
 			}
@@ -173,18 +163,6 @@ public class HexUnit : MonoBehaviour
 
 	IEnumerator LookAt(Vector3 point)
 	{
-		if (HexMetrics.Wrapping)
-		{
-			float xDistance = point.x - transform.localPosition.x;
-			if (xDistance < -HexMetrics.innerRadius * HexMetrics.wrapSize)
-			{
-				point.x += HexMetrics.innerDiameter * HexMetrics.wrapSize;
-			}
-			else if (xDistance > HexMetrics.innerRadius * HexMetrics.wrapSize)
-			{
-				point.x -= HexMetrics.innerDiameter * HexMetrics.wrapSize;
-			}
-		}
 
 		point.y = transform.localPosition.y;
 		Quaternion fromRotation = transform.localRotation;

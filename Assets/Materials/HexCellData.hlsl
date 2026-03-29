@@ -40,7 +40,6 @@ float4 GetCellData(float2 cellDataCoordinates, bool editMode)
 // x: Highlight center X position.
 // y: Highlight center Z position.
 // z: Highlight radius, squared with bias. Is negative if there is no highlight.
-// w: Hex grid wrap size, for X wrapping. Is zero if there is no wrapping.
 float4 _CellHighlighting;
 
 // Hex grid data derived from world-space XZ position.
@@ -68,8 +67,7 @@ struct HexGridData
 	bool IsHighlighted()
 	{
 		float2 cellToHighlight = abs(_CellHighlighting.xy - cellCenter);
-
-		// Adjust for world X wrapping if needed.
+		
 		if (cellToHighlight.x > _CellHighlighting.w * 0.5)
 		{
 			cellToHighlight.x -= _CellHighlighting.w;

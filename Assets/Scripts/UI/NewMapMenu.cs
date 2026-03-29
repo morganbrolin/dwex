@@ -14,8 +14,7 @@ public class NewMapMenu : MonoBehaviour
 	HexMapGenerator mapGenerator;
 
 	bool generateMaps = true;
-
-	bool wrapping = true;
+	
 
 	public void Open()
 	{
@@ -28,11 +27,6 @@ public class NewMapMenu : MonoBehaviour
 		generateToggle.value = generateMaps;
 		generateToggle.RegisterValueChangedCallback(
 			change => generateMaps = change.newValue);
-
-		var wrappingToggle = root.Q<Toggle>("Wrapping");
-		wrappingToggle.value = wrapping;
-		wrappingToggle.RegisterValueChangedCallback(
-			change => wrapping = change.newValue);
 		
 		root.Q<Button>("Small").clicked += () => CreateMap(20, 15);
 		root.Q<Button>("Medium").clicked += () => CreateMap(40, 30);
@@ -50,11 +44,11 @@ public class NewMapMenu : MonoBehaviour
 	{
 		if (generateMaps)
 		{
-			mapGenerator.GenerateMap(x, z, wrapping);
+			mapGenerator.GenerateMap(x, z);
 		}
 		else
 		{
-			hexGrid.CreateMap(x, z, wrapping);
+			hexGrid.CreateMap(x, z);
 		}
 		HexMapCamera.ValidatePosition();
 		Close();

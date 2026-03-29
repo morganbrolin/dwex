@@ -39,13 +39,7 @@ public class HexGrid : MonoBehaviour
 	/// Whether there currently exists a path that should be displayed.
 	/// </summary>
 	public bool HasPath => currentPathExists;
-
-	/// <summary>
-	/// Whether east-west wrapping is enabled.
-	/// </summary>
-	public bool Wrapping
-	{ get; private set; }
-
+	
 	Transform[] columns;
 
 	HexGridChunk[] chunks;
@@ -110,7 +104,7 @@ public class HexGrid : MonoBehaviour
 		HexUnit.unitPrefab = unitPrefab;
 		cellShaderData = gameObject.AddComponent<HexCellShaderData>();
 		cellShaderData.Grid = this;
-		CreateMap(CellCountX, CellCountZ, Wrapping);
+		CreateMap(CellCountX, CellCountZ);
 	}
 
 	/// <summary>
@@ -151,10 +145,9 @@ public class HexGrid : MonoBehaviour
 	/// </summary>
 	/// <param name="x">X size of the map.</param>
 	/// <param name="z">Z size of the map.</param>
-	/// <param name="wrapping">Whether the map wraps east-west.</param>
 	/// <returns>Whether the map was successfully created. It fails when the X
 	/// or Z size is not a multiple of the respective chunk size.</returns>
-	public bool CreateMap(int x, int z, bool wrapping)
+	public bool CreateMap(int x, int z)
 	{
 		if (
 			x <= 0 || x % HexMetrics.chunkSizeX != 0 ||
@@ -177,9 +170,7 @@ public class HexGrid : MonoBehaviour
 
 		CellCountX = x;
 		CellCountZ = z;
-		Wrapping = wrapping;
 		currentCenterColumnIndex = -1;
-		HexMetrics.wrapSize = wrapping ? CellCountX : 0;
 		chunkCountX = CellCountX / HexMetrics.chunkSizeX;
 		chunkCountZ = CellCountZ / HexMetrics.chunkSizeZ;
 		cellShaderData.Initialize(CellCountX, CellCountZ);
@@ -244,7 +235,6 @@ public class HexGrid : MonoBehaviour
 			HexMetrics.noiseSource = noiseSource;
 			HexMetrics.InitializeHashGrid(seed);
 			HexUnit.unitPrefab = unitPrefab;
-			HexMetrics.wrapSize = Wrapping ? CellCountX : 0;
 			ResetVisibility();
 		}
 	}
@@ -390,8 +380,7 @@ public class HexGrid : MonoBehaviour
 		CellPositions[i] = position;
 		CellData[i].coordinates = HexCoordinates.FromOffsetCoordinates(x, z);
 
-		bool explorable = Wrapping ?
-			z > 0 && z < CellCountZ - 1 :
+		bool explorable = 
 			x > 0 && z > 0 && x < CellCountX - 1 && z < CellCountZ - 1;
 		cell.Flags = explorable ?
 			cell.Flags.With(HexFlags.Explorable) :
@@ -490,7 +479,6 @@ public class HexGrid : MonoBehaviour
 	{
 		writer.Write(CellCountX);
 		writer.Write(CellCountZ);
-		writer.Write(Wrapping);
 
 		for (int i = 0; i < CellData.Length; i++)
 		{
@@ -521,10 +509,9 @@ public class HexGrid : MonoBehaviour
 			x = reader.ReadInt32();
 			z = reader.ReadInt32();
 		}
-		bool wrapping = header >= 5 && reader.ReadBoolean();
-		if (x != CellCountX || z != CellCountZ || this.Wrapping != wrapping)
+		if (x != CellCountX || z != CellCountZ )
 		{
-			if (!CreateMap(x, z, wrapping))
+			if (!CreateMap(x, z))
 			{
 				return;
 			}
@@ -851,43 +838,5 @@ public class HexGrid : MonoBehaviour
 		return visibleCells;
 	}
 
-	/// <summary>
-	/// Center the map given an X position, to facilitate east-west wrapping.
-	/// </summary>
-	/// <param name="xPosition">X position.</param>
-	public void CenterMap(float xPosition)
-	{
-		int centerColumnIndex = (int)
-			(xPosition / (HexMetrics.innerDiameter * HexMetrics.chunkSizeX));
-		
-		if (centerColumnIndex == currentCenterColumnIndex)
-		{
-			return;
-		}
-		currentCenterColumnIndex = centerColumnIndex;
 
-		int minColumnIndex = centerColumnIndex - chunkCountX / 2;
-		int maxColumnIndex = centerColumnIndex + chunkCountX / 2;
-
-		Vector3 position;
-		position.y = position.z = 0f;
-		for (int i = 0; i < columns.Length; i++)
-		{
-			if (i < minColumnIndex)
-			{
-				position.x = chunkCountX *
-					(HexMetrics.innerDiameter * HexMetrics.chunkSizeX);
-			}
-			else if (i > maxColumnIndex)
-			{
-				position.x = chunkCountX *
-					-(HexMetrics.innerDiameter * HexMetrics.chunkSizeX);
-			}
-			else
-			{
-				position.x = 0f;
-			}
-			columns[i].localPosition = position;
-		}
-	}
 }
