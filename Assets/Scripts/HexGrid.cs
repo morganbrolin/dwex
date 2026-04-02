@@ -2,6 +2,7 @@
 using UnityEngine.UI;
 using System.IO;
 using System.Collections.Generic;
+using Unity.Collections;
 
 /// <summary>
 /// Component that represents an entire hexagon map.
@@ -94,6 +95,8 @@ public class HexGrid : MonoBehaviour
 
 	HexCellShaderData cellShaderData;
 
+
+	private SortedDictionary<int,HexCell> _hexCells = new();
 	void Awake()
 	{
 		CellCountX = 20;
@@ -289,7 +292,8 @@ public class HexGrid : MonoBehaviour
 		{
 			return default;
 		}
-		return new HexCell(x + z * CellCountX, this);
+		return GetCell(x + z * CellCountX);
+		
 	}
 
 	/// <summary>
@@ -308,8 +312,10 @@ public class HexGrid : MonoBehaviour
 			cell = default;
 			return false;
 		}
-		cell = new HexCell(x + z * CellCountX, this);
+		cell = GetCell(x + z * CellCountX);
 		return true;
+	
+
 	}
 
 	/// <summary>
@@ -346,7 +352,22 @@ public class HexGrid : MonoBehaviour
 	/// </summary>
 	/// <param name="cellIndex">Cell index, which should be valid.</param>
 	/// <returns>The indicated cell.</returns>
-	public HexCell GetCell(int cellIndex) => new(cellIndex, this);
+	public HexCell GetCell(int cellIndex)
+	{
+		if (_hexCells.ContainsKey(cellIndex))
+		{
+			HexCell cell = _hexCells.GetValueOrDefault(cellIndex);
+			return cell;
+		}
+		else
+		{
+			HexCell cell = gameObject.AddComponent<HexCell>();
+			cell.Init(cellIndex, this);
+			_hexCells.Add(cellIndex,cell);
+			return cell;
+		}
+		
+	}
 
 	/// <summary>
 	/// Check whether a cell is visibile.
@@ -374,7 +395,7 @@ public class HexGrid : MonoBehaviour
 		position.y = 0f;
 		position.z = z * (HexMetrics.outerRadius * 1.5f);
 
-		var cell = new HexCell(i, this);
+		HexCell cell = GetCell(i);
 		CellPositions[i] = position;
 		CellData[i].coordinates = HexCoordinates.FromOffsetCoordinates(x, z);
 
@@ -653,7 +674,7 @@ public class HexGrid : MonoBehaviour
 		searchFrontier.Enqueue(fromCell.Index);
 		while (searchFrontier.TryDequeue(out int currentIndex))
 		{
-			var current = new HexCell(currentIndex, this);
+			HexCell current = GetCell(currentIndex);
 			int currentDistance = searchData[currentIndex].distance;
 			searchData[currentIndex].searchPhase += 1;
 
@@ -791,7 +812,8 @@ public class HexGrid : MonoBehaviour
 		HexCoordinates fromCoordinates = fromCell.Coordinates;
 		while (searchFrontier.TryDequeue(out int currentIndex))
 		{
-			var current = new HexCell(currentIndex, this);
+
+			HexCell current = GetCell(currentIndex);
 			searchData[currentIndex].searchPhase += 1;
 			visibleCells.Add(current);
 

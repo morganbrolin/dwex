@@ -4,21 +4,22 @@
 /// Struct that identifies a hex cell.
 /// </summary>
 [System.Serializable]
-public struct HexCell
+public class HexCell : MonoBehaviour
 {
-#pragma warning disable IDE0044 // Add readonly modifier
 	int index;
 
 	HexGrid grid;
-#pragma warning restore IDE0044 // Add readonly modifier
+
 
 	/// <summary>
 	/// Creates a cell given an index and grid.
 	/// </summary>
 	/// <param name="index">Index of the cell.</param>
 	/// <param name="grid">Grid the cell is a part of.</param>
-	public HexCell(int index, HexGrid grid)
+	
+	public void Init(int index, HexGrid grid)
 	{
+		Debug.Log("init");
 		this.index = index;
 		this.grid = grid;
 	}
@@ -26,24 +27,24 @@ public struct HexCell
 	/// <summary>
 	/// Hexagonal coordinates unique to the cell.
 	/// </summary>
-	public readonly HexCoordinates Coordinates =>
+	public HexCoordinates Coordinates =>
 		grid.CellData[index].coordinates;
 
 	/// <summary>
 	/// Unique global index of the cell.
 	/// </summary>
-	public readonly int Index => index;
+	public  int Index => index;
 
 	/// <summary>
 	/// Local position of this cell.
 	/// </summary>
-	public readonly Vector3 Position => grid.CellPositions[index];
+	public  Vector3 Position => grid.CellPositions[index];
 
 	/// <summary>
 	/// Set the elevation level.
 	/// </summary>
 	/// <param name="elevation">Elevation level.</param>
-	public readonly void SetElevation (int elevation)
+	public  void SetElevation (int elevation)
 	{
 		if (Values.Elevation != elevation)
 		{
@@ -60,7 +61,7 @@ public struct HexCell
 	/// Set the EnemyQuantity level.
 	/// </summary>
 	/// <param name="enemyQuantityLevel">enemyQuantity level.</param>
-	public readonly void SetEnemyQuantityLevel (int enemyQuantity)
+	public  void SetEnemyQuantityLevel (int enemyQuantity)
 	{
 		if (Values.EnemyQuantityLevel != enemyQuantity)
 		{
@@ -73,7 +74,7 @@ public struct HexCell
 	/// Set the gemQuality level.
 	/// </summary>
 	/// <param name="gemQualityevel">GemQuality level.</param>
-	public readonly void SetGemQualityLevel (int gemQualityLevel)
+	public  void SetGemQualityLevel (int gemQualityLevel)
 	{
 		if (Values.GemQualityLevel != gemQualityLevel)
 		{
@@ -86,7 +87,7 @@ public struct HexCell
 	/// Set the enemyQuality level.
 	/// </summary>
 	/// <param name="enemyQualityLevel">EnemyQuality level.</param>
-	public readonly void SetEnemyQualityLevel(int enemyQualityLevel)
+	public  void SetEnemyQualityLevel(int enemyQualityLevel)
 	{
 		if (Values.EnemyQualityLevel != enemyQualityLevel)
 		{
@@ -100,7 +101,7 @@ public struct HexCell
 	/// Set the terrain type index.
 	/// </summary>
 	/// <param name="terrainTypeIndex">Terrain type index.</param>
-	public readonly void SetTerrainTypeIndex (int terrainTypeIndex)
+	public  void SetTerrainTypeIndex (int terrainTypeIndex)
 	{
 		if (Values.TerrainTypeIndex != terrainTypeIndex)
 		{
@@ -112,7 +113,7 @@ public struct HexCell
 	/// <summary>
 	/// Unit currently occupying the cell, if any.
 	/// </summary>
-	public readonly HexUnit Unit
+	public  HexUnit Unit
 	{
 		get => grid.CellUnits[index];
 		set => grid.CellUnits[index] = value;
@@ -121,7 +122,7 @@ public struct HexCell
 	/// <summary>
 	/// Flags of the cell.
 	/// </summary>
-	public readonly HexFlags Flags
+	public  HexFlags Flags
 	{
 		get => grid.CellData[index].flags;
 		set => grid.CellData[index].flags = value;
@@ -130,7 +131,7 @@ public struct HexCell
 	/// <summary>
 	/// Values of the cell.
 	/// </summary>
-	public readonly HexValues Values
+	public  HexValues Values
 	{
 		get => grid.CellData[index].values;
 		set => grid.CellData[index].values = value;
@@ -141,7 +142,7 @@ public struct HexCell
 	/// </summary>
 	/// <param name="direction">Neighbor direction relative to the cell.</param>
 	/// <returns>Neighbor cell, if it exists.</returns>
-	public readonly HexCell GetNeighbor(HexDirection direction) =>
+	public  HexCell GetNeighbor(HexDirection direction) =>
 		grid.GetCell(Coordinates.Step(direction));
 
 	/// <summary>
@@ -150,26 +151,21 @@ public struct HexCell
 	/// <param name="direction">Neighbor direction relative to the cell.</param>
 	/// <param name="cell">The neighbor cell, if it exists.</param>
 	/// <returns>Whether the neighbor exists.</returns>
-	public readonly bool TryGetNeighbor(
+	public  bool TryGetNeighbor(
 		HexDirection direction, out HexCell cell) =>
 		grid.TryGetCell(Coordinates.Step(direction), out cell);
 	
 
-	readonly void Refresh() => grid.RefreshCell(index);
+	 void Refresh() => grid.RefreshCell(index);
 
 	/// <inheritdoc/>
-	public readonly override bool Equals(object obj) =>
+	public  override bool Equals(object obj) =>
 		obj is HexCell cell && this == cell;
 
 	/// <inheritdoc/>
-	public readonly override int GetHashCode() =>
+	public  override int GetHashCode() =>
 		grid != null ? index.GetHashCode() ^ grid.GetHashCode() : 0;
 	
-	/// <summary>
-	/// A cell counts as true if it is part of a grid.
-	/// </summary>
-	/// <param name="cell">The cell to check.</param>
-	public static implicit operator bool(HexCell cell) => cell.grid != null;
 
 	public static bool operator ==(HexCell a, HexCell b) =>
 		a.index == b.index && a.grid == b.grid;
