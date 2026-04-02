@@ -86,8 +86,7 @@ public class HexGrid : MonoBehaviour
 
 	int currentPathFromIndex = -1, currentPathToIndex = -1;
 	bool currentPathExists;
-
-	int currentCenterColumnIndex = -1;
+	
 
 #pragma warning disable IDE0044 // Add readonly modifier
 	List<HexUnit> units = new();
@@ -170,7 +169,6 @@ public class HexGrid : MonoBehaviour
 
 		CellCountX = x;
 		CellCountZ = z;
-		currentCenterColumnIndex = -1;
 		chunkCountX = CellCountX / HexMetrics.chunkSizeX;
 		chunkCountZ = CellCountZ / HexMetrics.chunkSizeZ;
 		cellShaderData.Initialize(CellCountX, CellCountZ);
