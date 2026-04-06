@@ -16,7 +16,7 @@ public class HexGrid : MonoBehaviour
 	HexGridChunk chunkPrefab;
 
 	[SerializeField]
-	HexUnit unitPrefab;
+	DwarfUnit unitPrefab;
 
 	[SerializeField]
 	Texture2D noiseSource;
@@ -86,6 +86,7 @@ public class HexGrid : MonoBehaviour
 	int searchFrontierPhase;
 
 	int currentPathFromIndex = -1, currentPathToIndex = -1;
+	int currentPathToWallIndex = -1;
 	bool currentPathExists;
 	
 
@@ -632,17 +633,52 @@ public class HexGrid : MonoBehaviour
 	{
 		if (currentPathExists)
 		{
+			bool isWallTarget = GetCell(currentPathToIndex).Values.Elevation >= 5;
+			int secondLastIndex = searchData[currentPathToIndex].pathFrom;
+
 			int currentIndex = currentPathToIndex;
 			while (currentIndex != currentPathFromIndex)
 			{
 				int turn = (searchData[currentIndex].distance - 1) / speed;
 				SetLabel(currentIndex, turn.ToString());
-				EnableHighlight(currentIndex, Color.white);
+
+				if (isWallTarget)
+				{
+					if (currentIndex == currentPathToIndex)
+					{
+						EnableHighlight(currentIndex, Color.yellow);
+					}
+					else if (currentIndex == secondLastIndex)
+					{
+						EnableHighlight(currentIndex, Color.red);
+					}
+					else
+					{
+						EnableHighlight(currentIndex, Color.white);
+					}
+				}
+				else
+				{
+					EnableHighlight(currentIndex, Color.white);
+				}
 				currentIndex = searchData[currentIndex].pathFrom;
 			}
 		}
-		EnableHighlight(currentPathFromIndex, Color.blue);
-		EnableHighlight(currentPathToIndex, Color.red);
+
+		// If targeting a wall, the standing hex (second-to-last) must be red.
+		// This handles cases where the dwarf is already standing next to the wall.
+		bool isWallTarget1 = GetCell(currentPathToIndex).Values.Elevation >= 5;
+		if (isWallTarget1 && searchData[currentPathToIndex].pathFrom == currentPathFromIndex)
+		{
+			EnableHighlight(currentPathFromIndex, Color.red);
+		} else {
+			EnableHighlight(currentPathFromIndex, Color.blue);
+		}
+
+		if (GetCell(currentPathToIndex).Values.Elevation < 5)
+		{
+			EnableHighlight(currentPathToIndex, Color.red);
+		}
 	}
 
 	/// <summary>
@@ -654,14 +690,15 @@ public class HexGrid : MonoBehaviour
 	public void FindPath(HexCell fromCell, HexCell toCell, HexUnit unit)
 	{
 		ClearPath();
-		currentPathFromIndex = fromCell.Index;
-		currentPathToIndex = toCell.Index;
-		currentPathExists = Search(fromCell, toCell, unit);
+
+		currentPathExists = SearchAndSetCurrentPathIndexes(fromCell, toCell, unit);
 		ShowPath(unit.Speed);
 	}
 
-	bool Search(HexCell fromCell, HexCell toCell, HexUnit unit)
+	bool SearchAndSetCurrentPathIndexes(HexCell fromCell, HexCell toCell, HexUnit unit)
 	{
+		currentPathFromIndex = fromCell.Index;
+		currentPathToIndex = toCell.Index;
 		int speed = unit.Speed;
 		searchFrontierPhase += 2;
 		searchFrontier ??= new HexCellPriorityQueue(this);
@@ -692,15 +729,24 @@ public class HexGrid : MonoBehaviour
 					continue;
 				}
 				HexCellSearchData neighborData = searchData[neighbor.Index];
-				if (neighborData.searchPhase > searchFrontierPhase ||
-					!unit.IsValidDestination(neighbor))
+				if (neighborData.searchPhase > searchFrontierPhase)
 				{
 					continue;
 				}
+
 				int moveCost = unit.GetMoveCost(current, neighbor, d);
-				if (moveCost < 0)
+				bool isWallTarget = neighbor == toCell && neighbor.Values.Elevation >= 5 && unit is DwarfUnit;
+
+				if (moveCost < 0 || !unit.IsValidDestination(neighbor))
 				{
-					continue;
+					if (isWallTarget)
+					{
+						moveCost = 1;
+					}
+					else
+					{
+						continue;
+					}
 				}
 
 				int distance = currentDistance + moveCost;
@@ -801,8 +847,7 @@ public class HexGrid : MonoBehaviour
 		searchFrontierPhase += 2;
 		searchFrontier ??= new HexCellPriorityQueue(this);
 		searchFrontier.Clear();
-
-		range += fromCell.Values.ViewElevation;
+		
 		searchData[fromCell.Index] = new HexCellSearchData
 		{
 			searchPhase = searchFrontierPhase,
@@ -831,7 +876,7 @@ public class HexGrid : MonoBehaviour
 				}
 
 				int distance = searchData[currentIndex].distance + 1;
-				if (distance + neighbor.Values.ViewElevation > range ||
+				if (distance > range ||
 					distance > fromCoordinates.DistanceTo(neighbor.Coordinates))
 				{
 					continue;

@@ -67,6 +67,11 @@ public class HexUnit : MonoBehaviour
 	List<int> pathToTravel;
 
 	/// <summary>
+	/// Whether the unit is currently moving along a path.
+	/// </summary>
+	public bool IsTraveling => pathToTravel != null;
+
+	/// <summary>
 	/// Validate the position of the unit.
 	/// </summary>
 	public void ValidateLocation() =>
@@ -86,13 +91,15 @@ public class HexUnit : MonoBehaviour
 	/// <param name="path">List of cells that describe a valid path.</param>
 	public void Travel(List<int> path)
 	{
-		HexCell location = Grid.GetCell(locationCellIndex);
-		location.Unit = null;
-		location = Grid.GetCell(path[^1]);
-		locationCellIndex = location.Index;
-		location.Unit = this;
-		pathToTravel = path;
+		// Stop current movement before starting new path
 		StopAllCoroutines();
+
+		// Update logical occupation to the start of the new path
+		Grid.GetCell(locationCellIndex).Unit = null;
+		locationCellIndex = path[0];
+		Grid.GetCell(locationCellIndex).Unit = this;
+
+		pathToTravel = path;
 		StartCoroutine(TravelPath());
 	}
 
@@ -113,6 +120,11 @@ public class HexUnit : MonoBehaviour
 		float t = Time.deltaTime * travelSpeed;
 		for (int i = 1; i < pathToTravel.Count; i++)
 		{
+			// Update logical position as we traverse
+			Grid.GetCell(locationCellIndex).Unit = null;
+			locationCellIndex = pathToTravel[i];
+			Grid.GetCell(locationCellIndex).Unit = this;
+
 			currentTravelLocation = Grid.GetCell(pathToTravel[i]);
 			currentTravelLocationCellIndex = currentTravelLocation.Index;
 			a = c;

@@ -498,7 +498,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cellLabelPrefab: {fileID: 11470134, guid: f68794ca03b6f4510b9a5bd6ee9ba2f4, type: 3}
   chunkPrefab: {fileID: 114000010052569294, guid: 7622d007cafd044a1b1189c0b93d2912, type: 3}
-  unitPrefab: {fileID: 114701888605048992, guid: 5661a1efcb9464721b4db3f694ded559, type: 3}
+  unitPrefab: {fileID: 4078360111678661829, guid: 44a249196933c16479f6fe2f3b295512, type: 3}
   noiseSource: {fileID: 2800000, guid: 38701cdeb1fb9427cbb585f917aa59cb, type: 3}
   seed: 1223
 --- !u!4 &1571186512

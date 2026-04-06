@@ -10,6 +10,11 @@ public class HexCell : MonoBehaviour
 
 	HexGrid grid;
 
+	public float CurrentHealth  { get; set; }
+	
+	public float MaxHealth  { get; set; }
+	
+
 
 	/// <summary>
 	/// Creates a cell given an index and grid.
@@ -21,8 +26,7 @@ public class HexCell : MonoBehaviour
 	{
 		Debug.Log("init");
 		this.index = index;
-		this.grid = grid;
-	}
+		this.grid = grid;	}
 
 	/// <summary>
 	/// Hexagonal coordinates unique to the cell.
