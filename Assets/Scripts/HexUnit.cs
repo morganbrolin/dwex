@@ -9,11 +9,14 @@ using System.IO;
 public class HexUnit : MonoBehaviour
 {
 	const float rotationSpeed = 180f;
-	const float travelSpeed = 4f;
+	const float travelSpeed = 3f;
 
 	public static HexUnit unitPrefab;
 
 	public HexGrid Grid { get; set; }
+
+	private int locationCellIndex = -1;
+	private int	currentTravelLocationCellIndex = -1;
 
 	/// <summary>
 	/// Cell that the unit occupies.
@@ -37,7 +40,7 @@ public class HexUnit : MonoBehaviour
 		}
 	}
 
-	int locationCellIndex = -1, currentTravelLocationCellIndex = -1;
+	
 
 	/// <summary>
 	/// Orientation that the unit is facing.
@@ -71,6 +74,7 @@ public class HexUnit : MonoBehaviour
 	/// </summary>
 	public bool IsTraveling => pathToTravel != null;
 
+	
 	/// <summary>
 	/// Validate the position of the unit.
 	/// </summary>
@@ -91,25 +95,30 @@ public class HexUnit : MonoBehaviour
 	/// <param name="path">List of cells that describe a valid path.</param>
 	public void Travel(List<int> path)
 	{
-		// Stop current movement before starting new path
-		StopAllCoroutines();
+		
+		if (!IsTraveling)
+		{
+			// Update logical occupation to the start of the new path
+			Grid.GetCell(locationCellIndex).Unit = null;
+			locationCellIndex = path[0];
+			Grid.GetCell(locationCellIndex).Unit = this;
+			pathToTravel = path;
+			StartCoroutine(TravelPath());
+		}
+		
 
-		// Update logical occupation to the start of the new path
-		Grid.GetCell(locationCellIndex).Unit = null;
-		locationCellIndex = path[0];
-		Grid.GetCell(locationCellIndex).Unit = this;
-
-		pathToTravel = path;
-		StartCoroutine(TravelPath());
 	}
 
 	IEnumerator TravelPath()
 	{
+
+		
 		Vector3 a, b, c = Grid.GetCell(pathToTravel[0]).Position;
 		yield return LookAt(Grid.GetCell(pathToTravel[1]).Position);
 
 		if (currentTravelLocationCellIndex < 0)
 		{
+			Debug.Log("index up"+pathToTravel[0]);
 			currentTravelLocationCellIndex = pathToTravel[0];
 		}
 		HexCell currentTravelLocation = Grid.GetCell(
@@ -127,6 +136,7 @@ public class HexUnit : MonoBehaviour
 
 			currentTravelLocation = Grid.GetCell(pathToTravel[i]);
 			currentTravelLocationCellIndex = currentTravelLocation.Index;
+			Debug.Log("index up"+currentTravelLocation.Index);
 			a = c;
 			b = Grid.GetCell(pathToTravel[i - 1]).Position;
 
@@ -151,6 +161,8 @@ public class HexUnit : MonoBehaviour
 			Grid.DecreaseVisibility(Grid.GetCell(pathToTravel[i]), VisionRange);
 			t -= 1f;
 		}
+
+		Debug.Log("index up -1");
 		currentTravelLocationCellIndex = -1;
 
 		HexCell location = Grid.GetCell(locationCellIndex);
@@ -172,6 +184,7 @@ public class HexUnit : MonoBehaviour
 		ListPool<int>.Add(pathToTravel);
 		pathToTravel = null;
 	}
+	
 
 	IEnumerator LookAt(Vector3 point)
 	{

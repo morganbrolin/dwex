@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 
 /// <summary>
 /// Struct that identifies a hex cell.
@@ -9,11 +10,36 @@ public class HexCell : MonoBehaviour
 	int index;
 
 	HexGrid grid;
+	
+	[SerializeField]
+	public Slider hpSlider;
 
 	public float CurrentHealth  { get; set; }
 	
 	public float MaxHealth  { get; set; }
 	
+	/// <summary>
+	/// Applies damage to the cell's health. 
+	/// If health reaches zero, the elevation is lowered (the wall is destroyed).
+	/// </summary>
+	/// <param name="damage">Amount of damage to subtract.</param>
+	public void ApplyMiningDamage(float damage)
+	{
+		if (CurrentHealth <= 0) return;
+
+		CurrentHealth -= damage;
+		if (CurrentHealth <= 0)
+		{
+			hpSlider.enabled = true;
+			hpSlider.gameObject.SetActive(true);
+			CurrentHealth = 0;
+			// Lower elevation to represent destruction of the wall
+			if (Values.Elevation > -15) // Ensure we don't go below the minimum supported elevation
+			{
+				SetElevation(Values.Elevation - 1);
+			}
+		}
+	}
 
 
 	/// <summary>
@@ -24,7 +50,6 @@ public class HexCell : MonoBehaviour
 	
 	public void Init(int index, HexGrid grid)
 	{
-		Debug.Log("init");
 		this.index = index;
 		this.grid = grid;	}
 
@@ -53,6 +78,18 @@ public class HexCell : MonoBehaviour
 		if (Values.Elevation != elevation)
 		{
 			Values = Values.WithElevation(elevation);
+
+			// Initialize health if this cell is a wall (elevation >= 5)
+			if (elevation >= 5)
+			{
+				MaxHealth = 100f; // Set a base health for walls
+				CurrentHealth = MaxHealth;
+			}
+			else
+			{
+				CurrentHealth = MaxHealth = 0f;
+			}
+
 			grid.ShaderData.ViewElevationChanged(index);
 			grid.RefreshCellPosition(index);
 			grid.RefreshCellWithDependents(index);

@@ -12,7 +12,7 @@ public class DwarfUnit : HexUnit
 	public HexCell PendingMineTarget { get; set; }
 
 	[SerializeField]
-	float miningSpeed = 50f;
+	float miningSpeed = 1f;
 	
 
 	void Update()
@@ -38,7 +38,14 @@ public class DwarfUnit : HexUnit
 		{
 			float currentHealth = target.CurrentHealth;
 			currentHealth -= miningSpeed * Time.deltaTime;
-
+			target.hpSlider.enabled = true;
+			target.hpSlider.gameObject.SetActive(true);
+			
+			target.hpSlider.value = currentHealth / target.MaxHealth;
+			Debug.Log("sliders");
+			Debug.Log(target.hpSlider.value);
+			Debug.Log(target.hpSlider.maxValue);
+			Debug.Log(target.hpSlider.minValue);
 			if (currentHealth <= 0f)
 			{
 				// Award gems before clearing the wall
@@ -49,6 +56,8 @@ public class DwarfUnit : HexUnit
 				target.SetElevation(0);
 				Grid.RefreshCellWithDependents(target.Index);
 				PendingMineTarget = default;
+				target.hpSlider.enabled = false;
+				target.hpSlider.gameObject.SetActive(false);
 			}
 			else
 			{

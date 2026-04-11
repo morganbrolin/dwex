@@ -73,6 +73,8 @@ public class HexGrid : MonoBehaviour
 
 	RectTransform[] cellUIRects;
 
+	HexCell[] hexCells;
+
 	/// <summary>
 	/// The <see cref="HexCellShaderData"/> container
 	/// for cell visualization data.
@@ -95,9 +97,7 @@ public class HexGrid : MonoBehaviour
 #pragma warning restore IDE0044 // Add readonly modifier
 
 	HexCellShaderData cellShaderData;
-
-
-	private SortedDictionary<int,HexCell> _hexCells = new();
+	
 	void Awake()
 	{
 		CellCountX = 20;
@@ -209,6 +209,7 @@ public class HexGrid : MonoBehaviour
 		cellUIRects = new RectTransform[CellData.Length];
 		cellGridChunks = new HexGridChunk[CellData.Length];
 		CellUnits = new HexUnit[CellData.Length];
+		hexCells = new HexCell[CellData.Length];
 		searchData = new HexCellSearchData[CellData.Length];
 		cellVisibility = new int[CellData.Length];
 
@@ -355,19 +356,7 @@ public class HexGrid : MonoBehaviour
 	/// <returns>The indicated cell.</returns>
 	public HexCell GetCell(int cellIndex)
 	{
-		if (_hexCells.ContainsKey(cellIndex))
-		{
-			HexCell cell = _hexCells.GetValueOrDefault(cellIndex);
-			return cell;
-		}
-		else
-		{
-			HexCell cell = gameObject.AddComponent<HexCell>();
-			cell.Init(cellIndex, this);
-			_hexCells.Add(cellIndex,cell);
-			return cell;
-		}
-		
+		return hexCells[cellIndex];
 	}
 
 	/// <summary>
@@ -396,7 +385,18 @@ public class HexGrid : MonoBehaviour
 		position.y = 0f;
 		position.z = z * (HexMetrics.outerRadius * 1.5f);
 
-		HexCell cell = GetCell(i);
+		// 1. Instantiate the label (which has HexCell script attached)
+		Text label = Instantiate(cellLabelPrefab);
+		label.rectTransform.anchoredPosition =
+			new Vector2(position.x, position.z);
+		// TODO move everything to hexCells[i] instead of having 2 lists(cellUIRects can be del)
+		RectTransform rect = cellUIRects[i] = label.rectTransform;
+
+		// 2. Get the component from the prefab and initialize it
+		HexCell cell = label.GetComponent<HexCell>();
+		cell.Init(i, this);
+		hexCells[i] = cell;
+		cell.hpSlider.gameObject.SetActive(false);
 		CellPositions[i] = position;
 		CellData[i].coordinates = HexCoordinates.FromOffsetCoordinates(x, z);
 
@@ -405,11 +405,6 @@ public class HexGrid : MonoBehaviour
 		cell.Flags = explorable ?
 			cell.Flags.With(HexFlags.Explorable) :
 			cell.Flags.Without(HexFlags.Explorable);
-
-		Text label = Instantiate(cellLabelPrefab);
-		label.rectTransform.anchoredPosition =
-			new Vector2(position.x, position.z);
-		RectTransform rect = cellUIRects[i] = label.rectTransform;
 
 		cell.Values = cell.Values.WithElevation(0);
 		RefreshCellPosition(i);
