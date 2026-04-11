@@ -39,15 +39,7 @@ public class HexMapEditor : MonoBehaviour
 	int brushSize;
 	
 	bool applyEnemyQuantityLevel, applyGemQualityLevel, applyEnemyQualityLevel;
-
-	enum OptionalToggle
-	{
-		Ignore, Yes, No
-	}
 	
-
-	bool isDrag;
-	HexDirection dragDirection;
 	HexCell previousCell;
 
 	InputAction interactAction, positionAction;
@@ -153,11 +145,15 @@ public class HexMapEditor : MonoBehaviour
 	void CreateUnit()
 	{
 		HexCell cell = GetCellUnderCursor();
-		if (cell && !cell.Unit)
+		if (cell && !cell.Unit && HexUnit.unitPrefab)
 		{
 			hexGrid.AddUnit(
 				Instantiate(HexUnit.unitPrefab), cell, Random.Range(0f, 360f)
 			);
+		}
+		else if (!HexUnit.unitPrefab)
+		{
+			Debug.LogError("Unit Prefab is missing on the HexGrid!");
 		}
 	}
 
@@ -175,14 +171,6 @@ public class HexMapEditor : MonoBehaviour
 		HexCell currentCell = GetCellUnderCursor();
 		if (currentCell)
 		{
-			if (previousCell && previousCell != currentCell)
-			{
-				ValidateDrag(currentCell);
-			}
-			else
-			{
-				isDrag = false;
-			}
 			EditCells(currentCell);
 			previousCell = currentCell;
 		}
@@ -214,22 +202,7 @@ public class HexMapEditor : MonoBehaviour
 
 	void ClearCellHighlightData() => Shader.SetGlobalVector(
 		cellHighlightingId, new Vector4(0f, 0f, -1f, 0f));
-
-	void ValidateDrag(HexCell currentCell)
-	{
-		for (dragDirection = HexDirection.NE;
-			dragDirection <= HexDirection.NW;
-			dragDirection++)
-		{
-			if (previousCell.GetNeighbor(dragDirection) ==
-				currentCell)
-			{
-				isDrag = true;
-				return;
-			}
-		}
-		isDrag = false;
-	}
+	
 
 	void EditCells(HexCell center)
 	{
