@@ -45,6 +45,8 @@ public class HexMapEditor : MonoBehaviour
 	InputAction interactAction, positionAction;
 	
 	InputAction createUnitAction, destroyUnitAction;
+	
+	InputAction createHomeAction, destroyHomeAction;
 
 	void Awake()
 	{
@@ -102,7 +104,9 @@ public class HexMapEditor : MonoBehaviour
 		interactAction = InputSystem.actions.FindAction("Interact");
 		positionAction = InputSystem.actions.FindAction("Position");
 		createUnitAction = InputSystem.actions.FindAction("CreateUnit");
-		destroyUnitAction = InputSystem.actions.FindAction("Destroyunit");
+		destroyUnitAction = InputSystem.actions.FindAction("DestroyUnit");
+		createHomeAction = InputSystem.actions.FindAction("CreateHome");
+		destroyHomeAction = InputSystem.actions.FindAction("DestroyHome");
     }
 
     void Update()
@@ -128,6 +132,16 @@ public class HexMapEditor : MonoBehaviour
 			if (createUnitAction.WasPerformedThisFrame())
 			{
 				CreateUnit();
+				return;
+			}
+			if (createHomeAction.WasPerformedThisFrame())
+			{
+				CreateHome();
+				return;
+			}
+			if (destroyHomeAction.WasPerformedThisFrame())
+			{
+				DestroyHome();
 				return;
 			}
 		}
@@ -156,6 +170,25 @@ public class HexMapEditor : MonoBehaviour
 			Debug.LogError("Unit Prefab is missing on the HexGrid!");
 		}
 	}
+	
+	void CreateHome()
+	{
+		HexCell cell = GetCellUnderCursor();
+		if (cell)
+		{
+			hexGrid.CreateHome(cell.Index);
+		}
+	}
+	
+	void DestroyHome()
+	{
+		HexCell cell = GetCellUnderCursor();
+		if (cell)
+		{
+			hexGrid.DestroyHome(cell.Index);
+		}
+	}
+	
 
 	void DestroyUnit()
 	{

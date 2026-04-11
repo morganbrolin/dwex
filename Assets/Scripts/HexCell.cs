@@ -11,12 +11,16 @@ public class HexCell : MonoBehaviour
 
 	HexGrid grid;
 	
+	public bool IsHome { get; set; } 
+	
 	[SerializeField]
 	public Slider hpSlider;
 
 	public float CurrentHealth  { get; set; }
 	
 	public float MaxHealth  { get; set; }
+
+	
 	
 	/// <summary>
 	/// Applies damage to the cell's health. 
@@ -51,7 +55,21 @@ public class HexCell : MonoBehaviour
 	public void Init(int index, HexGrid grid)
 	{
 		this.index = index;
-		this.grid = grid;	}
+		this.grid = grid;
+		IsHome = false;
+	}
+
+	public void BecomeHome()
+	{
+		this.IsHome = true;
+		this.SetElevation(5);
+	}
+
+	public void DeleteHome()
+	{
+		this.IsHome = false;
+		this.SetElevation(0);
+	}
 
 	/// <summary>
 	/// Hexagonal coordinates unique to the cell.

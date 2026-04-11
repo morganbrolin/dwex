@@ -3,6 +3,7 @@ using UnityEngine.UI;
 using System.IO;
 using System.Collections.Generic;
 using Unity.Collections;
+using UnityEngine.Serialization;
 
 /// <summary>
 /// Component that represents an entire hexagon map.
@@ -90,6 +91,8 @@ public class HexGrid : MonoBehaviour
 	int currentPathFromIndex = -1, currentPathToIndex = -1;
 	int currentPathToWallIndex = -1;
 	bool currentPathExists;
+
+	int currentHomeIndex;
 	
 
 #pragma warning disable IDE0044 // Add readonly modifier
@@ -201,6 +204,33 @@ public class HexGrid : MonoBehaviour
 			}
 		}
 	}
+
+	public void ClearHome()
+	{
+		hexCells[currentHomeIndex].DeleteHome();
+	}
+
+	public void CreateHome(int index)
+	{
+		if (currentHomeIndex != -1)
+		{
+			hexCells[currentHomeIndex].DeleteHome();
+			currentHomeIndex = index;
+			hexCells[index].BecomeHome();
+		}
+		else
+		{
+			currentHomeIndex = index;
+			hexCells[index].BecomeHome();
+		}
+	}
+	
+	public void DestroyHome(int index)
+	{
+		hexCells[index].DeleteHome();
+		currentHomeIndex = -1;
+	}
+	
 
 	void CreateCells()
 	{

@@ -70,9 +70,27 @@
                     "initialStateCheck": false
                 },
                 {
+                    "name": "CreateHome",
+                    "type": "Button",
+                    "id": "ef7bffcf-594d-449f-afe2-dcd85980869a",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
                     "name": "DestroyUnit",
                     "type": "Button",
                     "id": "be73b3e1-7ab7-42e5-9a64-557f21c0adfb",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "DestroyHome",
+                    "type": "Button",
+                    "id": "a6030001-19c5-4470-8fca-ac60f2307d55",
                     "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
@@ -345,6 +363,39 @@
                     "isPartOfComposite": true
                 },
                 {
+                    "name": "One Modifier",
+                    "id": "b6adfe27-2855-4f05-8a7a-04bda36bc201",
+                    "path": "OneModifier",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "DestroyHome",
+                    "isComposite": true,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "modifier",
+                    "id": "9daf7ab4-3623-4d03-8a17-81fbe6fbf1dd",
+                    "path": "<Keyboard>/shift",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";Keyboard&Mouse",
+                    "action": "DestroyHome",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "binding",
+                    "id": "617ef9da-1466-45db-bf65-d4383180495b",
+                    "path": "<Keyboard>/h",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "DestroyHome",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
                     "name": "",
                     "id": "db3d1d41-4da5-4188-a720-8079ebb815ef",
                     "path": "<Keyboard>/u",
@@ -352,6 +403,17 @@
                     "processors": "",
                     "groups": ";Keyboard&Mouse",
                     "action": "CreateUnit",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "7ec4eeed-5999-4816-86a1-e1a3a76247d2",
+                    "path": "<Keyboard>/h",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";Keyboard&Mouse",
+                    "action": "CreateHome",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
