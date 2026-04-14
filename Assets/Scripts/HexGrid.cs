@@ -2,6 +2,7 @@
 using UnityEngine.UI;
 using System.IO;
 using System.Collections.Generic;
+using System.Linq;
 using Unity.Collections;
 using UnityEngine.Serialization;
 
@@ -18,6 +19,9 @@ public class HexGrid : MonoBehaviour
 
 	[SerializeField]
 	DwarfUnit unitPrefab;
+	
+	[SerializeField]
+	EnemyUnit enemyUnitPrefab;
 
 	[SerializeField]
 	Texture2D noiseSource;
@@ -92,7 +96,7 @@ public class HexGrid : MonoBehaviour
 	int currentPathToWallIndex = -1;
 	bool currentPathExists;
 
-	int currentHomeIndex;
+	public int currentHomeIndex;
 	
 
 #pragma warning disable IDE0044 // Add readonly modifier
@@ -100,6 +104,8 @@ public class HexGrid : MonoBehaviour
 #pragma warning restore IDE0044 // Add readonly modifier
 
 	HexCellShaderData cellShaderData;
+
+	public Dictionary<string, HexCellFlowData[]> miningMapFlowMap = new Dictionary<string, HexCellFlowData[]>();
 	
 	void Awake()
 	{
@@ -108,9 +114,110 @@ public class HexGrid : MonoBehaviour
 		HexMetrics.noiseSource = noiseSource;
 		HexMetrics.InitializeHashGrid(seed);
 		HexUnit.unitPrefab = unitPrefab;
+		HexUnit.enemyUnitPrefab = enemyUnitPrefab;
 		cellShaderData = gameObject.AddComponent<HexCellShaderData>();
 		cellShaderData.Grid = this;
 		CreateMap(CellCountX, CellCountZ);
+	}
+
+	public void GenerateMiningFlowMap(float miningSpeed,float travelSpeed,int startIndex)
+	{
+		if (!miningMapFlowMap.ContainsKey(miningSpeed + " " + travelSpeed) )
+		{
+			HexCellFlowData[] flowMap = new HexCellFlowData[CellData.Length];
+			for (int i = 0; i < CellData.Length; i++)
+			{
+				flowMap[i] = new HexCellFlowData();
+			}
+
+			miningMapFlowMap[miningSpeed + " " + travelSpeed] = flowMap;
+			miningMapFlowMap[miningSpeed+" "+travelSpeed] = GenerateFlowMap(miningSpeed,travelSpeed,startIndex,miningMapFlowMap[miningSpeed+" "+travelSpeed]);
+			
+		}
+	}
+
+
+	public void flowMapUppdate()
+	{
+		//TODO maybe can be optimized to only do it from the wall somehow...
+		foreach (string key in miningMapFlowMap.Keys.ToList())
+		{
+			float miningSpeed = float.Parse(key.Split(' ')[0]);
+			float travelSpeed = float.Parse(key.Split(' ')[1]);
+			miningMapFlowMap[key] = GenerateFlowMap(miningSpeed,travelSpeed,currentHomeIndex,miningMapFlowMap[key]);
+
+			
+			
+		}
+	}
+
+	public HexCellFlowData[] GenerateFlowMap(float miningSpeed,float travelSpeed,int startIndex,HexCellFlowData [] flowMap)
+	{
+		// todo should not do a new everytime
+		flowMap = new HexCellFlowData[CellData.Length];
+		for (int i = 0; i < CellData.Length; i++)
+		{
+			flowMap[i] = new HexCellFlowData();
+		}
+		
+		
+		
+		flowMap[startIndex].totalCost = 0f;
+		List<HexDirection> directions = new List<HexDirection> { HexDirection.NE,HexDirection.E, HexDirection.SE,HexDirection.SW,HexDirection.W,HexDirection.NW };
+		Queue<int> queue = new Queue<int>();
+		queue.Enqueue(startIndex);
+		int loop = 0;
+		while (queue.Count != 0)
+		{
+			loop = loop + 1;
+
+
+			int currentIndex = queue.Dequeue();
+			HexCell currentHexCell = GetCell(currentIndex);
+			foreach (HexDirection direction in directions)
+			{
+				HexCell neigbourHexCell = currentHexCell.GetNeighbor(direction);
+				if (neigbourHexCell is null)
+				{
+					continue;
+				}
+				//magic number 17 ?! TODO maybe add hexgrid traversability int
+				float cost = 17 / travelSpeed + neigbourHexCell.CurrentHealth / miningSpeed;
+
+				float newCost = flowMap[currentHexCell.Index].totalCost + cost;
+				if (flowMap[neigbourHexCell.Index].totalCost> newCost)
+				{
+					flowMap[neigbourHexCell.Index].cost = cost;
+					//Debug.Log("setting total cost : " +flowMap[neigbourHexCell.Index].totalCost+ "index: " + neigbourHexCell.Index);
+					//Debug.Log(" new total cost : " +flowMap[currentHexCell.Index].totalCost+cost+ "index: " + neigbourHexCell.Index);
+					flowMap[neigbourHexCell.Index].totalCost = flowMap[currentHexCell.Index].totalCost+cost;
+					//Debug.Log("new total cost updated: "  +flowMap[neigbourHexCell.Index].totalCost+ "index: " + neigbourHexCell.Index);
+					flowMap[neigbourHexCell.Index].pathFrom = currentIndex;
+					flowMap[neigbourHexCell.Index].direction = OppositeDirection(direction);
+					queue.Enqueue(neigbourHexCell.Index);
+					Text text = neigbourHexCell.GetComponent<Text>();
+					text.text = ""+flowMap[neigbourHexCell.Index].totalCost;
+
+
+				}
+			}
+		}
+		Debug.Log("finish flowmap size: "+ flowMap.Length+"loop int: "+loop);
+		return flowMap;
+	}
+
+	private HexDirection OppositeDirection(HexDirection direction)
+	{
+		return direction switch
+		{
+			HexDirection.NE => HexDirection.SW,
+			HexDirection.E  => HexDirection.W,
+			HexDirection.SE => HexDirection.NW,
+			HexDirection.SW => HexDirection.NE,
+			HexDirection.W  => HexDirection.E,
+			HexDirection.NW => HexDirection.SE,
+			_ => direction
+		};
 	}
 
 	/// <summary>
@@ -658,8 +765,6 @@ public class HexGrid : MonoBehaviour
 	{
 		if (currentPathExists)
 		{
-			bool isWallTarget = GetCell(currentPathToIndex).Values.Elevation >= 5;
-			int secondLastIndex = searchData[currentPathToIndex].pathFrom;
 
 			int currentIndex = currentPathToIndex;
 			while (currentIndex != currentPathFromIndex)
@@ -667,20 +772,9 @@ public class HexGrid : MonoBehaviour
 				int turn = (searchData[currentIndex].distance - 1) / speed;
 				SetLabel(currentIndex, turn.ToString());
 
-				if (isWallTarget)
+				if (GetCell(currentIndex).isWall)
 				{
-					if (currentIndex == currentPathToIndex)
-					{
-						EnableHighlight(currentIndex, Color.yellow);
-					}
-					else if (currentIndex == secondLastIndex)
-					{
-						EnableHighlight(currentIndex, Color.red);
-					}
-					else
-					{
-						EnableHighlight(currentIndex, Color.white);
-					}
+					EnableHighlight(currentIndex, Color.yellow);
 				}
 				else
 				{

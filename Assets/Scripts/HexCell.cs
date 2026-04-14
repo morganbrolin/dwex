@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 /// <summary>
@@ -19,6 +20,8 @@ public class HexCell : MonoBehaviour
 	public float CurrentHealth  { get; set; }
 	
 	public float MaxHealth  { get; set; }
+
+	public bool isWall = false;
 
 	
 	
@@ -62,13 +65,27 @@ public class HexCell : MonoBehaviour
 	public void BecomeHome()
 	{
 		this.IsHome = true;
-		this.SetElevation(5);
+		BecomeWall();
 	}
 
 	public void DeleteHome()
 	{
 		this.IsHome = false;
+		BecomeGround();
+	}
+//TODO magic number here maybe in future only have 2 elevation ground and wall
+	public void BecomeWall()
+	{
+		this.isWall = true;
+		this.SetElevation(5);
+		grid.flowMapUppdate();
+	}
+
+	public void BecomeGround()
+	{
+		this.isWall = false;
 		this.SetElevation(0);
+		grid.flowMapUppdate();
 	}
 
 	/// <summary>

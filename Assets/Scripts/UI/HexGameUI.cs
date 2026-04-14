@@ -51,7 +51,7 @@ public class HexGameUI : MonoBehaviour
 			{
 				DoSelection();
 			}
-			else if (selectedUnit)
+			else if (selectedUnit is DwarfUnit)
 			{
 				if (commandAction.WasPerformedThisFrame())
 				{
@@ -59,6 +59,7 @@ public class HexGameUI : MonoBehaviour
 				}
 				else
 				{
+					
 					DoPathfinding();
 				}
 			}
@@ -79,13 +80,14 @@ public class HexGameUI : MonoBehaviour
 	{
 		if (UpdateCurrentCell())
 		{
-			// Allow pathfinding if it's a valid destination OR if it's a wall and we are a Dwarf
+			// Allow pathfinding if it's a valid destination 
 			bool canTarget = currentCell && 
 				(selectedUnit.IsValidDestination(currentCell) || 
-				(currentCell.Values.Elevation >= 5 && selectedUnit is DwarfUnit));
+				(currentCell.Values.Elevation >= 5 ));
 
 			if (canTarget)
 			{
+				Debug.Log("path finding");
 				grid.FindPath(selectedUnit.Location, currentCell, selectedUnit);
 			}
 			else
@@ -100,29 +102,23 @@ public class HexGameUI : MonoBehaviour
 		if (grid.HasPath)
 		{
 			List<int> path = grid.GetPath();
-			HexCell target = grid.GetCell(path[path.Count - 1]);
-			
-			// If the path ends in a wall, set the mining target and remove the wall from the movement path
-			if (target.Values.Elevation >= 5 && selectedUnit is DwarfUnit dwarf)
-			{
-				dwarf.PendingMineTarget = target;
-				path.RemoveAt(path.Count - 1);
-			}
 
-			// Only initiate travel if the unit actually needs to move to a new hex
-			if (path.Count > 1)
+			if (path != null && path.Count > 1)
 			{
 				selectedUnit.Travel(path);
 			}
 			grid.ClearPath();
 		}
 	}
-
 	bool UpdateCurrentCell()
 	{
 		HexCell cell = grid.GetCell(
 			Camera.main.ScreenPointToRay(positionAction.ReadValue<Vector2>()));
-		if (cell)
+		if(cell && currentCell is null){
+			currentCell = cell;
+			return true;
+		}
+		if (cell &&  currentCell != cell)
 		{
 			currentCell = cell;
 			return true;

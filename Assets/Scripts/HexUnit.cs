@@ -13,15 +13,27 @@ public class HexUnit : MonoBehaviour
 
 	public static HexUnit unitPrefab;
 
+	public static HexUnit enemyUnitPrefab;
+
 	public HexGrid Grid { get; set; }
 
-	private int locationCellIndex = -1;
-	private int	currentTravelLocationCellIndex = -1;
+	protected int locationCellIndex = -1;
+	protected int currentTravelLocationCellIndex = -1;
+	
+	[SerializeField]
+	public float miningSpeed;
+	
+	/// <summary>
+	/// A wall cell that the dwarf intends to mine upon arrival.
+	/// </summary>
+	public HexCell PendingMineTarget { get; set; }
+
+	private bool isMining = false;
 
 	/// <summary>
 	/// Cell that the unit occupies.
 	/// </summary>
-	public HexCell Location
+	public virtual HexCell Location
 	{
 		get => Grid.GetCell(locationCellIndex);
 		set
@@ -67,12 +79,12 @@ public class HexUnit : MonoBehaviour
 
 	float orientation;
 
-	List<int> pathToTravel;
+	List<int> _pathToTravel;
 
 	/// <summary>
 	/// Whether the unit is currently moving along a path.
 	/// </summary>
-	public bool IsTraveling => pathToTravel != null;
+	public bool IsTraveling => _pathToTravel != null;
 
 	
 	/// <summary>
@@ -96,20 +108,40 @@ public class HexUnit : MonoBehaviour
 	public void Travel(List<int> path)
 	{
 		
+		// TODO currently the only not buggy stopallcoroutines 
+		// i want the same for traveling but it jumps around
+		if (IsTraveling && isMining)
+		{
+			StopAllCoroutines();
+			Location = Grid.GetCell((path[0]));
+			_pathToTravel = path;
+			StartCoroutine(TravelPath());
+			
+		}
+
 		if (!IsTraveling)
 		{
-			// Update logical occupation to the start of the new path
-			Grid.GetCell(locationCellIndex).Unit = null;
-			locationCellIndex = path[0];
-			Grid.GetCell(locationCellIndex).Unit = this;
-			pathToTravel = path;
+			isMining = false;
+			//StopTravel();
+			Location = Grid.GetCell((path[0]));
+			_pathToTravel = path;
 			StartCoroutine(TravelPath());
 		}
-		
+		else
+		{
+			Debug.Log("isTraveling");
+			
+		}
+
 
 	}
 
-	IEnumerator TravelPath()
+	public IEnumerator TravelPath()
+	{
+		return TravelPath(_pathToTravel);
+	}
+
+	public IEnumerator TravelPath(List<int> pathToTravel)
 	{
 
 		
@@ -118,17 +150,25 @@ public class HexUnit : MonoBehaviour
 
 		if (currentTravelLocationCellIndex < 0)
 		{
-			Debug.Log("index up"+pathToTravel[0]);
 			currentTravelLocationCellIndex = pathToTravel[0];
 		}
 		HexCell currentTravelLocation = Grid.GetCell(
 			currentTravelLocationCellIndex);
-		Grid.DecreaseVisibility(currentTravelLocation, VisionRange);
 		int currentColumn = currentTravelLocation.Coordinates.ColumnIndex;
 
 		float t = Time.deltaTime * travelSpeed;
 		for (int i = 1; i < pathToTravel.Count; i++)
 		{
+			HexCell nextCell = Grid.GetCell(pathToTravel[i]);
+			if (nextCell.isWall)
+			{
+				// While waiting/mining, ensure we are standing at the previous cell logically
+				yield return StartCoroutine(OnCellBlocked(nextCell));
+			}
+
+			// Decrease visibility of the cell we are LEAVING
+			Grid.DecreaseVisibility(Grid.GetCell(pathToTravel[i - 1]), VisionRange);
+
 			// Update logical position as we traverse
 			Grid.GetCell(locationCellIndex).Unit = null;
 			locationCellIndex = pathToTravel[i];
@@ -136,7 +176,6 @@ public class HexUnit : MonoBehaviour
 
 			currentTravelLocation = Grid.GetCell(pathToTravel[i]);
 			currentTravelLocationCellIndex = currentTravelLocation.Index;
-			Debug.Log("index up"+currentTravelLocation.Index);
 			a = c;
 			b = Grid.GetCell(pathToTravel[i - 1]).Position;
 
@@ -148,7 +187,8 @@ public class HexUnit : MonoBehaviour
 			}
 
 			c = (b + currentTravelLocation.Position) * 0.5f;
-			Grid.IncreaseVisibility(Grid.GetCell(pathToTravel[i]), VisionRange);
+			// Increase visibility of the cell we are ENTERING
+			Grid.IncreaseVisibility(currentTravelLocation, VisionRange);
 
 			for (; t < 1f; t += Time.deltaTime * travelSpeed)
 			{
@@ -158,11 +198,9 @@ public class HexUnit : MonoBehaviour
 				transform.localRotation = Quaternion.LookRotation(d);
 				yield return null;
 			}
-			Grid.DecreaseVisibility(Grid.GetCell(pathToTravel[i]), VisionRange);
 			t -= 1f;
 		}
 
-		Debug.Log("index up -1");
 		currentTravelLocationCellIndex = -1;
 
 		HexCell location = Grid.GetCell(locationCellIndex);
@@ -182,7 +220,8 @@ public class HexUnit : MonoBehaviour
 		transform.localPosition = location.Position;
 		orientation = transform.localRotation.eulerAngles.y;
 		ListPool<int>.Add(pathToTravel);
-		pathToTravel = null;
+		_pathToTravel = null;
+		
 	}
 	
 
@@ -210,6 +249,75 @@ public class HexUnit : MonoBehaviour
 		transform.LookAt(point);
 		orientation = transform.localRotation.eulerAngles.y;
 	}
+	
+	
+	public void StopTravel()
+	{
+		if (PendingMineTarget)
+		{
+			PendingMineTarget.hpSlider.gameObject.SetActive(false);
+			PendingMineTarget = null;
+		}
+	}
+
+
+
+	/// <summary>
+	/// Applies mining damage to a target cell over time.
+	/// </summary>
+	/// <param name="target">The cell to mine.</param>
+	public void MineTick(HexCell target)
+	{
+		isMining = true;
+		if (target && target.Values.Elevation >= 5)
+		{
+			float currentHealth = target.CurrentHealth;
+			currentHealth -= miningSpeed * Time.deltaTime;
+			target.hpSlider.enabled = true;
+			target.hpSlider.gameObject.SetActive(true);
+			
+			target.hpSlider.value = currentHealth / target.MaxHealth;
+			if (currentHealth <= 0f)
+			{
+				// Award gems before clearing the wall
+				//int reward = Grid.GetGemReward(target);
+				//Grid.Gems += reward;
+				//Debug.Log($"Mined {reward} gems! Total: {Grid.Gems}");
+
+				target.BecomeGround();
+				Grid.RefreshCellWithDependents(target.Index);
+				PendingMineTarget = default;
+				target.hpSlider.enabled = false;
+				target.hpSlider.gameObject.SetActive(false);
+				isMining = false;
+			}
+			else
+			{
+				target.CurrentHealth = currentHealth;
+			}
+		}
+		else
+		{
+			PendingMineTarget = default;
+		}
+	}
+
+	/// <summary>
+	/// Implementation of the blocked path logic for the Dwarf.
+	/// Stops movement and mines the wall until it is destroyed.
+	/// </summary>
+	protected IEnumerator OnCellBlocked(HexCell blockedCell)
+	{
+		PendingMineTarget = blockedCell;
+		// Wait here in the travel coroutine until the wall is ground
+		while (blockedCell && blockedCell.isWall)
+		{
+			// Perform mining logic every frame while blocked
+			MineTick(blockedCell);
+			yield return null;
+		}
+		PendingMineTarget = null;
+	}
 
 	/// <summary>
 	/// Get the movement cost of moving from one cell to another.
@@ -218,23 +326,20 @@ public class HexUnit : MonoBehaviour
 	/// <param name="toCell">Cell to move to.</param>
 	/// <param name="direction">Movement direction.</param>
 	/// <returns></returns>
-	public int GetMoveCost(
+	public virtual int GetMoveCost(
 		HexCell fromCell, HexCell toCell, HexDirection direction)
 	{
 		if (!IsValidDestination(toCell))
 		{
 			return -1;
 		}
-		HexEdgeType edgeType = HexMetrics.GetEdgeType(
-			fromCell.Values.Elevation, toCell.Values.Elevation);
-		if (edgeType == HexEdgeType.Cliff)
+		if (toCell.isWall && miningSpeed <= 0)
 		{
 			return -1;
 		}
-		int moveCost;
-		moveCost = edgeType == HexEdgeType.Flat ? 5 : 10;
-		HexValues v = toCell.Values;
-		moveCost += v.EnemyQuantityLevel + v.GemQualityLevel + v.EnemyQualityLevel;
+
+		// Cost is 1 for ground, plus mining time penalty for walls.
+		int moveCost = 1 + (int)(toCell.CurrentHealth / miningSpeed);
 		return moveCost;
 	}
 

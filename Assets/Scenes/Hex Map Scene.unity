@@ -499,8 +499,10 @@ MonoBehaviour:
   cellLabelPrefab: {fileID: 11470134, guid: f68794ca03b6f4510b9a5bd6ee9ba2f4, type: 3}
   chunkPrefab: {fileID: 114000010052569294, guid: 7622d007cafd044a1b1189c0b93d2912, type: 3}
   unitPrefab: {fileID: 4078360111678661829, guid: 44a249196933c16479f6fe2f3b295512, type: 3}
+  enemyUnitPrefab: {fileID: 8365089867335078830, guid: dedfabeec2ffa23479ddd95dcdc8d097, type: 3}
   noiseSource: {fileID: 2800000, guid: 38701cdeb1fb9427cbb585f917aa59cb, type: 3}
   seed: 1223
+  currentHomeIndex: 0
 --- !u!4 &1571186512
 Transform:
   m_ObjectHideFlags: 0

@@ -70,6 +70,15 @@
                     "initialStateCheck": false
                 },
                 {
+                    "name": "CreateEnemy",
+                    "type": "Button",
+                    "id": "b89b932f-d060-480d-ac37-a1d82f388780",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
                     "name": "CreateHome",
                     "type": "Button",
                     "id": "ef7bffcf-594d-449f-afe2-dcd85980869a",
@@ -82,6 +91,15 @@
                     "name": "DestroyUnit",
                     "type": "Button",
                     "id": "be73b3e1-7ab7-42e5-9a64-557f21c0adfb",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "DestroyEnemy",
+                    "type": "Button",
+                    "id": "4161e83b-9d7a-4ace-af66-6ca12a07506a",
                     "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
@@ -364,6 +382,39 @@
                 },
                 {
                     "name": "One Modifier",
+                    "id": "d43e69df-b904-4f35-bb1e-4542d4fc2d87",
+                    "path": "OneModifier",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "DestroyEnemy",
+                    "isComposite": true,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "modifier",
+                    "id": "a686217f-ee55-4306-9ede-cdb4bcba9445",
+                    "path": "<Keyboard>/shift",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";Keyboard&Mouse",
+                    "action": "DestroyEnemy",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "binding",
+                    "id": "ed6c40de-de7e-45fb-8844-2a5df4b8e6dd",
+                    "path": "<Keyboard>/i",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "DestroyEnemy",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "One Modifier",
                     "id": "b6adfe27-2855-4f05-8a7a-04bda36bc201",
                     "path": "OneModifier",
                     "interactions": "",
@@ -403,6 +454,17 @@
                     "processors": "",
                     "groups": ";Keyboard&Mouse",
                     "action": "CreateUnit",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "ad3a6b33-cfc7-47f1-9193-7bed8feebcad",
+                    "path": "<Keyboard>/i",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";Keyboard&Mouse",
+                    "action": "CreateEnemy",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },

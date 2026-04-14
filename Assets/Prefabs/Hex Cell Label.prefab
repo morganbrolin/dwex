@@ -95,6 +95,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::HexCell
   hpSlider: {fileID: 271055794391223401}
+  isWall: 0
 --- !u!1 &1370793699697384
 GameObject:
   m_ObjectHideFlags: 0

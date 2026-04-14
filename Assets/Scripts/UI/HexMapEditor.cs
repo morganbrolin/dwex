@@ -47,7 +47,8 @@ public class HexMapEditor : MonoBehaviour
 	InputAction createUnitAction, destroyUnitAction;
 	
 	InputAction createHomeAction, destroyHomeAction;
-
+	
+	InputAction createEnemyAction, destroyEnemyAction;
 	void Awake()
 	{
 		terrainMaterial.DisableKeyword("_SHOW_GRID");
@@ -107,6 +108,8 @@ public class HexMapEditor : MonoBehaviour
 		destroyUnitAction = InputSystem.actions.FindAction("DestroyUnit");
 		createHomeAction = InputSystem.actions.FindAction("CreateHome");
 		destroyHomeAction = InputSystem.actions.FindAction("DestroyHome");
+		createEnemyAction = InputSystem.actions.FindAction("CreateEnemy");
+		destroyEnemyAction = InputSystem.actions.FindAction("DestroyEnemy"); 
     }
 
     void Update()
@@ -144,6 +147,17 @@ public class HexMapEditor : MonoBehaviour
 				DestroyHome();
 				return;
 			}
+			
+			if (createEnemyAction.WasPerformedThisFrame())
+			{
+				CreateEnemy();
+				return;
+			}
+			if (destroyEnemyAction.WasPerformedThisFrame())
+			{
+				DestroyEnemy();
+				return;
+			}
 		}
 		else
 		{
@@ -171,6 +185,21 @@ public class HexMapEditor : MonoBehaviour
 		}
 	}
 	
+	void CreateEnemy()
+	{
+		HexCell cell = GetCellUnderCursor();
+		if (cell && !cell.Unit && HexUnit.enemyUnitPrefab)
+		{
+			hexGrid.AddUnit(
+				Instantiate(HexUnit.enemyUnitPrefab), cell, Random.Range(0f, 360f)
+			);
+		}
+		else if (!HexUnit.enemyUnitPrefab)
+		{
+			Debug.LogError("Unit Prefab is missing on the HexGrid!");
+		}
+	}
+	
 	void CreateHome()
 	{
 		HexCell cell = GetCellUnderCursor();
@@ -191,6 +220,15 @@ public class HexMapEditor : MonoBehaviour
 	
 
 	void DestroyUnit()
+	{
+		HexCell cell = GetCellUnderCursor();
+		if (cell && cell.Unit)
+		{
+			hexGrid.RemoveUnit(cell.Unit);
+		}
+	}
+	
+	void DestroyEnemy()
 	{
 		HexCell cell = GetCellUnderCursor();
 		if (cell && cell.Unit)
@@ -267,12 +305,12 @@ public class HexMapEditor : MonoBehaviour
 				cell.SetTerrainTypeIndex(activeTerrainTypeIndex);
 			}
 			
-			//TODO magic number here maybe in future only have 2 elevation ground and wall
+			
 			if(applyWall)
-			{cell.SetElevation(5);}
+			{cell.BecomeWall();}
 			else
 			{
-				cell.SetElevation(0);
+				cell.BecomeGround();
 			}
 
 			
